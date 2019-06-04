@@ -110,6 +110,8 @@ tol.p$gen_spec= paste(tol.p$Genus, tol.p$Species, sep="_")
 tol.gt$gen_spec= paste(tol.gt$Genus, tol.gt$Species, sep="_")
 #match
 match1= match(tol.p$gen_spec, tol.gt$gen_spec)
+#make numeric
+tol.gt$tmin= as.numeric(as.character(tol.gt$tmin))
 
 tol.p$tmin =tol.gt$tmin[match1]
 tol.p$tmin_metric =tol.gt$min_metric[match1]
@@ -129,6 +131,7 @@ points(tol.marine$lon,tol.marine$lat, col="blue")
 
 #------
 #huey data
+setwd("/Volumes/GoogleDrive/Team Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
 tol.h= read.csv('Hueyetal2009.csv')
 #check locations
 plot(ocean)
@@ -177,7 +180,7 @@ ts[spec.k,inds,2]= tmax.k.tt[inds]- Topt.tt
 } # end loop species
 
 #------------
-#Calaculate annual metrics
+#Calculate annual metrics
 
 ts.l= as.data.frame(t(rbind(years, ts[,,1])))
 ts.t= as.data.frame(t(rbind(years, ts[,,2])))
@@ -206,44 +209,94 @@ ts.t.mean.v= colMeans(ts.t.mean[,3:ncol(ts.l.sum)], na.rm=T)
 #add data
 tol.h.ts= cbind(tol.h, ts.l.sum.v, ts.l.count.v, ts.l.mean.v, ts.t.sum.v, ts.t.count.v, ts.t.mean.v)
 
+par(mfrow=c(2,2))
+#sum metabolic integration of thermal stress events > Topt
 plot(tol.h.ts$Lat,tol.h.ts$ts.l.sum.v+1, log='y')
+#count of events >Topt
 plot(tol.h.ts$Lat,tol.h.ts$ts.l.count.v+1, log='y')
+#mean metabolic integration of thermal stress events > Topt
 plot(tol.h.ts$Lat,tol.h.ts$ts.l.mean.v)
+#thermal safe zone
 plot(tol.h.ts$Lat,tol.h.ts$SafeZone)
 
 #============================
 #MARINE
 
-tsm= array(NA, dim= c(nrow(tol.marine), length(s.times),2) )
+#data with ctmin and ctmax
+tol.m= tol.marine[which(!is.na(tol.marine$tmax) & !is.na(tol.marine$tmin)),]
+#assume Topt as 70%
+tol.m$Topt= tol.m$tmin +0.7*(tol.m$tmax-tol.m$tmin) 
+
+tsm= array(NA, dim= c(nrow(tol.m), length(s.times),2) )
 
 #calculate degree days above Topt
-for(spec.k in 1:nrow(tol.marine)){
+for(spec.k in 1:nrow(tol.m)){
   
   #find closest grid cell
-  lon.ind= which.min(abs(s.lons - tol.h[spec.k, "Long" ]))
-  lat.ind= which.min(abs(s.lats - tol.h[spec.k, "Lat" ]))
+  lon.ind= which.min(abs(s.lons - tol.m[spec.k, "lon" ]))
+  lat.ind= which.min(abs(s.lats - tol.m[spec.k, "lat" ]))
   
   #extract data
-  tmin.k= tmin[lon.ind,lat.ind,]
-  tmax.k= tmax[lon.ind,lat.ind,]
+  tmin.k= sst[lon.ind,lat.ind,]
+  tmax.k= sst[lon.ind,lat.ind,]
   
   #metabolic scaled thermal stress
-  Topt= tol.h[spec.k,'newTopt']
+  Topt= tol.m[spec.k,'Topt']
   inds= which(tmax.k > Topt)
   
-  ts[spec.k,inds,1]= tmax.k[inds]- Topt  
+  tsm[spec.k,inds,1]= tmax.k[inds]- Topt  
   
   #thermodynamic scale
-  Topt.tt= thermo.temp(tol.h[spec.k,'newTopt'])
+  Topt.tt= thermo.temp(tol.m[spec.k,'Topt'])
   tmax.k.tt= thermo.temp(tmax.k)
   
   inds= which(tmax.k.tt > Topt.tt)
   
-  ts[spec.k,inds,2]= tmax.k.tt[inds]- Topt.tt  
+  tsm[spec.k,inds,2]= tmax.k.tt[inds]- Topt.tt  
   
 } # end loop species
 
+#------------
+#Calculate annual metrics
 
+ts.l.m= as.data.frame(t(rbind(years, tsm[,,1])))
+ts.t.m= as.data.frame(t(rbind(years, tsm[,,2])))
+#count
+count=function(x) length(na.omit(x))
+
+ts.l.sum.m= aggregate(ts.l.m, by=list(ts.l.m$years), FUN=sum, na.rm=T)
+ts.t.sum.m= aggregate(ts.t.m, by=list(ts.t.m$years), FUN=sum, na.rm=T)
+ts.l.count.m= aggregate(ts.l.m, by=list(ts.l.m$years), FUN=count)
+ts.t.count.m= aggregate(ts.t.m, by=list(ts.t.m$years), FUN=count)
+ts.l.mean.m= aggregate(ts.l.m, by=list(ts.l.m$years), FUN=mean, na.rm=T)
+ts.t.mean.m= aggregate(ts.t.m, by=list(ts.t.m$years), FUN=mean, na.rm=T)
+
+#yearly
+#ts.l.m= ts.l.agg[,3:ncol(ts.l.agg)]
+#ts.t.m= ts.t.agg[,3:ncol(ts.t.agg)]
+#row.names(ts.l.m)= ts.l.agg$Group.1
+#row.names(ts.t.m)= ts.t.agg$Group.1
+ts.l.sum.v.m= colMeans(ts.l.sum.m[,3:ncol(ts.l.sum.m)], na.rm=T)
+ts.t.sum.v.m= colMeans(ts.t.sum.m[,3:ncol(ts.l.sum.m)], na.rm=T)
+ts.l.count.v.m= colMeans(ts.l.count.m[,3:ncol(ts.l.sum.m)], na.rm=T)
+ts.t.count.v.m= colMeans(ts.t.count.m[,3:ncol(ts.l.sum.m)], na.rm=T)
+ts.l.mean.v.m= colMeans(ts.l.mean.m[,3:ncol(ts.l.sum.m)], na.rm=T)
+ts.t.mean.v.m= colMeans(ts.t.mean.m[,3:ncol(ts.l.sum.m)], na.rm=T)
+
+#add data
+tol.m.ts= cbind(tol.m, ts.l.sum.v.m, ts.l.count.v.m, ts.l.mean.v.m, ts.t.sum.v.m, ts.t.count.v.m, ts.t.mean.v.m)
+
+par(mfrow=c(2,2))
+#sum metabolic integration of thermal stress events > Topt
+plot(tol.m.ts$lat,tol.m.ts$ts.l.sum.v+1, log='y')
+#count of events >Topt
+plot(tol.m.ts$lat,tol.m.ts$ts.l.count.v+1, log='y')
+#mean metabolic integration of thermal stress events > Topt
+plot(tol.m.ts$lat,tol.m.ts$ts.l.mean.v)
+#thermal safe zone
+plot(tol.m.ts$lat,tol.m.ts$SafeZone)
+
+##FIX
 
 #%%%%%%%%%%%%%%
 sst=ncvar_get(sst.nc,"sst")
