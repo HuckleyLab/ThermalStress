@@ -375,7 +375,7 @@ tol.gt$topt= tol.gt$tmin + ToptPer( abs(tol.gt$lat_max) )*tol.gt$TTB
 #--------------------
 #THERMAL STRESS ESTIMATES
 
-ts= array(NA, dim= c(nrow(tol.gt), length(ncep.dates),2) )
+ts= array(NA, dim= c(nrow(tol.gt), length(ncep.dates),4) )
 
 #calculate degree days above Topt
 for(spec.k in 1:nrow(tol.gt)){
@@ -400,10 +400,14 @@ for(spec.k in 1:nrow(tol.gt)){
   tmax.k= as.numeric( ncep.cmm[,3] )
   tmin.k= as.numeric( ncep.cmm[,2] )
  
+  #daily safety margins
+  ts[spec.k,,1]= tol.gt[spec.k,'Tmax']-tmax.k
+  ts[spec.k,,2]= tol.gt[spec.k,'topt']-tmax.k 
+  
   #metabolic scaled thermal stress
   inds= which(tmax.k > tol.gt[spec.k,'topt'])
   
-  ts[spec.k,inds,1]= tmax.k[inds]- tol.gt[spec.k,'topt']  
+  ts[spec.k,inds,3]= tmax.k[inds]- tol.gt[spec.k,'topt']  
   
   #thermodynamic scale
   Topt.tt= thermo.temp(tol.gt[spec.k,'topt'])
@@ -411,13 +415,22 @@ for(spec.k in 1:nrow(tol.gt)){
   
   inds= which(tmax.k.tt > Topt.tt)
   
-  if(length(inds>0)) ts[spec.k,inds,2]= tmax.k.tt[inds]- Topt.tt  
+  if(length(inds>0)) ts[spec.k,inds,4]= tmax.k.tt[inds]- Topt.tt  
   
 } # end loop species
 
 #------------
-#Calculate annual metrics
+#TSM
+#TSM daily: min, 10%, 50%, 90%
+#lowest 7, 14 day average
+#count of days <x
 
+
+
+#METABOLIC
+#duration of days about Topt
+
+#Calculate annual metrics
 ts.l= as.data.frame(t(rbind(years, ts[,,1])))
 ts.t= as.data.frame(t(rbind(years, ts[,,2])))
 #count
@@ -445,13 +458,13 @@ ts.t.mean.v= colMeans(ts.t.mean[,3:ncol(ts.l.sum)], na.rm=T)
 #add data
 tol.gt.ts= cbind(tol.gt, ts.l.sum.v, ts.l.count.v, ts.l.mean.v, ts.t.sum.v, ts.t.count.v, ts.t.mean.v)
 
-par(mfrow=c(2,2))
 #sum metabolic integration of thermal stress events > Topt
-plot( abs(tol.gt.ts$lat_max),tol.gt.ts$ts.l.sum.v, log='y') 
+ggplot(tol.gt.ts, aes(x=abs(lat_max),y=log(ts.l.sum.v)) ) +geom_point()+facet_wrap(~habitat)#+geom_smooth(method='lm',se=FALSE)
 #count of events >Topt
-plot( abs(tol.gt.ts$lat_max),tol.gt.ts$ts.l.count.v, log='y')
+ggplot(tol.gt.ts, aes(x=abs(lat_max),y=log(tol.gt.ts$ts.l.count.v)) ) +geom_point()+facet_wrap(~habitat)
 #mean metabolic integration of thermal stress events > Topt
-plot( abs(tol.gt.ts$lat_max),tol.gt.ts$ts.l.mean.v)
+ggplot(tol.gt.ts, aes(x=abs(lat_max),y=log(ts.l.mean.v)) ) +geom_point()+facet_wrap(~habitat)
+
 
 
 
