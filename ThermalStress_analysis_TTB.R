@@ -10,6 +10,7 @@ library(tidyverse) #data manipulation and visualization
 library(RColorBrewer) #color schemes
 library(sf) #to import a spatial object and to work with geom_sf in ggplot2
 library(raster)
+library(zoo)
 
 #convert longituide
 convert.lon= function(r0) ifelse(r0 > 180, -360 + r0, r0)
@@ -421,21 +422,51 @@ for(spec.k in 1:nrow(tol.gt)){
 
 #------------
 #TSM
+tsm<-  array(NA, dim= c(nrow(tol.gt),11,4) )
+
 #TSM daily: min, 10%, 50%, 90%
-#lowest 7, 14 day average
-#count of days <x
+#CTmax-Tmax
+tsm[,1:4,1]= t(apply(ts[,,1], MARGIN=1, FUN='quantile', probs=c(0,0.1,0.5,0.9)))
+#Topt-Tmax
+tsm[,1:4,2]= t(apply(ts[,,2], MARGIN=1, FUN='quantile', probs=c(0,0.1,0.5,0.9), na.rm=TRUE))
 
+#lowest 7 day average
+tsm[,5,1]= apply(rollmean(ts[,,1], 7, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
+tsm[,5,2]= apply(rollmean(ts[,,2], 7, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
+#lowest 14 day average
+tsm[,6,1]= apply(rollmean(ts[,,1], 14, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
+tsm[,6,2]= apply(rollmean(ts[,,2], 14, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
 
+#count of days <5
+count.sub5= function(x) sum(x<5)
+tsm[,7,1]= apply(rollmean(ts[,,1], 14, fill=NA), MARGIN=1, FUN='count.sub5')
+tsm[,7,2]= apply(rollmean(ts[,,2], 14, fill=NA), MARGIN=1, FUN='count.sub5')
 
 #METABOLIC
-#duration of days about Topt
+#duration of days above Topt
+maxc.overTopt= function(x){ rle(sum(x>0))
+  # get rle object
+  consec <- rle(x>0)
+  # max consecutive values
+  max(consec$lengths[consec$values==TRUE])
+}
+meanc.overTopt= function(x){ rle(sum(x>0))
+  # get rle object
+  consec <- rle(x>0)
+  # mean consecutive values
+  mean(consec$lengths[consec$values==TRUE])
+}
+
+tsm[,8,3]= apply(ts[,,3], MARGIN=1, FUN='maxc.overTopt')
+tsm[,8,4]= apply(ts[,,4], MARGIN=1, FUN='maxc.overTopt')
 
 #Calculate annual metrics
-ts.l= as.data.frame(t(rbind(years, ts[,,1])))
-ts.t= as.data.frame(t(rbind(years, ts[,,2])))
+ts.l= as.data.frame(t(rbind(years, ts[,,1]))) #linear
+ts.t= as.data.frame(t(rbind(years, ts[,,2]))) #thermodynamic
 #count
 count=function(x) length(na.omit(x))
 
+#aggregate for each year
 ts.l.sum= aggregate(ts.l, by=list(ts.l$years), FUN=sum, na.rm=T)
 ts.t.sum= aggregate(ts.t, by=list(ts.t$years), FUN=sum, na.rm=T)
 ts.l.count= aggregate(ts.l, by=list(ts.l$years), FUN=count)
@@ -443,27 +474,44 @@ ts.t.count= aggregate(ts.t, by=list(ts.t$years), FUN=count)
 ts.l.mean= aggregate(ts.l, by=list(ts.l$years), FUN=mean, na.rm=T)
 ts.t.mean= aggregate(ts.t, by=list(ts.t$years), FUN=mean, na.rm=T)
 
-#yearly
-#ts.l.m= ts.l.agg[,3:ncol(ts.l.agg)]
-#ts.t.m= ts.t.agg[,3:ncol(ts.t.agg)]
-#row.names(ts.l.m)= ts.l.agg$Group.1
-#row.names(ts.t.m)= ts.t.agg$Group.1
-ts.l.sum.v= colMeans(ts.l.sum[,3:ncol(ts.l.sum)], na.rm=T)
-ts.t.sum.v= colMeans(ts.t.sum[,3:ncol(ts.l.sum)], na.rm=T)
-ts.l.count.v= colMeans(ts.l.count[,3:ncol(ts.l.sum)], na.rm=T)
-ts.t.count.v= colMeans(ts.t.count[,3:ncol(ts.l.sum)], na.rm=T)
-ts.l.mean.v= colMeans(ts.l.mean[,3:ncol(ts.l.sum)], na.rm=T)
-ts.t.mean.v= colMeans(ts.t.mean[,3:ncol(ts.l.sum)], na.rm=T)
+#average across years
+tsm[,9,3]= colMeans(ts.l.sum[,3:ncol(ts.l.sum)], na.rm=T)
+tsm[,9,4]= colMeans(ts.t.sum[,3:ncol(ts.l.sum)], na.rm=T)
+tsm[,10,3]= colMeans(ts.l.count[,3:ncol(ts.l.sum)], na.rm=T)
+tsm[,10,4]= colMeans(ts.t.count[,3:ncol(ts.l.sum)], na.rm=T)
+tsm[,11,3]= colMeans(ts.l.mean[,3:ncol(ts.l.sum)], na.rm=T)
+tsm[,11,4]= colMeans(ts.t.mean[,3:ncol(ts.l.sum)], na.rm=T)
 
 #add data
-tol.gt.ts= cbind(tol.gt, ts.l.sum.v, ts.l.count.v, ts.l.mean.v, ts.t.sum.v, ts.t.count.v, ts.t.mean.v)
+#dim 1: TSM CTmax
+tol.ts= cbind(tol.gt, tsm[,1:7,1])
+colnames(tol.ts)[50:56]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
+#dim 2: TSM Topt
+tol.ts= cbind(tol.gt, tsm[,1:7,2])
+colnames(tol.ts)[50:56]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
+#dim 3: Tmax - Topt
+tol.ts= cbind(tol.gt, tsm[,8:11,3])
+colnames(tol.ts)[50:53]=c('dTopt','sumI','countI','meanI')
+#dim 4: thermodynamic Tmax - Topt
+tol.ts= cbind(tol.gt, tsm[,8:11,4])
+colnames(tol.ts)[50:53]=c('dTopt','sumI','countI','meanI')
 
-#sum metabolic integration of thermal stress events > Topt
-ggplot(tol.gt.ts, aes(x=abs(lat_max),y=log(ts.l.sum.v)) ) +geom_point()+facet_wrap(~habitat)#+geom_smooth(method='lm',se=FALSE)
-#count of events >Topt
-ggplot(tol.gt.ts, aes(x=abs(lat_max),y=log(tol.gt.ts$ts.l.count.v)) ) +geom_point()+facet_wrap(~habitat)
-#mean metabolic integration of thermal stress events > Topt
-ggplot(tol.gt.ts, aes(x=abs(lat_max),y=log(ts.l.mean.v)) ) +geom_point()+facet_wrap(~habitat)
+#------------------
+#PLOT
+#TSM
+ggplot(tol.ts, aes(x=abs(lat_max),y=minTSM) ) +geom_point()+facet_wrap(~habitat)
+ggplot(tol.ts, aes(x=abs(lat_max),y=TSM10p) ) +geom_point()+facet_wrap(~habitat)
+ggplot(tol.ts, aes(x=abs(lat_max),y=TSM50p) ) +geom_point()+facet_wrap(~habitat)
+ggplot(tol.ts, aes(x=abs(lat_max),y=TSM90p) ) +geom_point()+facet_wrap(~habitat)
+ggplot(tol.ts, aes(x=abs(lat_max),y=low7d) ) +geom_point()+facet_wrap(~habitat)
+ggplot(tol.ts, aes(x=abs(lat_max),y=low14d) ) +geom_point()+facet_wrap(~habitat)
+ggplot(tol.ts, aes(x=abs(lat_max),y=count5) ) +geom_point()+facet_wrap(~habitat)
+
+#Metabolic integration
+ggplot(tol.ts, aes(x=abs(lat_max),y=log(dTopt)) ) +geom_point()+facet_wrap(~habitat)#+geom_smooth(method='lm',se=FALSE)
+ggplot(tol.ts, aes(x=abs(lat_max),y=log(sumI)) ) +geom_point()+facet_wrap(~habitat)
+ggplot(tol.ts, aes(x=abs(lat_max),y=log(countI)) ) +geom_point()+facet_wrap(~habitat)
+ggplot(tol.ts, aes(x=abs(lat_max),y=log(meanI)) ) +geom_point()+facet_wrap(~habitat)
 
 
 
