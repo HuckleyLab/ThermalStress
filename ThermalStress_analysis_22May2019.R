@@ -76,7 +76,7 @@ image.plot(s.lons,s.lats,sst[,,1])
 #---------------------
 #LOAD BIOLOGICAL DATA
 
-setwd("/Volumes/GoogleDrive/Team Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
 
 tol.p= read.csv('Pinsky_dataset_1_hotwater.csv')
 tol.gt= read.csv('GlobalTherm_upload_10_11_17.csv')
