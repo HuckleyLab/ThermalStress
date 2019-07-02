@@ -13,8 +13,6 @@ library(raster)
 library(zoo)
 library(cowplot)
 
-##FIX TIME
-
 #convert longituide
 convert.lon= function(r0) ifelse(r0 > 180, -360 + r0, r0)
 
@@ -164,47 +162,50 @@ for(spec.k in 1:nrow(tol.dd)){
 
 #------------
 #TSM
-tsm<-  array(NA, dim= c(length(years),nrow(tol.gt),11,4) )
+tsm<-  array(NA, dim= c(length(years),nrow(tol.dd),11,4) )
+
+#reorder ts
+ts <- aperm(ts, c(2,1,3,4))
 
 #loop years
 for(year.k in 1:length(years)){
   
   #TSM daily: min, 10%, 50%, 90%
   #CTmax-Tmax
-  tsm[year.k,,1:4,1]= t(apply(ts[year.k,,,1], MARGIN=1, FUN='quantile', probs=c(0,0.1,0.5,0.9)))
+  tsm[year.k,,1:4,1]=t(apply(ts[,year.k,,1], MARGIN=1, FUN='quantile', probs=c(0,0.1,0.5,0.9), na.rm=TRUE))
   #Topt-Tmax
-  tsm[year.k,,1:4,2]= t(apply(ts[year.k,,,2], MARGIN=1, FUN='quantile', probs=c(0,0.1,0.5,0.9), na.rm=TRUE))
+  tsm[year.k,,1:4,2]= t(apply(ts[,year.k,,2], MARGIN=1, FUN='quantile', probs=c(0,0.1,0.5,0.9), na.rm=TRUE))
   
   #lowest 7 day average
-  tsm[year.k,,5,1]= apply(rollmean(ts[year.k,,,1], 7, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
-  tsm[year.k,,5,2]= apply(rollmean(ts[year.k,,,2], 7, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
+  tsm[year.k,,5,1]= apply(rollmean(ts[,year.k,,1], 7, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
+  tsm[year.k,,5,2]= apply(rollmean(ts[,year.k,,2], 7, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
   #lowest 14 day average
-  tsm[year.k,,6,1]= apply(rollmean(ts[year.k,,,1], 14, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
-  tsm[year.k,,6,2]= apply(rollmean(ts[year.k,,,2], 14, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
+  tsm[year.k,,6,1]= apply(rollmean(ts[,year.k,,1], 14, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
+  tsm[year.k,,6,2]= apply(rollmean(ts[,year.k,,2], 14, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
   
   #count of days <5
   count.sub5= function(x) sum(x<5)
-  tsm[year.k,,7,1]= apply(rollmean(ts[year.k,,,1], 14, fill=NA), MARGIN=1, FUN='count.sub5')
-  tsm[year.k,,7,2]= apply(rollmean(ts[year.k,,,2], 14, fill=NA), MARGIN=1, FUN='count.sub5')
+  tsm[year.k,,7,1]= apply(rollmean(ts[,year.k,,1], 14, fill=NA), MARGIN=1, FUN='count.sub5')
+  tsm[year.k,,7,2]= apply(rollmean(ts[,year.k,,2], 14, fill=NA), MARGIN=1, FUN='count.sub5')
   
   #Metabolic integration
-  tsm[year.k,,8,3]= apply(ts[year.k,,,3], MARGIN=1, FUN='maxc.overTopt')
-  tsm[year.k,,8,4]= apply(ts[year.k,,,4], MARGIN=1, FUN='maxc.overTopt')
+  tsm[year.k,,8,3]= apply(ts[,year.k,,3], MARGIN=1, FUN='maxc.overTopt')
+  tsm[year.k,,8,4]= apply(ts[,year.k,,4], MARGIN=1, FUN='maxc.overTopt')
   #Replace -Inf with NA
-  tsm[year.k,which(is.infinite(tsm[year.k,,8,3])),8,3]=NA
-  tsm[year.k,which(is.infinite(tsm[year.k,,8,4])),8,4]=NA
+  tsm[year.k,which(is.infinite(tsm[,year.k,8,3])),8,3]=NA
+  tsm[year.k,which(is.infinite(tsm[,year.k,8,4])),8,4]=NA
   
   #-----
   #aggregate
   #sum, count, mean
-  tsm[year.k,,9,3]= apply(ts[year.k,,,3], MARGIN=1, FUN=sum, na.rm=T)
-  tsm[year.k,,9,4]= apply(ts[year.k,,,4], MARGIN=1, FUN=sum, na.rm=T)
+  tsm[year.k,,9,3]= apply(ts[,year.k,,3], MARGIN=1, FUN=sum, na.rm=T)
+  tsm[year.k,,9,4]= apply(ts[,year.k,,4], MARGIN=1, FUN=sum, na.rm=T)
   
-  tsm[year.k,,10,3]= apply(ts[year.k,,,3], MARGIN=1, FUN=count)
-  tsm[year.k,,10,4]= apply(ts[year.k,,,4], MARGIN=1, FUN=count)
+  tsm[year.k,,10,3]= apply(ts[,year.k,,3], MARGIN=1, FUN=count)
+  tsm[year.k,,10,4]= apply(ts[,year.k,,4], MARGIN=1, FUN=count)
   
-  tsm[year.k,,11,3]= apply(ts[year.k,,,3], MARGIN=1, FUN=mean, na.rm=T)
-  tsm[year.k,,11,4]= apply(ts[year.k,,,4], MARGIN=1, FUN=mean, na.rm=T)
+  tsm[year.k,,11,3]= apply(ts[,year.k,,3], MARGIN=1, FUN=mean, na.rm=T)
+  tsm[year.k,,11,4]= apply(ts[,year.k,,4], MARGIN=1, FUN=mean, na.rm=T)
   
 } #end year loop
 
@@ -213,56 +214,64 @@ for(year.k in 1:length(years)){
 
 tsm.yrs= apply(tsm, MARGIN=c(2,3,4), FUN=mean, na.rm=T)
 
-#add data
-#dim 1: TSM CTmax
-tol.ts= cbind(tol.gt, tsm.yrs[,1:7,1])
-colnames(tol.ts)[50:56]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
-#dim 2: TSM Topt
-tol.ts= cbind(tol.gt, tsm.yrs[,1:7,2])
-colnames(tol.ts)[50:56]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
-#dim 3: Tmax - Topt
-tol.ts= cbind(tol.gt, tsm.yrs[,8:11,3])
-colnames(tol.ts)[50:53]=c('dTopt','sumI','countI','meanI')
-#dim 4: thermodynamic Tmax - Topt
-tol.ts= cbind(tol.gt, tsm.yrs[,8:11,4])
-colnames(tol.ts)[50:53]=c('dTopt','sumI','countI','meanI')
-
 #------------------
 #PLOT
+
 #TSM
-plot.minTSM= ggplot(tol.ts, aes(x=abs(Lat),y=minTSM) ) +geom_point()+geom_smooth(method='loess',se=TRUE)
-plot.TSM10p= ggplot(tol.ts, aes(x=abs(Lat),y=TSM10p) ) +geom_point()+geom_smooth(method='loess',se=TRUE)
-plot.TSM50p= ggplot(tol.ts, aes(x=abs(Lat),y=TSM50p) ) +geom_point()+geom_smooth(method='loess',se=TRUE)
-plot.TSM90p= ggplot(tol.ts, aes(x=abs(Lat),y=TSM90p) ) +geom_point()+geom_smooth(method='loess',se=TRUE)
-#lowest 7 and 14 day average 
-plot.low7d= ggplot(tol.ts, aes(x=abs(Lat),y=low7d) ) +geom_point()+geom_smooth(method='loess',se=TRUE)
-plot.low14d= ggplot(tol.ts, aes(x=abs(Lat),y=low14d) ) +geom_point() +geom_smooth(method='loess',se=TRUE)
-#count of days <5
-plot.count5= ggplot(tol.ts, aes(x=abs(Lat),y=count5) ) +geom_point() +geom_smooth(method='loess',se=TRUE)
-
-#Plot out
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/out/")
-pdf("Figs_TSM_deutsch.pdf", height = 12, width = 12)
-plot_grid(plot.minTSM, plot.TSM10p, plot.TSM50p, plot.TSM90p, labels = c("minTSM", "TSM10p", "TSM50p", "TSM90p"), ncol = 2)
-dev.off()
-
-pdf("Figs_TSMdur_deutsch.pdf", height = 12, width = 12)
-plot_grid(plot.low7d, plot.low14d, plot.count5, labels = c("low7d", "low7d", "count5"), ncol = 2)
-dev.off()
-
-#---------
-#Metabolic integration
-#duration of days above Topt
-plot.dTopt= ggplot(tol.ts, aes(x=abs(Lat),y=log(dTopt)) ) +geom_point()+geom_smooth(method='loess',se=TRUE)
-#sum, count, and mean of intergration
-plot.sumI= ggplot(tol.ts, aes(x=abs(Lat),y=log(sumI)) ) +geom_point()+geom_smooth(method='loess',se=TRUE)
-plot.countI= ggplot(tol.ts, aes(x=abs(Lat),y=log(countI)) ) +geom_point() +geom_smooth(method='loess',se=TRUE)
-plot.meanI= ggplot(tol.ts, aes(x=abs(Lat),y=log(meanI)) ) +geom_point() +geom_smooth(method='loess',se=TRUE)
-
-#Plot out
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/out/")
-pdf("Figs_MetIntegration_deutsch.pdf", height = 12, width = 12)
-plot_grid(plot.dTopt, plot.sumI, plot.countI, plot.meanI, labels = c("dTopt", "sumI", "countI", "meanI"), ncol = 2)
-dev.off()
+#plot two dimensions
+for(p.k in 1:2){
+  #dim 1: TSM CTmax
+  if(p.k==1){tol.ts= cbind(tol.dd, tsm.yrs[,1:7,1])
+  colnames(tol.ts)[13:19]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )}
+  #dim 2: TSM Topt
+  if(p.k==2){tol.ts= cbind(tol.dd, tsm.yrs[,1:7,2])
+  colnames(tol.ts)[13:19]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )}
+  
+  plot.minTSM= ggplot(tol.ts, aes(x=abs(Lat),y=minTSM) ) +geom_point()+facet_wrap(~habitat) +geom_smooth(method='loess',se=TRUE)
+  plot.TSM10p= ggplot(tol.ts, aes(x=abs(Lat),y=TSM10p) ) +geom_point()+facet_wrap(~habitat) +geom_smooth(method='loess',se=TRUE)
+  plot.TSM50p= ggplot(tol.ts, aes(x=abs(Lat),y=TSM50p) ) +geom_point()+facet_wrap(~habitat) +geom_smooth(method='loess',se=TRUE)
+  plot.TSM90p= ggplot(tol.ts, aes(x=abs(Lat),y=TSM90p) ) +geom_point()+facet_wrap(~habitat) +geom_smooth(method='loess',se=TRUE)
+  #lowest 7 and 14 day average 
+  plot.low7d= ggplot(tol.ts, aes(x=abs(Lat),y=low7d) ) +geom_point()+facet_wrap(~habitat) +geom_smooth(method='loess',se=TRUE)
+  plot.low14d= ggplot(tol.ts, aes(x=abs(Lat),y=low14d) ) +geom_point()+facet_wrap(~habitat) +geom_smooth(method='loess',se=TRUE)
+  #count of days <5
+  plot.count5= ggplot(tol.ts, aes(x=abs(Lat),y=count5) ) +geom_point()+facet_wrap(~habitat) +geom_smooth(method='loess',se=TRUE)
+  
+  #Plot out
+  setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/out/")
+  if(p.k==1) pdf("Figs_TSM_CTmax_Deutsch.pdf", height = 12, width = 12)
+  if(p.k==2) pdf("Figs_TSM_Topt_Deutsch.pdf", height = 12, width = 12)
+  plot_grid(plot.minTSM, plot.TSM10p, plot.TSM50p, plot.TSM90p, labels = c("minTSM", "TSM10p", "TSM50p", "TSM90p"), ncol = 2)
+  dev.off()
+  
+  if(p.k==1) pdf("Figs_TSMdur_CTmax_Deutsch.pdf", height = 12, width = 12)
+  if(p.k==2) pdf("Figs_TSMdur_Topt_Deutsch.pdf", height = 12, width = 12)
+  plot_grid(plot.low7d, plot.low14d, plot.count5, labels = c("low7d", "low14d", "count5"), ncol = 2)
+  dev.off()
+  
+  #---------
+  #Metabolic integration
+  #dim 3: Tmax - Topt
+  if(p.k==1){tol.ts= cbind(tol.dd, tsm.yrs[,8:11,3])
+  colnames(tol.ts)[13:16]=c('dTopt','sumI','countI','meanI')}
+  #dim 4: thermodynamic Tmax - Topt
+  if(p.k==2){tol.ts= cbind(tol.dd, tsm.yrs[,8:11,4])
+  colnames(tol.ts)[13:16]=c('dTopt','sumI','countI','meanI')}
+  
+  #duration of days above Topt
+  plot.dTopt= ggplot(tol.ts, aes(x=abs(Lat),y=log(dTopt)) ) +geom_point()+facet_wrap(~habitat) +geom_smooth(method='loess',se=TRUE)
+  #sum, count, and mean of intergration
+  plot.sumI= ggplot(tol.ts, aes(x=abs(Lat),y=log(sumI)) ) +geom_point()+facet_wrap(~habitat) +geom_smooth(method='loess',se=TRUE)
+  plot.countI= ggplot(tol.ts, aes(x=abs(Lat),y=log(countI)) ) +geom_point()+facet_wrap(~habitat) +geom_smooth(method='loess',se=TRUE)
+  plot.meanI= ggplot(tol.ts, aes(x=abs(Lat),y=log(meanI)) ) +geom_point()+facet_wrap(~habitat) +geom_smooth(method='loess',se=TRUE)
+  
+  #Plot out
+  setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/out/")
+  if(p.k==1) pdf("Figs_MetIntegration_linear_Deutsch.pdf", height = 12, width = 12)
+  if(p.k==2) pdf("Figs_MetIntegration_metabolic_Deutsch.pdf", height = 12, width = 12)
+  plot_grid(plot.dTopt, plot.sumI, plot.countI, plot.meanI, labels = c("dTopt", "sumI", "countI", "meanI"), ncol = 2)
+  dev.off()
+  
+} #end plot loop
 
 
