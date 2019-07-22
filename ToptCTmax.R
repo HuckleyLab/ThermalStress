@@ -1,4 +1,5 @@
 #Compare CTmax and Topt
+library(ggplot2)
 
 #Dataset notes
 #ROHR et al.- Estimates Topt from Dell data but doesn't include CTmax
@@ -41,6 +42,10 @@ liz$dbreadth= liz$CTmax - liz$newTopt
 plot(liz$AbsLat, liz$dbreadth)
 #by CTMax
 plot(liz$CTmax, liz$dbreadth, ylab="CTmax-Topt",xlab="CTmax" )
+#by family
+liz$Family= as.factor(liz$Family)
+ggplot(liz) + aes(x=CTmax, y = dbreadth, color=Family, 
+      group=Family)+geom_point()+geom_smooth(method="lm", se=FALSE)
 
 #---
 #INSECTS- Deutsch et al.
