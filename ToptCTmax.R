@@ -21,11 +21,15 @@ plot(abs(plank$isolation.latitude), plank$tmax-plank$tmin, log="y")
 #Breadth of declining part of TPC: Distance from Topt to CTmax
 plank$dbreadth= plank$tmax - plank$mu.g.opt.list
 plot(abs(plank$isolation.latitude), plank$dbreadth, log="y")
+#plot by CTmax
+plot(plank$tmax, plank$dbreadth, log="y", ylab="CTmax-Topt",xlab="CTmax" )
 
 #Use max growth data to calculate as slope
 #mu.g.opt.val.list = estimated maximum specific growth rate (per day) based on the thermal reaction norm model fit
 slope= plank$mu.g.opt.val.list/plank$dbreadth
 plot(abs(plank$isolation.latitude), slope, log="y")
+#plot by CTmax
+plot(plank$tmax, slope, log="y")
 
 #---
 #LIZARDS- Huey
@@ -35,6 +39,8 @@ liz= read.csv('Hueyetal2009.csv', na.strings ='-9999')
 #Breadth of declining part of TPC: Distance from Topt to CTmax
 liz$dbreadth= liz$CTmax - liz$newTopt
 plot(liz$AbsLat, liz$dbreadth)
+#by CTMax
+plot(liz$CTmax, liz$dbreadth, ylab="CTmax-Topt",xlab="CTmax" )
 
 #---
 #INSECTS- Deutsch et al.
@@ -45,6 +51,6 @@ ins= read.csv('Deutschetel.2008Insect.TPCdata.csv')
 #Breadth of declining part of TPC: Distance from Topt to CTmax
 ins$dbreadth= ins$CTmax - ins$Topt
 plot(abs(ins$Lat), ins$dbreadth)
-
-
+#plot by CTmax
+plot(CTmax, ins$dbreadth)
 
