@@ -15,6 +15,16 @@ plot(tpc$asym,tpc$asym2)
 #calculate declining breadth
 tpc$CTmax.Topt.breadth= tpc$CTmax - tpc$Topt
 
+#Convert to thermodynamic scale
+#E=0.757 #eV
+#k= 1.38*10^-23 #J K^-1
+#k=8.617* 10^-5 #eV K^-1
+#function using temp in C
+thermo.temp= function(t, E=0.757, k=8.617* 10^-5) exp(-E/(k*(t+273.15))) 
+
+tpc$CTmax.Topt.breadth.thermo= thermo.temp(tpc$CTmax) - thermo.temp(tpc$Topt)
+tpc$asym.thermo= (thermo.temp(tpc$CTmax) - thermo.temp(tpc$Topt))/(thermo.temp(tpc$Topt)- thermo.temp(tpc$CTmin) )
+
 #================
 #Plots
 #PLOT TPCs
@@ -33,6 +43,7 @@ tpc.plot= function(T,Topt,CTmin, CTmax){
   return(F)
 }
 
+library(viridis)
 temps=-5:50
 
 par(mfrow=c(2,2))
@@ -41,7 +52,7 @@ for(taxa in 1:4){
   
 tpc.sub= tpc[which(tpc$taxa==taxas[taxa]),]
 #add a column of color values based on assymetry values
-tpc.sub$col <- rainbow(20)[as.numeric(cut(tpc.sub$asym,breaks = 20))]
+tpc.sub$col <- viridis(20)[as.numeric(cut(tpc.sub$asym,breaks = quantile(tpc.sub$asym, probs = seq(0, 1, 0.05)) ))]
 
 plot(temps, tpc.plot(temps, Topt=tpc.sub[1,"Topt"] , CTmin=tpc.sub[1,"CTmin"], CTmax=tpc.sub[1,"CTmax"]), type="l", xlab="temperature",ylab="performance", main=taxas[taxa])
 for(r in 2:nrow(tpc.sub)) points(temps, tpc.plot(temps, Topt=tpc.sub[r,"Topt"] , CTmin=tpc.sub[r,"CTmin"], CTmax=tpc.sub[r,"CTmax"]), type="l", col=tpc.sub[r,"col"]) 
@@ -50,9 +61,19 @@ for(r in 2:nrow(tpc.sub)) points(temps, tpc.plot(temps, Topt=tpc.sub[r,"Topt"] ,
 #-----------
 #PLOT RELATIONSHIPS
 #assymetry vs Topt
-ggplot(tpc) + aes(x=Topt, y = asym, color=habitat)+geom_point()+facet_wrap(~taxa) #, scales="free"
+ggplot(tpc) + aes(x=Topt, y = asym, color=habitat)+geom_point()+facet_wrap(~taxa)+ylim(0,2) #, scales="free"
 
 #TPC vs assymetry
-ggplot(tpc) + aes(x=asym, y = CTmax.Topt.breadth, color=habitat)+geom_point()+facet_wrap(~taxa)
+ggplot(tpc) + aes(x=asym, y = CTmax.Topt.breadth, color=habitat)+geom_point()+facet_wrap(~taxa)+xlim(0,2)
 #+geom_smooth(method="lm", se=FALSE)
+
+ggplot(tpc) + aes(x=Topt, y = CTmax.Topt.breadth, color=habitat)+geom_point()+facet_wrap(~taxa)
+ggplot(tpc) + aes(x=CTmax, y = CTmax.Topt.breadth, color=habitat)+geom_point()+facet_wrap(~taxa)
+
+#thermodynamic plots
+#assymetry vs Topt
+ggplot(tpc) + aes(x=thermo.temp(Topt), y = asym.thermo, color=habitat)+geom_point()+facet_wrap(~taxa) #, scales="free"
+#TPC vs assymetry
+ggplot(tpc) + aes(x=asym.thermo, y = CTmax.Topt.breadth.thermo, color=habitat)+geom_point()+facet_wrap(~taxa)
+
 

@@ -18,8 +18,8 @@ library(ggplot2)
 #SCELOPORUS POPS: https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/1365-2435.12406
 #FRESH WATER?: https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2427.2004.01317.x
 #ABALONE: https://www.sciencedirect.com/science/article/pii/S0306456599000327
-#LIZARDS: https://www.journals.uchicago.edu/doi/full/10.1086/660021
 #ANTS (data available?): https://esajournals.onlinelibrary.wiley.com/doi/abs/10.1890/15-1225
+#DROSOPHILA (ask Heidi): https://royalsocietypublishing.org/doi/full/10.1098/rstb.2018.0548
 
 #---------------
 #Assemble data in simplified form for easy plotting
