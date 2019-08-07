@@ -4,8 +4,8 @@ library(ggplot2)
 #Similar concept (plus fish data): https://onlinelibrary.wiley.com/doi/full/10.1111/ele.12707
 
 #Dataset notes
-#ROHR et al.- Estimates Topt from Dell data but doesn't include CTmax, Can recaluculate or ask Jason
 #BACTERIA- Knies et al.- Bacteria, has data and compiled other data, but data not published. Not geographic. Ask Joelfor a,b,m of thermal reaction norm? https://www.journals.uchicago.edu/doi/full/10.1086/597224.
+#ANTS (data available?): https://esajournals.onlinelibrary.wiley.com/doi/abs/10.1890/15-1225, Ask Mike?
 
 #OTHER POTENTIAL DATA
 #SEA URCHINS: https://www.int-res.com/articles/meps2018/589/m589p153.pdf
@@ -18,7 +18,6 @@ library(ggplot2)
 #SCELOPORUS POPS: https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/1365-2435.12406
 #FRESH WATER?: https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2427.2004.01317.x
 #ABALONE: https://www.sciencedirect.com/science/article/pii/S0306456599000327
-#ANTS (data available?): https://esajournals.onlinelibrary.wiley.com/doi/abs/10.1890/15-1225
 
 #---------------
 #Assemble data in simplified form for easy plotting
@@ -107,6 +106,7 @@ write.csv(tpc, "tpcs.csv")
 
 #=====================
 #DELL ET AL.: https://www.pnas.org/content/pnas/suppl/2011/05/19/1015178108.DCSupplemental/sapp.pdf
+#ROHR et al.- Estimates Topt from Dell data but doesn't include CTmax, Can recaluculate or ask Jason
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
 dell= read.csv('DelletalTPC.csv')
 
@@ -121,9 +121,11 @@ delleq(E=dell[3,"Er"],Ef=dell[3,"Ef"],temp=25,Topt=dell[3,"Topt"])
 
 #-----------
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
-dat.full<-read.csv('Delletal2013_forfitting.csv')
+dat.full<-read.csv('Delletal2013.csv')
 #adjust names
+dat.full$temperature= dat.full$AmbientTemp
 dat.full$growth.rate=dat.full$TraitValueSI
+dat.full$curve.id= dat.full$DataSeriesID
 #drop records without temperatures
 dat.full= dat.full[!is.na(dat.full$temperature),]
 
@@ -139,9 +141,9 @@ for(k in ids){
   #order by temperature 
   dat= dat[order(dat$temperature),]
   
-  drop=which.max(dat$TraitValueSI)>2 & which.max(dat$TraitValueSI)<(nrow(dat)-1)
+  do.keep=which.max(dat$TraitValueSI)>2 & which.max(dat$TraitValueSI)<(nrow(dat)-1) & length(unique(dat$temperature))>3
   
-  if(!drop)keep=c(keep, k)
+  if(do.keep) keep=c(keep, k)
 }
 #Drop NA and subset data
 ids=keep[2:length(keep)]
@@ -153,12 +155,24 @@ for(k in 1:length(ids)){
   inds=which(dat.sub$curve.id==ids[k])
   #normalize max to 1
   dat.sub$trait[inds]= dat.sub$TraitValueSI[inds]/(max(dat.sub$TraitValueSI[inds]))
-}
+ }
+
+##PLOT
+for(k in 1:100){ #length(ids)
+  inds=which(dat.sub$curve.id==ids[k])
+  
+  dat.sub2= dat.sub[inds,]
+  dat.sub2= dat.sub2[order(dat.sub$temperature),]
+  if(k==1) plot(dat.sub$temperature[inds], dat.sub$trait[inds], type="l", xlim=c(0,60))
+  points(dat.sub$temperature[inds], dat.sub$trait[inds], type="l")
+  }
 
 ##plot curves
-#library(ggplot2)
-ggplot(dat.sub) + aes(x=temperature, y = trait, color=curve.id, group=curve.id)+geom_smooth(se=FALSE)+ylim(0,1)+xlim(-5,60)
+library(ggplot2)
+ggplot(dat.sub) + aes(x=temperature, y = trait, color=curve.id, group=curve.id)+ylim(0,1)+xlim(-5,60)+geom_smooth(se=FALSE)
 
+#write out
+write.csv(dat.sub, "Delletal2013_forfitting.csv")
 
 
 

@@ -22,12 +22,10 @@ dat.full<-read.csv('Delletal2013_forfitting.csv')
 #adjust names
 dat.full$growth.rate=dat.full$TraitValueSI
 str(dat.full)
-#cut to unimodal
-dat.full=dat.full[which(dat.full$CitationID %in% c(61,91,3,36,6,101,49,136,176)),]
-dat.full$init.curve.id= dat.full$curve.id
 
-table= which(table(dat.full$curve.id)>2)
-dat.full=dat.full[which(dat.full$curve.id %in% names(table)),]
+##cut to unimodal
+#dat.full=dat.full[which(dat.full$CitationID %in% c(61,91,3,36,6,101,49,136,176)),]
+#dat.full$init.curve.id= dat.full$curve.id
 
 ids=unique(dat.full$curve.id)
 dat.full$curve.id= match(dat.full$curve.id, ids)
@@ -55,6 +53,9 @@ s.list<-rep(NA, length(curve.id.list))				#Error
 n.list<-rep(NA, length(curve.id.list))				#Number of growth rate measurements used in the curve
 
 # Loop through all curve.id.list values to estimate parameters for all curves
+
+#change directory
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/BioTraits/")
 
 for(i in 1:length(curve.id.list)){
   print(i)
