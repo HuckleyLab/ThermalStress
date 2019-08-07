@@ -5,7 +5,7 @@ library(ggplot2)
 
 #Dataset notes
 #ROHR et al.- Estimates Topt from Dell data but doesn't include CTmax, Can recaluculate or ask Jason
-#BACTERIA- Knies et al.- Bacteria, has data and compiled other data, but data not published. Not geographic. Ask Joel?
+#BACTERIA- Knies et al.- Bacteria, has data and compiled other data, but data not published. Not geographic. Ask Joelfor a,b,m of thermal reaction norm? https://www.journals.uchicago.edu/doi/full/10.1086/597224.
 
 #OTHER POTENTIAL DATA
 #SEA URCHINS: https://www.int-res.com/articles/meps2018/589/m589p153.pdf
@@ -19,13 +19,12 @@ library(ggplot2)
 #FRESH WATER?: https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2427.2004.01317.x
 #ABALONE: https://www.sciencedirect.com/science/article/pii/S0306456599000327
 #ANTS (data available?): https://esajournals.onlinelibrary.wiley.com/doi/abs/10.1890/15-1225
-#DROSOPHILA (ask Heidi): https://royalsocietypublishing.org/doi/full/10.1098/rstb.2018.0548
 
 #---------------
 #Assemble data in simplified form for easy plotting
 
 #PLANKTON- Thomas
-#Thomas data downloaded from his website, https://mridulkthomas.weebly.com/data--code.html
+#Thomas data downloaded from his website, https://mridulkthomas.weebly.com/data--code.html, https://onlinelibrary.wiley.com/doi/full/10.1111/geb.12387
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Phytoplankton_temperature_growth_rate_dataset_2016_01_29/")
 plank= read.csv('traits_derived_2016_01_29.csv')
 #Topt: plank$mu.g.opt.list
@@ -89,8 +88,77 @@ tpc2$taxa="fish"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
+#---
+#DROSOPHILA: https://royalsocietypublishing.org/doi/full/10.1098/rstb.2018.0548
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
+fly= read.csv('DrosophilaTopt_Maclean.csv')
+fly$family=NA
+fly$Genus=NA
+
+tpc2= fly[,c("Species","Genus","family","CTMin","CTMax","Fitness.Topt")] #also EgglayingTopt
+tpc2$habitat="terrestrial"
+tpc2$taxa="flies"
+#bind
+tpc= rbind(tpc, setNames(tpc2, names(tpc)))
+
 #--------
 #Write out
 write.csv(tpc, "tpcs.csv")
+
+#=====================
+#DELL ET AL.: https://www.pnas.org/content/pnas/suppl/2011/05/19/1015178108.DCSupplemental/sapp.pdf
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
+dell= read.csv('DelletalTPC.csv')
+
+#use equation to estimate CTmin and CTmax
+delleq= function(E,Ef,temp,Topt, c=1) {
+  k=1.3806*10^(-23)
+  c*exp(-E/(k*temp))/(1+exp(-1/(k*temp)*(Ef-(Ef/Topt+k*log(E/(Ef-E))*temp)) ))}
+
+plot(1:50, delleq(E=dell[4,"Er"],Ef=dell[4,"Ef"],temp=1:50,Topt=dell[4,"Topt"]), type="l")
+
+delleq(E=dell[3,"Er"],Ef=dell[3,"Ef"],temp=25,Topt=dell[3,"Topt"])
+
+#-----------
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
+dat.full<-read.csv('Delletal2013_forfitting.csv')
+#adjust names
+dat.full$growth.rate=dat.full$TraitValueSI
+#drop records without temperatures
+dat.full= dat.full[!is.na(dat.full$temperature),]
+
+ids= unique(dat.full$curve.id)
+#restrict to ids with at least 4 temperatures
+tabs= table(dat.full$curve.id)
+ids= as.numeric( names(tabs)[which(tabs>5)])
+
+keep=NA
+#check cases max is intermediate temperature
+for(k in ids){
+  dat=dat.full[which(dat.full$curve.id==k),]
+  #order by temperature 
+  dat= dat[order(dat$temperature),]
+  
+  drop=which.max(dat$TraitValueSI)>2 & which.max(dat$TraitValueSI)<(nrow(dat)-1)
+  
+  if(!drop)keep=c(keep, k)
+}
+#Drop NA and subset data
+ids=keep[2:length(keep)]
+dat.sub= dat.full[which(dat.full$curve.id %in% ids),]
+
+#normalize max to 1
+dat.sub$trait=NA
+for(k in 1:length(ids)){
+  inds=which(dat.sub$curve.id==ids[k])
+  #normalize max to 1
+  dat.sub$trait[inds]= dat.sub$TraitValueSI[inds]/(max(dat.sub$TraitValueSI[inds]))
+}
+
+##plot curves
+#library(ggplot2)
+ggplot(dat.sub) + aes(x=temperature, y = trait, color=curve.id, group=curve.id)+geom_smooth(se=FALSE)+ylim(0,1)+xlim(-5,60)
+
+
 
 

@@ -10,7 +10,7 @@ tpc= subset(tpc, !is.na(tpc$CTmin) & !is.na(tpc$Topt) & !is.na(tpc$CTmax) )
 tpc$asym= (tpc$CTmax - tpc$Topt)/(tpc$Topt- tpc$CTmin )
 tpc$asym2= (2*tpc$Topt-tpc$CTmax - tpc$CTmin)/(tpc$CTmax-tpc$CTmin )
 #check relationship of assymetry metrics
-plot(tpc$asym,tpc$asym2)
+plot(tpc$asym,tpc$asym2, ylab="Martin Huey assymetry", xlab="Deutsch et al assymetry")
 
 #calculate declining breadth
 tpc$CTmax.Topt.breadth= tpc$CTmax - tpc$Topt
@@ -46,9 +46,9 @@ tpc.plot= function(T,Topt,CTmin, CTmax){
 library(viridis)
 temps=-5:50
 
-par(mfrow=c(2,2))
-taxas= c("insects","lizards","lizards_Tp","plankton")
-for(taxa in 1:4){
+par(mfrow=c(3,2))
+taxas= c("lizards","lizards_Tp","insects","flies","plankton")
+for(taxa in 1:5){
   
 tpc.sub= tpc[which(tpc$taxa==taxas[taxa]),]
 #add a column of color values based on assymetry values
