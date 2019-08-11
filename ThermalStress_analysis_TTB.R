@@ -21,7 +21,7 @@ convert.lon= function(r0) ifelse(r0 > 180, -360 + r0, r0)
 #LOAD TERRESTRIAL DATA
 #https://www.metoffice.gov.uk/hadobs/hadghcnd/download.html
 
-setwd("/Volumes/GoogleDrive/Team Drives/TrEnCh/Projects/ThermalStress/data/HadGHCND_TXTN_acts_1950-2014_15102015.nc/")
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/HadGHCND_TXTN_acts_1950-2014_15102015.nc/")
 
 lst.nc= nc_open('HadGHCND_TXTN_acts_2001-2010_15102015.nc')
 print(lst.nc)
@@ -128,7 +128,7 @@ map('world', fill = FALSE, col = "grey", add=TRUE)
 #=====================================
 #LOAD BIOLOGICAL DATA
 
-setwd("/Volumes/GoogleDrive/Team Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
 
 tol.p= read.csv('Pinsky_dataset_1_hotwater.csv')
 tol.gt= read.csv('GlobalTherm_upload_10_11_17.csv')
@@ -351,6 +351,17 @@ plot(tol.m.ts$lat,tol.m.ts$SafeZone)
 #=========================================
 #All GlobTherm Data using NCEP and TTB assumption
 
+#TTB, based on GlobTherm
+#terrestrial
+TTB.terr= function(AbsLat) 29.15383 + 0.19897 * AbsLat
+#marine
+TTB.mar= function(AbsLat) 0.6945813 + 0.0020061 * AbsLat
+#TTB= 26.25588 + 0.09722 * AbsLat
+
+#Topt as percent of TTB, based on Huey data
+ToptPer= function(AbsLat) 0.6945813 + 0.0020061 * AbsLat
+
+#----------------
 #Load GlobTherm
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
 tol.gt= read.csv('GlobalTherm_upload_10_11_17.csv')

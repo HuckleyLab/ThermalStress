@@ -77,4 +77,42 @@ ggplot(tpc) + aes(x=thermo.temp(Topt), y = asym.thermo, color=habitat)+geom_poin
 #TPC vs assymetry
 ggplot(tpc) + aes(x=asym.thermo, y = CTmax.Topt.breadth.thermo, color=habitat)+geom_point()+facet_wrap(~taxa)
 
+#-------
+#JK suggestions:
+#PCA analysis as in Knies et al. 
+#Null analysis of asymmetry relationship based on TPC constraints
+
+tpc.sub= tpc[tpc$taxa=="plankton",]
+pc=princomp(tpc.sub[,c("CTmin","Topt","CTmax")])
+tpc.sub= cbind(tpc.sub, pc$scores)
+
+#variances
+var(tpc.sub$CTmin)
+var(tpc.sub$Topt)
+var(tpc.sub$CTmax)
+
+#tpc.m= melt(tpc.sub, id.vars=c("species","genus","CTmin","CTmax","Topt","asym") , measure.vars=c("Comp.1","Comp.2","Comp.3"))
+
+ggplot(data=tpc.sub, aes(x=Comp.1, y=Comp.2, color=Topt))+geom_point()
+ggplot(data=tpc.sub, aes(x=Comp.1, y=Comp.3, color=Topt))+geom_point()
+ggplot(data=tpc.sub, aes(x=Comp.1, y=Comp.2, color=asym))+geom_point()
+
+# P matrix
+#https://www.biorxiv.org/content/biorxiv/early/2015/09/11/026518.full.pdf
+#install.packages("evolqg")
+library(evolqg)
+
+tpc.sub$gen_spec=paste(tpc.sub$genus,tpc.sub$species,sep="_")
+tpc.lm= lm(as.matrix(tpc.sub[,c("CTmin","CTmax","Topt")])~tpc.sub[,"gen_spec"])
+cov.matrix <- CalculateMatrix(tpc.lm)
+#To obtain a correlation matrix, use:
+cor.matrix <- cov2cor(cov.matrix)
+
+MeanMatrixStatistics(cov.matrix)
+
+#https://rdrr.io/cran/QGglmm/man/QGvcov.html
+
+
+
+
 
