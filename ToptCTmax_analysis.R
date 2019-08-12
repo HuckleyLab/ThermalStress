@@ -82,10 +82,67 @@ ggplot(tpc) + aes(x=asym.thermo, y = CTmax.Topt.breadth.thermo, color=habitat)+g
 #PCA analysis as in Knies et al. 
 #Null analysis of asymmetry relationship based on TPC constraints
 
-tpc.sub= tpc[tpc$taxa=="plankton",]
+taxas= c("lizards","lizards_Tp","insects","flies","plankton")
+tpc.sub= tpc[tpc$taxa==taxas[5],]
+
+#plot segments
+plot(tpc.sub$Topt,tpc.sub$CTmax-tpc.sub$Topt)
+plot(tpc.sub$Topt,tpc.sub$Topt-tpc.sub$CTmin)
+
+#---
 pc=princomp(tpc.sub[,c("CTmin","Topt","CTmax")])
 tpc.sub= cbind(tpc.sub, pc$scores)
 
+pc$loadings
+#pc1: all parameters increase together, shift in asymmetry
+#pc2: as CTmin increases, Topt and CTmax decrease, narrowing
+#pc3: gets steeper
+
+#plot along pca axes
+p=tpc.sub[,c("CTmin","Topt","CTmax")]
+p.mean= colMeans(p)
+
+#pc1
+#a_i= mean(a)+score*loading
+p.pc1=p
+p.pc1[,1]=p.mean[1]+pc$scores[,1]*pc$loadings[1,1]
+p.pc1[,2]=p.mean[2]+pc$scores[,1]*pc$loadings[1,2]
+p.pc1[,3]=p.mean[3]+pc$scores[,1]*pc$loadings[1,3]
+
+#estimate asmmetry
+p.pc1$asym= (p.pc1[,3] - p.pc1[,2])/(p.pc1[,2]- p.pc1[,1])
+#p.pc1$asym= (2*p.pc1[,2]-p.pc1[,3] - p.pc1[,1])/(p.pc1[,3]-p.pc1[,1] )
+plot(p.pc1[,2], p.pc1$asym)
+plot(p.pc1$asym, p.pc1[,3] - p.pc1[,2])
+#first pc captures asymmetry
+#add a column of color values based on assymetry values
+p.pc1$col <- viridis(20)[as.numeric(cut(tpc.sub$asym,breaks = quantile(p.pc1$asym, probs = seq(0, 1, 0.05)) ))]
+
+#plot
+plot(temps, tpc.plot(temps, Topt=p.pc1[1,2] , CTmin=p.pc1[1,1], CTmax=p.pc1[1,3]), type="l", xlab="temperature",ylab="performance")
+for(r in 2:nrow(p.pc1)) points(temps, tpc.plot(temps, Topt=p.pc1[r,2] , CTmin=p.pc1[r,1], CTmax=p.pc1[r,3]), type="l", col=p.pc1[r,"col"]) 
+
+#pc2
+p.pc2=p
+p.pc2[,1]=p.mean[1]+pc$scores[,2]*pc$loadings[2,1]
+p.pc2[,2]=p.mean[2]+pc$scores[,2]*pc$loadings[2,2]
+p.pc2[,3]=p.mean[3]+pc$scores[,2]*pc$loadings[2,3]
+
+#plot
+plot(temps, tpc.plot(temps, Topt=p.pc2[1,2] , CTmin=p.pc2[1,1], CTmax=p.pc2[1,3]), type="l", xlab="temperature",ylab="performance")
+for(r in 2:nrow(p.pc2)) points(temps, tpc.plot(temps, Topt=p.pc2[r,2] , CTmin=p.pc2[r,1], CTmax=p.pc2[r,3]), type="l") 
+
+#pc3
+p.pc3=p
+p.pc3[,1]=p.mean[1]+pc$scores[,3]*pc$loadings[3,1]
+p.pc3[,2]=p.mean[2]+pc$scores[,3]*pc$loadings[3,2]
+p.pc3[,3]=p.mean[3]+pc$scores[,3]*pc$loadings[3,3]
+
+#plot
+plot(temps, tpc.plot(temps, Topt=p.pc3[1,2] , CTmin=p.pc3[1,1], CTmax=p.pc3[1,3]), type="l", xlab="temperature",ylab="performance")
+for(r in 2:nrow(p.pc3)) points(temps, tpc.plot(temps, Topt=p.pc3[r,2] , CTmin=p.pc3[r,1], CTmax=p.pc3[r,3]), type="l") 
+
+#--------------------
 #variances
 var(tpc.sub$CTmin)
 var(tpc.sub$Topt)
@@ -100,7 +157,7 @@ ggplot(data=tpc.sub, aes(x=Comp.1, y=Comp.2, color=asym))+geom_point()
 # P matrix
 #https://www.biorxiv.org/content/biorxiv/early/2015/09/11/026518.full.pdf
 #install.packages("evolqg")
-library(evolqg)
+#library(evolqg)
 
 tpc.sub$gen_spec=paste(tpc.sub$genus,tpc.sub$species,sep="_")
 tpc.lm= lm(as.matrix(tpc.sub[,c("CTmin","CTmax","Topt")])~tpc.sub[,"gen_spec"])
