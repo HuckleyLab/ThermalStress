@@ -171,6 +171,16 @@ MeanMatrixStatistics(cov.matrix)
 
 #https://rdrr.io/cran/QGglmm/man/QGvcov.html
 
+#VISUALIZATION scores*loadings
+#PC1 scores plot along pc space
+#PC2 
+#how does assymetry vary along axis
+
+#cov: opt and max more strongly correlation
+#where is Topt
+#selection gradient CTmax
+#selection on tpc, 
+#plankton function valued, curves vs parameters selection, selection on curves not parameters, e.g., Ann Rev Gomulkiwitz, Kingsolver
 
 
 
