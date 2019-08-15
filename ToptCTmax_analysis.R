@@ -62,10 +62,10 @@ for(r in 2:nrow(tpc.sub)) points(temps, tpc.plot(temps, Topt=tpc.sub[r,"Topt"] ,
 #-----------
 #PLOT RELATIONSHIPS
 #assymetry vs Topt
-ggplot(tpc) + aes(x=Topt, y = asym, color=habitat)+geom_point()+facet_wrap(~taxa)+ylim(0,2) #, scales="free"
+ggplot(tpc) + aes(x=Topt, y = asym2, color=habitat)+geom_point()+facet_wrap(~taxa)+ylim(0,1)+ylab("assymetry") #, scales="free"
 
 #TPC vs assymetry
-ggplot(tpc) + aes(x=asym, y = CTmax.Topt.breadth, color=habitat)+geom_point()+facet_wrap(~taxa)+xlim(0,2)
+ggplot(tpc) + aes(x=asym2, y = CTmax.Topt.breadth, color=habitat)+geom_point()+facet_wrap(~taxa)+xlim(0,2)
 #+geom_smooth(method="lm", se=FALSE)
 
 ggplot(tpc) + aes(x=Topt, y = CTmax.Topt.breadth, color=habitat)+geom_point()+facet_wrap(~taxa)
@@ -77,19 +77,25 @@ ggplot(tpc) + aes(x=thermo.temp(Topt), y = asym.thermo, color=habitat)+geom_poin
 #TPC vs assymetry
 ggplot(tpc) + aes(x=asym.thermo, y = CTmax.Topt.breadth.thermo, color=habitat)+geom_point()+facet_wrap(~taxa)
 
+#plot segments
+ggplot(tpc) + aes(x=Topt, y = Topt-CTmin, color=habitat)+geom_point()+facet_grid(taxa~1)
+ggplot(tpc) + aes(x=Topt, y = CTmax-Topt, color=habitat)+geom_point()+facet_grid(taxa~1)
+
 #-------
 #JK suggestions:
-#PCA analysis as in Knies et al. 
 #Null analysis of asymmetry relationship based on TPC constraints
 
+
+#PCA analysis as in Knies et al. 
+par(mfrow=c(5,4))
 taxas= c("lizards","lizards_Tp","insects","flies","plankton")
-tpc.sub= tpc[tpc$taxa==taxas[5],]
 
-#plot segments
-plot(tpc.sub$Topt,tpc.sub$CTmax-tpc.sub$Topt)
-plot(tpc.sub$Topt,tpc.sub$Topt-tpc.sub$CTmin)
 
-#---
+for(taxa in 1:5){
+
+  tpc.sub= tpc[which(tpc$taxa==taxas[taxa]),]
+  #add a column of color values based on assymetry values
+   
 pc=princomp(tpc.sub[,c("CTmin","Topt","CTmax")])
 tpc.sub= cbind(tpc.sub, pc$scores)
 
@@ -110,10 +116,10 @@ p.pc1[,2]=p.mean[2]+pc$scores[,1]*pc$loadings[1,2]
 p.pc1[,3]=p.mean[3]+pc$scores[,1]*pc$loadings[1,3]
 
 #estimate asmmetry
-p.pc1$asym= (p.pc1[,3] - p.pc1[,2])/(p.pc1[,2]- p.pc1[,1])
-#p.pc1$asym= (2*p.pc1[,2]-p.pc1[,3] - p.pc1[,1])/(p.pc1[,3]-p.pc1[,1] )
-plot(p.pc1[,2], p.pc1$asym)
-plot(p.pc1$asym, p.pc1[,3] - p.pc1[,2])
+#p.pc1$asym= (p.pc1[,3] - p.pc1[,2])/(p.pc1[,2]- p.pc1[,1])
+p.pc1$asym= (2*p.pc1[,2]-p.pc1[,3] - p.pc1[,1])/(p.pc1[,3]-p.pc1[,1] )
+plot(p.pc1[,2], p.pc1$asym, ylim=c(-0.2,1))
+#plot(p.pc1$asym, p.pc1[,3] - p.pc1[,2])
 #first pc captures asymmetry
 #add a column of color values based on assymetry values
 p.pc1$col <- viridis(20)[as.numeric(cut(tpc.sub$asym,breaks = quantile(p.pc1$asym, probs = seq(0, 1, 0.05)) ))]
@@ -129,7 +135,7 @@ p.pc2[,2]=p.mean[2]+pc$scores[,2]*pc$loadings[2,2]
 p.pc2[,3]=p.mean[3]+pc$scores[,2]*pc$loadings[2,3]
 
 #plot
-plot(temps, tpc.plot(temps, Topt=p.pc2[1,2] , CTmin=p.pc2[1,1], CTmax=p.pc2[1,3]), type="l", xlab="temperature",ylab="performance")
+plot(temps, tpc.plot(temps, Topt=p.pc2[1,2] , CTmin=p.pc2[1,1], CTmax=p.pc2[1,3]), type="l", xlab="temperature",ylab="performance", main=taxas[taxa])
 for(r in 2:nrow(p.pc2)) points(temps, tpc.plot(temps, Topt=p.pc2[r,2] , CTmin=p.pc2[r,1], CTmax=p.pc2[r,3]), type="l") 
 
 #pc3
@@ -142,17 +148,13 @@ p.pc3[,3]=p.mean[3]+pc$scores[,3]*pc$loadings[3,3]
 plot(temps, tpc.plot(temps, Topt=p.pc3[1,2] , CTmin=p.pc3[1,1], CTmax=p.pc3[1,3]), type="l", xlab="temperature",ylab="performance")
 for(r in 2:nrow(p.pc3)) points(temps, tpc.plot(temps, Topt=p.pc3[r,2] , CTmin=p.pc3[r,1], CTmax=p.pc3[r,3]), type="l") 
 
+} #end loop taxa
+
 #--------------------
 #variances
 var(tpc.sub$CTmin)
 var(tpc.sub$Topt)
 var(tpc.sub$CTmax)
-
-#tpc.m= melt(tpc.sub, id.vars=c("species","genus","CTmin","CTmax","Topt","asym") , measure.vars=c("Comp.1","Comp.2","Comp.3"))
-
-ggplot(data=tpc.sub, aes(x=Comp.1, y=Comp.2, color=Topt))+geom_point()
-ggplot(data=tpc.sub, aes(x=Comp.1, y=Comp.3, color=Topt))+geom_point()
-ggplot(data=tpc.sub, aes(x=Comp.1, y=Comp.2, color=asym))+geom_point()
 
 # P matrix
 #https://www.biorxiv.org/content/biorxiv/early/2015/09/11/026518.full.pdf
