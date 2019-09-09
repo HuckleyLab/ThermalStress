@@ -18,6 +18,7 @@ library(ggplot2)
 #SCELOPORUS POPS: https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/1365-2435.12406
 #FRESH WATER?: https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2427.2004.01317.x
 #ABALONE: https://www.sciencedirect.com/science/article/pii/S0306456599000327
+
 #AMPHIBIAN LARVAE? https://onlinelibrary.wiley.com/doi/full/10.1111/evo.12711
 #PLANT POPULATIONS? https://academic.oup.com/icb/article/51/5/733/627422
 #Algae: https://royalsocietypublishing.org/doi/full/10.1098/rspb.2018.1076
@@ -104,8 +105,22 @@ tpc2$taxa="flies"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
+#---
+#OTHERS GATHERED FROM LITERATURE
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/ToptAssembly/")
+dat= read.csv('Topt_Plantsetc.csv')
+dat$family=NA
+dat$habitat<- "terrestrial"
+dat$habitat[which(dat$Taxa=="Sea Urchins")]<-"marine"
+
+tpc2= dat[,c("Species","Genus","family","CTmin","CTmax","Topt","habitat","Taxa")] #also EgglayingTopt
+
+#bind
+tpc= rbind(tpc, setNames(tpc2, names(tpc)))
+
 #--------
 #Write out
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
 write.csv(tpc, "tpcs.csv")
 
 #=====================

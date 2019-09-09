@@ -47,13 +47,14 @@ tpc.plot= function(T,Topt,CTmin, CTmax){
 library(viridis)
 temps=-5:50
 
-par(mfrow=c(3,2))
-taxas= c("lizards","lizards_Tp","insects","flies","plankton")
-for(taxa in 1:5){
+par(mfrow=c(3,3))
+taxas= c("lizards","lizards_Tp","insects","flies","plankton","Sea Urchins", "Australian lizards", "Plant")
+for(taxa in 1:8){
   
 tpc.sub= tpc[which(tpc$taxa==taxas[taxa]),]
 #add a column of color values based on assymetry values
-tpc.sub$col <- viridis(20)[as.numeric(cut(tpc.sub$asym,breaks = quantile(tpc.sub$asym, probs = seq(0, 1, 0.05)) ))]
+tpc.sub$col<-viridis(1)
+try(tpc.sub$col <- viridis(20)[as.numeric(cut(tpc.sub$asym,breaks = quantile(tpc.sub$asym, probs = seq(0, 1, 0.05)) ))])
 
 plot(temps, tpc.plot(temps, Topt=tpc.sub[1,"Topt"] , CTmin=tpc.sub[1,"CTmin"], CTmax=tpc.sub[1,"CTmax"]), type="l", xlab="temperature",ylab="performance", main=taxas[taxa])
 for(r in 2:nrow(tpc.sub)) points(temps, tpc.plot(temps, Topt=tpc.sub[r,"Topt"] , CTmin=tpc.sub[r,"CTmin"], CTmax=tpc.sub[r,"CTmax"]), type="l", col=tpc.sub[r,"col"]) 
