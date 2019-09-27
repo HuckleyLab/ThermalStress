@@ -10,7 +10,7 @@ library(tidyverse) #data manipulation and visualization
 library(RColorBrewer) #color schemes
 library(sf) #to import a spatial object and to work with geom_sf in ggplot2
 library(raster)
-
+library(zoo)
 
 #convert longituide
 convert.lon= function(r0) ifelse(r0 > 180, -360 + r0, r0)
@@ -45,17 +45,23 @@ years= as.numeric(format(ncep.dates, "%Y"))
 doy= as.numeric(format(ncep.dates, "%j"))
 hours= as.numeric(format(ncep.dates, "%H"))
 
-#daily min max
-ncep.cell= cbind(years, doy, hours, ncep.temp[70,35,])
-colnames(ncep.cell)[4]="temp"
-ncep.cell= as.data.frame(ncep.cell)
-#make day factor
-ncep.cell$doy= as.factor(ncep.cell$doy)
+#-----------------
+#load and combine data across years
+years= 2000:2018
 
-#daily min and max
-ncep.cmm= ncep.cell %>%
-  group_by(doy) %>%
-  summarise(min = min(temp), max= max(temp))
+#make array to store data
+ncep.temp.yrs= array(NA, dim=c(length(years),length(ncep.lons),length(ncep.lats),length(ncep.times)  ))
+
+for(year.k in 1:length(years)){
+  
+  file.name= paste('air.sig995.', years[year.k], '.nc', sep='')
+  ncep.nc= nc_open(file.name)
+  
+  #extract metrics
+  ncep.temp=ncvar_get(ncep.nc,"air") -273.15
+  dim(ncep.temp) 
+  ncep.temp.yrs[year.k,,,]= ncep.temp[,,1:1460] 
+}
 
 #---
 #to raster
@@ -70,17 +76,8 @@ ncep.r <- rotate(ncep.r)
 plot(ncep.r)
 #add country outline
 map('world', fill = FALSE, col = "grey", add=TRUE)
-
 #=====================================
-#LOAD BIOLOGICAL DATA
-
-#huey data
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
-tol.h= read.csv('Hueyetal2009.csv')
-
-#===================================================
-#Calculate thermal stress metrics
-
+#Functions
 #Convert to thermodynamic scale
 #E=0.757 #eV
 #k= 1.38*10^-23 #J K^-1
@@ -88,159 +85,7 @@ tol.h= read.csv('Hueyetal2009.csv')
 #function using temp in C
 thermo.temp= function(t, E=0.757, k=8.617* 10^-5) exp(-E/(k*(t+273.15))) 
 
-#----------
-#TERRESTRIAL
-
-ts= array(NA, dim= c(nrow(tol.h), length(dates),2) )
-
-#calculate degree days above Topt
-for(spec.k in 1:nrow(tol.h)){
-  
-  #find closest grid cell
-  lons.neg= convert.lon(lons)
-  lon.ind= which.min(abs(lons.neg - tol.h[spec.k, "Long" ]))
-  lat.ind= which.min(abs(lats - tol.h[spec.k, "Lat" ]))
-  
-  #extract data
-  tmin.k= tmin[lon.ind,lat.ind,]
-  tmax.k= tmax[lon.ind,lat.ind,]
-  
-  #metabolic scaled thermal stress
-  Topt= tol.h[spec.k,'newTopt']
-  inds= which(tmax.k > Topt)
-  
-  ts[spec.k,inds,1]= tmax.k[inds]- Topt  
-  
-  #thermodynamic scale
-  Topt.tt= thermo.temp(tol.h[spec.k,'newTopt'])
-  tmax.k.tt= thermo.temp(tmax.k)
-  
-  inds= which(tmax.k.tt > Topt.tt)
-  
-  ts[spec.k,inds,2]= tmax.k.tt[inds]- Topt.tt  
-  
-} # end loop species
-
-#------------
-#Calculate annual metrics
-
-ts.l= as.data.frame(t(rbind(years, ts[,,1])))
-ts.t= as.data.frame(t(rbind(years, ts[,,2])))
-#count
-count=function(x) length(na.omit(x))
-
-ts.l.sum= aggregate(ts.l, by=list(ts.l$years), FUN=sum, na.rm=T)
-ts.t.sum= aggregate(ts.t, by=list(ts.t$years), FUN=sum, na.rm=T)
-ts.l.count= aggregate(ts.l, by=list(ts.l$years), FUN=count)
-ts.t.count= aggregate(ts.t, by=list(ts.t$years), FUN=count)
-ts.l.mean= aggregate(ts.l, by=list(ts.l$years), FUN=mean, na.rm=T)
-ts.t.mean= aggregate(ts.t, by=list(ts.t$years), FUN=mean, na.rm=T)
-
-#yearly
-#ts.l.m= ts.l.agg[,3:ncol(ts.l.agg)]
-#ts.t.m= ts.t.agg[,3:ncol(ts.t.agg)]
-#row.names(ts.l.m)= ts.l.agg$Group.1
-#row.names(ts.t.m)= ts.t.agg$Group.1
-ts.l.sum.v= colMeans(ts.l.sum[,3:ncol(ts.l.sum)], na.rm=T)
-ts.t.sum.v= colMeans(ts.t.sum[,3:ncol(ts.l.sum)], na.rm=T)
-ts.l.count.v= colMeans(ts.l.count[,3:ncol(ts.l.sum)], na.rm=T)
-ts.t.count.v= colMeans(ts.t.count[,3:ncol(ts.l.sum)], na.rm=T)
-ts.l.mean.v= colMeans(ts.l.mean[,3:ncol(ts.l.sum)], na.rm=T)
-ts.t.mean.v= colMeans(ts.t.mean[,3:ncol(ts.l.sum)], na.rm=T)
-
-#add data
-tol.h.ts= cbind(tol.h, ts.l.sum.v, ts.l.count.v, ts.l.mean.v, ts.t.sum.v, ts.t.count.v, ts.t.mean.v)
-
-par(mfrow=c(2,2))
-#sum metabolic integration of thermal stress events > Topt
-plot(tol.h.ts$Lat,tol.h.ts$ts.l.sum.v+1, log='y')
-#count of events >Topt
-plot(tol.h.ts$Lat,tol.h.ts$ts.l.count.v+1, log='y')
-#mean metabolic integration of thermal stress events > Topt
-plot(tol.h.ts$Lat,tol.h.ts$ts.l.mean.v)
-#thermal safe zone
-plot(tol.h.ts$Lat,tol.h.ts$SafeZone)
-
-#============================
-#MARINE
-
-#data with ctmin and ctmax
-tol.m= tol.marine[which(!is.na(tol.marine$tmax) & !is.na(tol.marine$tmin)),]
-#assume Topt as 70%
-tol.m$Topt= tol.m$tmin +0.7*(tol.m$tmax-tol.m$tmin) 
-
-tsm= array(NA, dim= c(nrow(tol.m), length(s.times),2) )
-
-#calculate degree days above Topt
-for(spec.k in 1:nrow(tol.m)){
-  
-  #find closest grid cell
-  lon.ind= which.min(abs(s.lons - tol.m[spec.k, "lon" ]))
-  lat.ind= which.min(abs(s.lats - tol.m[spec.k, "lat" ]))
-  
-  #extract data
-  tmin.k= sst[lon.ind,lat.ind,]
-  tmax.k= sst[lon.ind,lat.ind,]
-  
-  #metabolic scaled thermal stress
-  Topt= tol.m[spec.k,'Topt']
-  inds= which(tmax.k > Topt)
-  
-  tsm[spec.k,inds,1]= tmax.k[inds]- Topt  
-  
-  #thermodynamic scale
-  Topt.tt= thermo.temp(tol.m[spec.k,'Topt'])
-  tmax.k.tt= thermo.temp(tmax.k)
-  
-  inds= which(tmax.k.tt > Topt.tt)
-  
-  tsm[spec.k,inds,2]= tmax.k.tt[inds]- Topt.tt  
-  
-} # end loop species
-
-#------------
-#Calculate annual metrics
-
-ts.l.m= as.data.frame(t(rbind(years, tsm[,,1])))
-ts.t.m= as.data.frame(t(rbind(years, tsm[,,2])))
-#count
-count=function(x) length(na.omit(x))
-
-ts.l.sum.m= aggregate(ts.l.m, by=list(ts.l.m$years), FUN=sum, na.rm=T)
-ts.t.sum.m= aggregate(ts.t.m, by=list(ts.t.m$years), FUN=sum, na.rm=T)
-ts.l.count.m= aggregate(ts.l.m, by=list(ts.l.m$years), FUN=count)
-ts.t.count.m= aggregate(ts.t.m, by=list(ts.t.m$years), FUN=count)
-ts.l.mean.m= aggregate(ts.l.m, by=list(ts.l.m$years), FUN=mean, na.rm=T)
-ts.t.mean.m= aggregate(ts.t.m, by=list(ts.t.m$years), FUN=mean, na.rm=T)
-
-#yearly
-#ts.l.m= ts.l.agg[,3:ncol(ts.l.agg)]
-#ts.t.m= ts.t.agg[,3:ncol(ts.t.agg)]
-#row.names(ts.l.m)= ts.l.agg$Group.1
-#row.names(ts.t.m)= ts.t.agg$Group.1
-ts.l.sum.v.m= colMeans(ts.l.sum.m[,3:ncol(ts.l.sum.m)], na.rm=T)
-ts.t.sum.v.m= colMeans(ts.t.sum.m[,3:ncol(ts.l.sum.m)], na.rm=T)
-ts.l.count.v.m= colMeans(ts.l.count.m[,3:ncol(ts.l.sum.m)], na.rm=T)
-ts.t.count.v.m= colMeans(ts.t.count.m[,3:ncol(ts.l.sum.m)], na.rm=T)
-ts.l.mean.v.m= colMeans(ts.l.mean.m[,3:ncol(ts.l.sum.m)], na.rm=T)
-ts.t.mean.v.m= colMeans(ts.t.mean.m[,3:ncol(ts.l.sum.m)], na.rm=T)
-
-#add data
-tol.m.ts= cbind(tol.m, ts.l.sum.v.m, ts.l.count.v.m, ts.l.mean.v.m, ts.t.sum.v.m, ts.t.count.v.m, ts.t.mean.v.m)
-
-par(mfrow=c(2,2))
-#sum metabolic integration of thermal stress events > Topt
-plot(tol.m.ts$lat,tol.m.ts$ts.l.sum.v+1, log='y')
-#count of events >Topt
-plot(tol.m.ts$lat,tol.m.ts$ts.l.count.v+1, log='y')
-#mean metabolic integration of thermal stress events > Topt
-plot(tol.m.ts$lat,tol.m.ts$ts.l.mean.v)
-#thermal safe zone
-plot(tol.m.ts$lat,tol.m.ts$SafeZone)
-
-#=========================================
-#All GlobTherm Data using NCEP and TTB assumption
-
+#ESTIMATE IN Seasonality_TTB.R
 #TTB, based on GlobTherm
 #terrestrial
 TTB.terr= function(AbsLat) 29.15383 + 0.19897 * AbsLat
@@ -251,168 +96,206 @@ TTB.mar= function(AbsLat) 0.6945813 + 0.0020061 * AbsLat
 #Topt as percent of TTB, based on Huey data
 ToptPer= function(AbsLat) 0.6945813 + 0.0020061 * AbsLat
 
-#----------------
-#Load GlobTherm
+#METABOLIC FUNTIONS
+#duration of days above Topt
+maxc.overTopt= function(x){ 
+  # get rle object
+  consec <- rle(x>0)
+  # max consecutive values
+  max(consec$lengths[consec$values==TRUE], na.rm=TRUE)
+}
+meanc.overTopt= function(x){ 
+  # get rle object
+  consec <- rle(x>0)
+  # mean consecutive values
+  mean(consec$lengths[consec$values==TRUE], na.rm=TRUE)
+}
+
+#count
+count=function(x) length(na.omit(x))
+
+#=====================================
+#LOAD BIOLOGICAL DATA
+
+#Topt data
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
-tol.gt= read.csv('GlobalTherm_upload_10_11_17.csv')
-#species with CTmin and CTmax 
-tol.gt= tol.gt[ which(tol.gt$max_metric=='ctmax'),] # & tol.gt$min_metric=='ctmin'
+tol.h=read.csv("tpcs.csv")
 
-#make tmin numeric
-tol.gt$tmin= as.numeric(as.character(tol.gt$tmin))
-#Thermal tolerance breadth
-tol.gt$TTB= tol.gt$Tmax - tol.gt$tmin
+#species with lat lon
+tol.h= subset(tol.h, !is.na(tol.h$lat) & !is.na(tol.h$lon) )
 
-#partition marine and terrestrial
-tol.gt$habitat= 'terrestrial'
-tol.gt$habitat[which(tol.gt$Order %in% c('Perciformes','Decapoda','Cypriniformes','Cyprinodontiformes','Kurtiformes','Laminariales','Mugiliformes','Osmeriformes','Characiformes','Myliobatiformes','Salmoniformes') )]= 'marine'
-
-#Estimate TTB for those lacking
-inds= which(is.na(tol.gt$TTB) & tol.gt$habitat=='terrestrial')
-tol.gt$TTB[inds]= TTB.terr( abs(tol.gt$lat_max[inds]) )
-tol.gt$tmin[inds]= tol.gt$Tmax[inds] - tol.gt$TTB[inds]
-#Estimate Topt
-tol.gt$topt= tol.gt$tmin + ToptPer( abs(tol.gt$lat_max) )*tol.gt$TTB
-
-#--------------------
+#===================================================
 #THERMAL STRESS ESTIMATES
 
-ts= array(NA, dim= c(nrow(tol.gt), length(ncep.dates),4) )
+ts= array(NA, dim= c(length(years), nrow(tol.h), 365,4) )
 
 #calculate degree days above Topt
-for(spec.k in 1:nrow(tol.gt)){
+for(spec.k in 1:nrow(tol.h)){
   
   #find closest grid cell
-  lon.ind= which.min(abs(ncep.lons.neg - tol.gt[spec.k, "long_max" ]))
-  lat.ind= which.min(abs(ncep.lats - tol.gt[spec.k, "lat_max" ]))
+  lon.ind= which.min(abs(ncep.lons.neg - tol.h[spec.k, "lon" ]))
+  lat.ind= which.min(abs(ncep.lats - tol.h[spec.k, "lat" ]))
   
-  #extract data
-  #daily min max
-  ncep.cell= cbind(years, doy, hours, ncep.temp[lon.ind,lat.ind,])
-  colnames(ncep.cell)[4]="temp"
-  ncep.cell= as.data.frame(ncep.cell)
-  #make day factor
-  ncep.cell$doy= as.factor(ncep.cell$doy)
-  
-  #daily min and max
-  ncep.cmm= ncep.cell %>%
-    group_by(doy) %>%
-    summarise(min = min(temp), max= max(temp))
-  ncep.cmm= as.matrix(ncep.cmm)
-  tmax.k= as.numeric( ncep.cmm[,3] )
-  tmin.k= as.numeric( ncep.cmm[,2] )
-  
-  #daily safety margins
-  ts[spec.k,,1]= tol.gt[spec.k,'Tmax']-tmax.k
-  ts[spec.k,,2]= tol.gt[spec.k,'topt']-tmax.k 
-  
-  #metabolic scaled thermal stress
-  inds= which(tmax.k > tol.gt[spec.k,'topt'])
-  
-  ts[spec.k,inds,3]= tmax.k[inds]- tol.gt[spec.k,'topt']  
-  
-  #thermodynamic scale
-  Topt.tt= thermo.temp(tol.gt[spec.k,'topt'])
-  tmax.k.tt= thermo.temp(tmax.k)
-  
-  inds= which(tmax.k.tt > Topt.tt)
-  
-  if(length(inds>0)) ts[spec.k,inds,4]= tmax.k.tt[inds]- Topt.tt  
+  #loop years
+  for(year.k in 1:length(years)){
+    
+    #extract data
+    #daily min max
+    ncep.cell= cbind(years, doy, hours, ncep.temp.yrs[year.k,lon.ind,lat.ind,])
+    colnames(ncep.cell)[4]="temp"
+    ncep.cell= as.data.frame(ncep.cell)
+    #make day factor
+    ncep.cell$doy= as.factor(ncep.cell$doy)
+    
+    #daily min and max
+    ncep.cmm= ncep.cell %>%
+      group_by(doy) %>%
+      summarise(min = min(temp), max= max(temp))
+    ncep.cmm= as.matrix(ncep.cmm)
+    tmax.k= as.numeric( ncep.cmm[,3] )
+    tmin.k= as.numeric( ncep.cmm[,2] )
+    
+    #daily safety margins
+    ts[year.k,spec.k,,1]= tol.h[spec.k,'CTmax']-tmax.k
+    ts[year.k,spec.k,,2]= tol.h[spec.k,'Topt']-tmax.k 
+    
+    #metabolic scaled thermal stress
+    inds= which(tmax.k > tol.h[spec.k,'Topt'])
+    
+    if(length(inds)>0) ts[year.k,spec.k,inds,3]= tmax.k[inds]- tol.h[spec.k,'Topt']  
+    
+    #thermodynamic scale
+    Topt.tt= thermo.temp(tol.h[spec.k,'topt'])
+    tmax.k.tt= thermo.temp(tmax.k)
+    
+    inds= which(tmax.k.tt > Topt.tt)
+    
+    if(length(inds>0)) ts[year.k,spec.k,inds,4]= tmax.k.tt[inds]- Topt.tt  
+    
+  } # end year loop
   
 } # end loop species
 
 #------------
 #TSM
-tsm<-  array(NA, dim= c(nrow(tol.gt),11,4) )
+tsm<-  array(NA, dim= c(length(years),nrow(tol.h),11,4) )
 
-#TSM daily: min, 10%, 50%, 90%
-#CTmax-Tmax
-tsm[,1:4,1]= t(apply(ts[,,1], MARGIN=1, FUN='quantile', probs=c(0,0.1,0.5,0.9)))
-#Topt-Tmax
-tsm[,1:4,2]= t(apply(ts[,,2], MARGIN=1, FUN='quantile', probs=c(0,0.1,0.5,0.9), na.rm=TRUE))
+#reorder ts
+ts <- aperm(ts, c(2,1,3,4))
 
-#lowest 7 day average
-tsm[,5,1]= apply(rollmean(ts[,,1], 7, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
-tsm[,5,2]= apply(rollmean(ts[,,2], 7, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
-#lowest 14 day average
-tsm[,6,1]= apply(rollmean(ts[,,1], 14, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
-tsm[,6,2]= apply(rollmean(ts[,,2], 14, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
+#loop years
+for(year.k in 1:length(years)){
+  
+  #TSM daily: min, 10%, 50%, 90%
+  #CTmax-Tmax
+  tsm[year.k,,1:4,1]=t(apply(ts[,year.k,,1], MARGIN=1, FUN='quantile', probs=c(0,0.1,0.5,0.9), na.rm=TRUE))
+  #Topt-Tmax
+  tsm[year.k,,1:4,2]= t(apply(ts[,year.k,,2], MARGIN=1, FUN='quantile', probs=c(0,0.1,0.5,0.9), na.rm=TRUE))
+  
+  #lowest 7 day average
+  tsm[year.k,,5,1]= apply(rollmean(ts[,year.k,,1], 7, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
+  tsm[year.k,,5,2]= apply(rollmean(ts[,year.k,,2], 7, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
+  #lowest 14 day average
+  tsm[year.k,,6,1]= apply(rollmean(ts[,year.k,,1], 14, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
+  tsm[year.k,,6,2]= apply(rollmean(ts[,year.k,,2], 14, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
+  
+  #count of days <5
+  count.sub5= function(x) sum(x<5)
+  tsm[year.k,,7,1]= apply(rollmean(ts[,year.k,,1], 14, fill=NA), MARGIN=1, FUN='count.sub5')
+  tsm[year.k,,7,2]= apply(rollmean(ts[,year.k,,2], 14, fill=NA), MARGIN=1, FUN='count.sub5')
+  
+  #Metabolic integration
+  tsm[year.k,,8,3]= apply(ts[,year.k,,3], MARGIN=1, FUN='maxc.overTopt')
+  tsm[year.k,,8,4]= apply(ts[,year.k,,4], MARGIN=1, FUN='maxc.overTopt')
+  #Replace -Inf with NA
+  tsm[year.k,which(is.infinite(tsm[,year.k,8,3])),8,3]=NA
+  tsm[year.k,which(is.infinite(tsm[,year.k,8,4])),8,4]=NA
+  
+  #-----
+  #aggregate
+  #sum, count, mean
+  tsm[year.k,,9,3]= apply(ts[,year.k,,3], MARGIN=1, FUN=sum, na.rm=T)
+  tsm[year.k,,9,4]= apply(ts[,year.k,,4], MARGIN=1, FUN=sum, na.rm=T)
+  
+  tsm[year.k,,10,3]= apply(ts[,year.k,,3], MARGIN=1, FUN=count)
+  tsm[year.k,,10,4]= apply(ts[,year.k,,4], MARGIN=1, FUN=count)
+  
+  tsm[year.k,,11,3]= apply(ts[,year.k,,3], MARGIN=1, FUN=mean, na.rm=T)
+  tsm[year.k,,11,4]= apply(ts[,year.k,,4], MARGIN=1, FUN=mean, na.rm=T)
+  
+  #Replace -Inf with NA
+  tsm[year.k,which(is.infinite(tsm[,year.k,9,3])),9,3]=NA
+  tsm[year.k,which(is.infinite(tsm[,year.k,9,4])),9,4]=NA
+  tsm[year.k,which(is.infinite(tsm[,year.k,10,3])),10,3]=NA
+  tsm[year.k,which(is.infinite(tsm[,year.k,10,4])),10,4]=NA
+  tsm[year.k,which(is.infinite(tsm[,year.k,11,3])),11,3]=NA
+  tsm[year.k,which(is.infinite(tsm[,year.k,11,4])),11,4]=NA
+  
+} #end year loop
 
-#count of days <5
-count.sub5= function(x) sum(x<5)
-tsm[,7,1]= apply(rollmean(ts[,,1], 14, fill=NA), MARGIN=1, FUN='count.sub5')
-tsm[,7,2]= apply(rollmean(ts[,,2], 14, fill=NA), MARGIN=1, FUN='count.sub5')
+#----------------------
+#AGGREGATE ACROSS YEARS
 
-#METABOLIC
-#duration of days above Topt
-maxc.overTopt= function(x){ rle(sum(x>0))
-  # get rle object
-  consec <- rle(x>0)
-  # max consecutive values
-  max(consec$lengths[consec$values==TRUE])
-}
-meanc.overTopt= function(x){ rle(sum(x>0))
-  # get rle object
-  consec <- rle(x>0)
-  # mean consecutive values
-  mean(consec$lengths[consec$values==TRUE])
-}
-
-tsm[,8,3]= apply(ts[,,3], MARGIN=1, FUN='maxc.overTopt')
-tsm[,8,4]= apply(ts[,,4], MARGIN=1, FUN='maxc.overTopt')
-
-#Calculate annual metrics
-ts.l= as.data.frame(t(rbind(years, ts[,,1]))) #linear
-ts.t= as.data.frame(t(rbind(years, ts[,,2]))) #thermodynamic
-#count
-count=function(x) length(na.omit(x))
-
-#aggregate for each year
-ts.l.sum= aggregate(ts.l, by=list(ts.l$years), FUN=sum, na.rm=T)
-ts.t.sum= aggregate(ts.t, by=list(ts.t$years), FUN=sum, na.rm=T)
-ts.l.count= aggregate(ts.l, by=list(ts.l$years), FUN=count)
-ts.t.count= aggregate(ts.t, by=list(ts.t$years), FUN=count)
-ts.l.mean= aggregate(ts.l, by=list(ts.l$years), FUN=mean, na.rm=T)
-ts.t.mean= aggregate(ts.t, by=list(ts.t$years), FUN=mean, na.rm=T)
-
-#average across years
-tsm[,9,3]= colMeans(ts.l.sum[,3:ncol(ts.l.sum)], na.rm=T)
-tsm[,9,4]= colMeans(ts.t.sum[,3:ncol(ts.l.sum)], na.rm=T)
-tsm[,10,3]= colMeans(ts.l.count[,3:ncol(ts.l.sum)], na.rm=T)
-tsm[,10,4]= colMeans(ts.t.count[,3:ncol(ts.l.sum)], na.rm=T)
-tsm[,11,3]= colMeans(ts.l.mean[,3:ncol(ts.l.sum)], na.rm=T)
-tsm[,11,4]= colMeans(ts.t.mean[,3:ncol(ts.l.sum)], na.rm=T)
-
-#add data
-#dim 1: TSM CTmax
-tol.ts= cbind(tol.gt, tsm[,1:7,1])
-colnames(tol.ts)[50:56]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
-#dim 2: TSM Topt
-tol.ts= cbind(tol.gt, tsm[,1:7,2])
-colnames(tol.ts)[50:56]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
-#dim 3: Tmax - Topt
-tol.ts= cbind(tol.gt, tsm[,8:11,3])
-colnames(tol.ts)[50:53]=c('dTopt','sumI','countI','meanI')
-#dim 4: thermodynamic Tmax - Topt
-tol.ts= cbind(tol.gt, tsm[,8:11,4])
-colnames(tol.ts)[50:53]=c('dTopt','sumI','countI','meanI')
+tsm.yrs= apply(tsm, MARGIN=c(2,3,4), FUN=mean, na.rm=T)
 
 #------------------
 #PLOT
+
 #TSM
-ggplot(tol.ts, aes(x=abs(lat_max),y=minTSM) ) +geom_point()+facet_wrap(~habitat)
-ggplot(tol.ts, aes(x=abs(lat_max),y=TSM10p) ) +geom_point()+facet_wrap(~habitat)
-ggplot(tol.ts, aes(x=abs(lat_max),y=TSM50p) ) +geom_point()+facet_wrap(~habitat)
-ggplot(tol.ts, aes(x=abs(lat_max),y=TSM90p) ) +geom_point()+facet_wrap(~habitat)
-ggplot(tol.ts, aes(x=abs(lat_max),y=low7d) ) +geom_point()+facet_wrap(~habitat)
-ggplot(tol.ts, aes(x=abs(lat_max),y=low14d) ) +geom_point()+facet_wrap(~habitat)
-ggplot(tol.ts, aes(x=abs(lat_max),y=count5) ) +geom_point()+facet_wrap(~habitat)
-
-#Metabolic integration
-ggplot(tol.ts, aes(x=abs(lat_max),y=log(dTopt)) ) +geom_point()+facet_wrap(~habitat)#+geom_smooth(method='lm',se=FALSE)
-ggplot(tol.ts, aes(x=abs(lat_max),y=log(sumI)) ) +geom_point()+facet_wrap(~habitat)
-ggplot(tol.ts, aes(x=abs(lat_max),y=log(countI)) ) +geom_point()+facet_wrap(~habitat)
-ggplot(tol.ts, aes(x=abs(lat_max),y=log(meanI)) ) +geom_point()+facet_wrap(~habitat)
-
+#plot two dimensions
+for(p.k in 1:2){
+  #dim 1: TSM CTmax
+  if(p.k==1){tol.ts= cbind(tol.h, tsm.yrs[,1:7,1])
+  colnames(tol.ts)[12:18]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )}
+  #dim 2: TSM Topt
+  if(p.k==2){tol.ts= cbind(tol.h, tsm.yrs[,1:7,2])
+  colnames(tol.ts)[12:18]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )}
+  
+  plot.minTSM= ggplot(tol.ts, aes(x=abs(lat),y=minTSM) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
+  plot.TSM10p= ggplot(tol.ts, aes(x=abs(lat),y=TSM10p) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
+  plot.TSM50p= ggplot(tol.ts, aes(x=abs(lat),y=TSM50p) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
+  plot.TSM90p= ggplot(tol.ts, aes(x=abs(lat),y=TSM90p) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
+  #lowest 7 and 14 day average 
+  plot.low7d= ggplot(tol.ts, aes(x=abs(lat),y=low7d) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
+  plot.low14d= ggplot(tol.ts, aes(x=abs(lat),y=low14d) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
+  #count of days <5
+  plot.count5= ggplot(tol.ts, aes(x=abs(lat),y=count5) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
+  
+  #Plot out
+  setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/out/")
+  if(p.k==1) pdf("Figs_TSM_CTmax.pdf", height = 12, width = 12)
+  if(p.k==2) pdf("Figs_TSM_Topt.pdf", height = 12, width = 12)
+  plot_grid(plot.minTSM, plot.TSM10p, plot.TSM50p, plot.TSM90p, labels = c("minTSM", "TSM10p", "TSM50p", "TSM90p"), ncol = 2)
+  dev.off()
+  
+  if(p.k==1) pdf("Figs_TSMdur_CTmax.pdf", height = 12, width = 12)
+  if(p.k==2) pdf("Figs_TSMdur_Topt.pdf", height = 12, width = 12)
+  plot_grid(plot.low7d, plot.low14d, plot.count5, labels = c("low7d", "low7d", "count5"), ncol = 2)
+  dev.off()
+  
+  #---------
+  #Metabolic integration
+  #dim 3: Tmax - Topt
+  if(p.k==1){tol.ts= cbind(tol.h, tsm.yrs[,8:11,3])
+  colnames(tol.ts)[12:15]=c('dTopt','sumI','countI','meanI')}
+  #dim 4: thermodynamic Tmax - Topt
+  if(p.k==2){tol.ts= cbind(tol.h, tsm.yrs[,8:11,4])
+  colnames(tol.ts)[12:15]=c('dTopt','sumI','countI','meanI')}
+  
+  #duration of days above Topt
+  plot.dTopt= ggplot(tol.ts, aes(x=abs(lat),y=log(dTopt)) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
+  #sum, count, and mean of intergration
+  plot.sumI= ggplot(tol.ts, aes(x=abs(lat),y=log(sumI)) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
+  plot.countI= ggplot(tol.ts, aes(x=abs(lat),y=log(countI)) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
+  plot.meanI= ggplot(tol.ts, aes(x=abs(lat),y=log(meanI)) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
+  
+  #Plot out
+  setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/out/")
+  if(p.k==1) pdf("Figs_MetIntegration_linear.pdf", height = 12, width = 12)
+  if(p.k==2) pdf("Figs_MetIntegration_metabolic.pdf", height = 12, width = 12)
+  plot_grid(plot.dTopt, plot.sumI, plot.countI, plot.meanI, labels = c("dTopt", "sumI", "countI", "meanI"), ncol = 2)
+  dev.off()
+  
+} #end plot loop
 
 

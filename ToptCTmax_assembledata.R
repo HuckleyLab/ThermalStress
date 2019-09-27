@@ -38,9 +38,10 @@ plank= read.csv('traits_derived_2016_01_29.csv')
 plank= subset(plank, plank$minqual=="good" & plank$maxqual=="good" & plank$curvequal=="good" )
 
 #subset
-tpc= plank[,c("species","genus","family","tmin","tmax","mu.g.opt.list","habitat")]
+tpc= plank[,c("species","genus","family","tmin","tmax","mu.g.opt.list","habitat", "isolation.latitude", "isolation.longitude")]
 tpc$taxa="plankton"
 names(tpc)[4:6]<- c("CTmin", "CTmax", "Topt")
+names(tpc)[8:9]<- c("lat", "lon")
 
 #---
 #LIZARDS- Huey
@@ -48,6 +49,7 @@ setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTl
 liz= read.csv('Hueyetal2009.csv', na.strings ='-9999')
 tpc2= liz[,c("Species","Genus","Family","CTmin","CTmax","newTopt")]
 tpc2$habitat="terrestrial"
+tpc2= cbind(tpc2, liz[,c("Lat","Long")])
 tpc2$taxa="lizards"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
@@ -60,6 +62,7 @@ ins= read.csv('Deutschetel.2008Insect.TPCdata.csv')
 
 tpc2= ins[,c("Species","genus","Order","Ctmin","CTmax","Topt")]
 tpc2$habitat="terrestrial"
+tpc2= cbind(tpc2, ins[,c("Lat","Long")])
 tpc2$taxa="insects"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
@@ -74,6 +77,8 @@ liz2$family=NA
 
 tpc2= liz2[,c("Species","genus","family","CTmin","CTmax","Tp")]
 tpc2$habitat="terrestrial"
+tpc2$lat= NA
+tpc2$lon= NA
 tpc2$taxa="lizards_Tp"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
@@ -88,6 +93,8 @@ fish$CTmin=NA
 
 tpc2= fish[,c("Species","Genus","family","CTmin","CTmax...C.","Topt...C.")]
 tpc2$habitat="aquatic"
+tpc2$lat= NA
+tpc2$lon= NA
 tpc2$taxa="fish"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
@@ -101,6 +108,8 @@ fly$Genus=NA
 
 tpc2= fly[,c("Species","Genus","family","CTMin","CTMax","Fitness.Topt")] #also EgglayingTopt
 tpc2$habitat="terrestrial"
+tpc2= cbind(tpc2, fly[,c("latitude")])
+tpc2$lon= NA
 tpc2$taxa="flies"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
@@ -109,11 +118,15 @@ tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 #OTHERS GATHERED FROM LITERATURE
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/ToptAssembly/")
 dat= read.csv('Topt_Plantsetc.csv')
+#just add lizards
+dat<- subset(dat, dat$Taxa=="Australian lizards")
+dat$Taxa<- "lizards"
+
 dat$family=NA
 dat$habitat<- "terrestrial"
-dat$habitat[which(dat$Taxa=="Sea Urchins")]<-"marine"
+#dat$habitat[which(dat$Taxa=="Sea Urchins")]<-"marine"
 
-tpc2= dat[,c("Species","Genus","family","CTmin","CTmax","Topt","habitat","Taxa")] #also EgglayingTopt
+tpc2= dat[,c("Species","Genus","family","CTmin","CTmax","Topt","habitat","Latitide","Longitude","Taxa")] #also EgglayingTopt
 
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
