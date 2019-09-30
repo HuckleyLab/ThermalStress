@@ -43,6 +43,15 @@ tpc$taxa="plankton"
 names(tpc)[4:6]<- c("CTmin", "CTmax", "Topt")
 names(tpc)[8:9]<- c("lat", "lon")
 
+#analysis
+#Use max growth data to calculate as slope
+#mu.g.opt.val.list = estimated maximum specific growth rate (per day) based on the thermal reaction norm model fit
+slope= plank$mu.g.opt.val.list/(plank$tmax -plank$mu.g.opt.list)
+plot(plank$mu.g.opt.list, slope, log="y")
+#plot by CTmax and optima
+par(mfrow=c(1,2))
+plot(plank$tmax, slope, log="y")
+
 #---
 #LIZARDS- Huey
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")

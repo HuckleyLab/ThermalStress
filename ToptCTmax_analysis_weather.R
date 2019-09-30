@@ -123,11 +123,13 @@ tol.h=read.csv("tpcs.csv")
 
 #species with lat lon
 tol.h= subset(tol.h, !is.na(tol.h$lat) & !is.na(tol.h$lon) )
+#drop data without all metrics
+tol.h= subset(tol.h, !is.na(tol.h$CTmin) & !is.na(tol.h$Topt) & !is.na(tol.h$CTmax) )
 
 #===================================================
 #THERMAL STRESS ESTIMATES
 
-ts= array(NA, dim= c(length(years), nrow(tol.h), 365,4) )
+ts= array(NA, dim= c(length(years), nrow(tol.h), 365,5) )
 
 #calculate degree days above Topt
 for(spec.k in 1:nrow(tol.h)){
@@ -152,8 +154,8 @@ for(spec.k in 1:nrow(tol.h)){
       group_by(doy) %>%
       summarise(min = min(temp), max= max(temp))
     ncep.cmm= as.matrix(ncep.cmm)
-    tmax.k= as.numeric( ncep.cmm[,3] )
-    tmin.k= as.numeric( ncep.cmm[,2] )
+    tmax.k= as.numeric( ncep.cmm[,2] )
+    tmin.k= as.numeric( ncep.cmm[,1] )
     
     #daily safety margins
     ts[year.k,spec.k,,1]= tol.h[spec.k,'CTmax']-tmax.k
@@ -163,6 +165,10 @@ for(spec.k in 1:nrow(tol.h)){
     inds= which(tmax.k > tol.h[spec.k,'Topt'])
     
     if(length(inds)>0) ts[year.k,spec.k,inds,3]= tmax.k[inds]- tol.h[spec.k,'Topt']  
+    
+    #performance detriment
+    slope= 1/(-tol.h[spec.k,'CTmax']+tol.h[spec.k,'Topt'])
+    if(length(inds)>0) ts[year.k,spec.k,inds,5]= (tmax.k[inds]- tol.h[spec.k,'Topt'])*slope  
     
     #thermodynamic scale
     Topt.tt= thermo.temp(tol.h[spec.k,'topt'])
@@ -178,7 +184,7 @@ for(spec.k in 1:nrow(tol.h)){
 
 #------------
 #TSM
-tsm<-  array(NA, dim= c(length(years),nrow(tol.h),11,4) )
+tsm<-  array(NA, dim= c(length(years),nrow(tol.h),12,4) )
 
 #reorder ts
 ts <- aperm(ts, c(2,1,3,4))
@@ -223,6 +229,9 @@ for(year.k in 1:length(years)){
   tsm[year.k,,11,3]= apply(ts[,year.k,,3], MARGIN=1, FUN=mean, na.rm=T)
   tsm[year.k,,11,4]= apply(ts[,year.k,,4], MARGIN=1, FUN=mean, na.rm=T)
   
+  #performance detriment
+  tsm[year.k,,12,3]= apply(ts[,year.k,,5], MARGIN=1, FUN=sum, na.rm=T)
+  
   #Replace -Inf with NA
   tsm[year.k,which(is.infinite(tsm[,year.k,9,3])),9,3]=NA
   tsm[year.k,which(is.infinite(tsm[,year.k,9,4])),9,4]=NA
@@ -230,7 +239,7 @@ for(year.k in 1:length(years)){
   tsm[year.k,which(is.infinite(tsm[,year.k,10,4])),10,4]=NA
   tsm[year.k,which(is.infinite(tsm[,year.k,11,3])),11,3]=NA
   tsm[year.k,which(is.infinite(tsm[,year.k,11,4])),11,4]=NA
-  
+  tsm[year.k,which(is.infinite(tsm[,year.k,12,3])),12,3]=NA
 } #end year loop
 
 #----------------------
@@ -276,8 +285,8 @@ for(p.k in 1:2){
   #---------
   #Metabolic integration
   #dim 3: Tmax - Topt
-  if(p.k==1){tol.ts= cbind(tol.h, tsm.yrs[,8:11,3])
-  colnames(tol.ts)[12:15]=c('dTopt','sumI','countI','meanI')}
+  if(p.k==1){tol.ts= cbind(tol.h, tsm.yrs[,8:12,3])
+  colnames(tol.ts)[12:16]=c('dTopt','sumI','countI','meanI','Perf')}
   #dim 4: thermodynamic Tmax - Topt
   if(p.k==2){tol.ts= cbind(tol.h, tsm.yrs[,8:11,4])
   colnames(tol.ts)[12:15]=c('dTopt','sumI','countI','meanI')}
@@ -289,6 +298,9 @@ for(p.k in 1:2){
   plot.countI= ggplot(tol.ts, aes(x=abs(lat),y=log(countI)) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
   plot.meanI= ggplot(tol.ts, aes(x=abs(lat),y=log(meanI)) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
   
+  #performance detriment
+  plot.perf= ggplot(tol.ts, aes(x=abs(lat),y=Perf) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)+ylab("Performance detriment")+ylim(-3,0)
+  
   #Plot out
   setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/out/")
   if(p.k==1) pdf("Figs_MetIntegration_linear.pdf", height = 12, width = 12)
@@ -297,5 +309,8 @@ for(p.k in 1:2){
   dev.off()
   
 } #end plot loop
+
+#---------
+#CALCULATE REDUCTION IN PERFORMANCE DUE TO THERMAL STRESS
 
 

@@ -92,7 +92,7 @@ dev.off()
 fig2a= ggplot(tpc) + aes(x=Topt, y = asym2, color=habitat, group=taxa)+geom_point()+ylim(0,1)+ylab("assymetry")+facet_grid(taxa~1)+theme(legend.position="bottom")+geom_smooth(method="lm")
 
 #TPC vs assymetry
-fig2b= ggplot(tpc) + aes(x=asym2, y = CTmax.Topt.breadth, color=habitat, group=taxa)+geom_point()+xlim(0,1)+xlab("assymetry")+ylab("cool side breadth (CTmax-Topt)")+facet_grid(taxa~1)+theme(legend.position="bottom")+geom_smooth(method="lm")
+fig2b= ggplot(tpc) + aes(x=asym2, y = CTmax.Topt.breadth, color=habitat, group=taxa)+geom_point()+xlim(0,1)+xlab("assymetry")+ylab("warm side breadth (CTmax-Topt)")+facet_grid(taxa~1)+theme(legend.position="bottom")+geom_smooth(method="lm")
 #+geom_smooth(method="lm", se=FALSE)
 
 pdf("Fig2_Assym.pdf", height = 10, width = 8)
@@ -185,6 +185,8 @@ dev.off()
 
 #--------------------
 #variances
+tpc.sub= tpc[which(tpc$taxa==taxas[5]),]
+
 var(tpc.sub$CTmin)
 var(tpc.sub$Topt)
 var(tpc.sub$CTmax)
@@ -192,7 +194,7 @@ var(tpc.sub$CTmax)
 # P matrix
 #https://www.biorxiv.org/content/biorxiv/early/2015/09/11/026518.full.pdf
 #install.packages("evolqg")
-#library(evolqg)
+library(evolqg)
 
 tpc.sub$gen_spec=paste(tpc.sub$genus,tpc.sub$species,sep="_")
 tpc.lm= lm(as.matrix(tpc.sub[,c("CTmin","CTmax","Topt")])~tpc.sub[,"gen_spec"])
@@ -215,6 +217,24 @@ MeanMatrixStatistics(cov.matrix)
 #selection on tpc, 
 #plankton function valued, curves vs parameters selection, selection on curves not parameters, e.g., Ann Rev Gomulkiwitz, Kingsolver
 
+#--------------------------
+#Shuffling 
 
+library(dplyr)
+tpc2<- tpc %>% group_by(taxa) %>% mutate(CTmin=sample(CTmin), CTmax=sample(CTmax), Topt=sample(Topt) )
+#calculate asymetry
+tpc2$asym= (tpc2$CTmax - tpc2$Topt)/(tpc2$Topt- tpc2$CTmin )
+tpc2$asym2= (2*tpc2$Topt-tpc2$CTmax - tpc2$CTmin)/(tpc2$CTmax-tpc2$CTmin )
+#estimate breadth
+tpc2$CTmax.Topt.breadth= tpc2$CTmax - tpc$Topt
 
+#assymetry vs Topt
+fig2a= ggplot(tpc2) + aes(x=Topt, y = asym2, color=habitat, group=taxa)+geom_point()+ylim(0,1)+ylab("assymetry")+facet_grid(taxa~1)+theme(legend.position="bottom")+geom_smooth(method="lm")
 
+#TPC vs assymetry
+fig2b= ggplot(tpc2) + aes(x=asym2, y = CTmax.Topt.breadth, color=habitat, group=taxa)+geom_point()+xlim(0,1)+xlab("assymetry")+ylab("warm side breadth (CTmax-Topt)")+facet_grid(taxa~1)+theme(legend.position="bottom")+geom_smooth(method="lm")
+#+geom_smooth(method="lm", se=FALSE)
+
+pdf("Fig2_AssymRand.pdf", height = 10, width = 8)
+plot_grid(fig2a, fig2b, nrow=1)
+dev.off()
