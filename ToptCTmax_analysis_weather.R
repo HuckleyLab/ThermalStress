@@ -11,6 +11,7 @@ library(RColorBrewer) #color schemes
 library(sf) #to import a spatial object and to work with geom_sf in ggplot2
 library(raster)
 library(zoo)
+library(cowplot)
 
 #convert longituide
 convert.lon= function(r0) ifelse(r0 > 180, -360 + r0, r0)
@@ -41,7 +42,7 @@ ncep.times= ncvar_get(ncep.nc,"time") #julian date, calendar day, since 0000-01-
 dim(ncep.times)
 #change to dates
 ncep.dates= as.POSIXct(ncep.times*3600,origin='1800-01-01 00:00') 
-years= as.numeric(format(ncep.dates, "%Y"))
+year= as.numeric(format(ncep.dates, "%Y"))
 doy= as.numeric(format(ncep.dates, "%j"))
 hours= as.numeric(format(ncep.dates, "%H"))
 
@@ -143,7 +144,7 @@ for(spec.k in 1:nrow(tol.h)){
     
     #extract data
     #daily min max
-    ncep.cell= cbind(years, doy, hours, ncep.temp.yrs[year.k,lon.ind,lat.ind,])
+    ncep.cell= cbind(year, doy, hours, ncep.temp.yrs[year.k,lon.ind,lat.ind,])
     colnames(ncep.cell)[4]="temp"
     ncep.cell= as.data.frame(ncep.cell)
     #make day factor
@@ -154,8 +155,8 @@ for(spec.k in 1:nrow(tol.h)){
       group_by(doy) %>%
       summarise(min = min(temp), max= max(temp))
     ncep.cmm= as.matrix(ncep.cmm)
-    tmax.k= as.numeric( ncep.cmm[,2] )
-    tmin.k= as.numeric( ncep.cmm[,1] )
+    tmax.k= as.numeric( ncep.cmm[,3] )
+    tmin.k= as.numeric( ncep.cmm[,2] )
     
     #daily safety margins
     ts[year.k,spec.k,,1]= tol.h[spec.k,'CTmax']-tmax.k
@@ -313,4 +314,24 @@ for(p.k in 1:2){
 #---------
 #CALCULATE REDUCTION IN PERFORMANCE DUE TO THERMAL STRESS
 
+#TSM
+#CTmax
+tol.ts= cbind(tol.h, tsm.yrs[,1:7,1])
+colnames(tol.ts)[12:18]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
+plot.TSM_CTmax= ggplot(tol.ts, aes(x=abs(lat),y=minTSM) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)+ylab("TSM (CTmax-Tmax)")
+
+tol.ts= cbind(tol.h, tsm.yrs[,1:7,2])
+colnames(tol.ts)[12:18]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
+plot.TSM_Topt= ggplot(tol.ts, aes(x=abs(lat),y=minTSM) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)+ylab("TSM (Topt-Tmax)")
+
+#performance detriment
+tol.ts= cbind(tol.h, tsm.yrs[,8:12,3])
+colnames(tol.ts)[12:16]=c('dTopt','sumI','countI','meanI','Perf')
+plot.perf= ggplot(tol.ts, aes(x=abs(lat),y=log(-Perf)) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)+ylab("Performance detriment")
+
+#Plot out
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/out/")
+pdf("Figs_ThermalStress.pdf", height = 12, width = 12)
+plot_grid(plot.TSM_CTmax, plot.TSM_Topt, plot.perf, ncol = 1)
+dev.off()
 
