@@ -124,6 +124,25 @@ tpc2$taxa="flies"
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
 #---
+#PHAGE, https://www.journals.uchicago.edu/doi/full/10.1086/597224
+
+# a -height
+# m- location of optimum
+# b- width
+
+phage.growth= function(temp, a,b,m,P=1) {a +(1/b)*P*(1/b*(temp-m))}
+
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/phage/")
+phage= read.csv('TMV_output_Knies2009.csv')
+
+ggplot(phage) + aes(x=1:60, y = phage.growth(1:60,a,b,m), color=Genotype, group=Genotype)+geom_line()
+
+for(ind in 1:nrow(phage)){
+if(ind==1) plot(1:60, phage.growth(1:60, phage[ind, "a"], phage[ind, "b"], phage[ind, "m"]), type="l")
+  points(1:60, phage.growth(1:60, phage[ind, "a"], phage[ind, "b"], phage[ind, "m"]), type="l")
+}
+  
+#---
 #OTHERS GATHERED FROM LITERATURE
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/ToptAssembly/")
 dat= read.csv('Topt_Plantsetc.csv')
