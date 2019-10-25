@@ -314,24 +314,47 @@ for(p.k in 1:2){
 #---------
 #CALCULATE REDUCTION IN PERFORMANCE DUE TO THERMAL STRESS
 
+#include Aust lizards
+tol.ts[which(tol.ts$taxa=="Australian lizards"),"taxa"]<- "lizards"
+
 #TSM
 #CTmax
 tol.ts= cbind(tol.h, tsm.yrs[,1:7,1])
 colnames(tol.ts)[12:18]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
-plot.TSM_CTmax= ggplot(tol.ts, aes(x=abs(lat),y=minTSM) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)+ylab("TSM (CTmax-Tmax)")
+#subset taxa
+tol.ts.ctmax= subset(tol.ts, tol.ts$taxa %in%c("insects","lizards","plankton"))
+
+plot.TSM_CTmax= ggplot(tol.ts.ctmax, aes(x=abs(lat),y=TSM10p) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)+ylab("TSM (CTmax-Tmax)")
 
 tol.ts= cbind(tol.h, tsm.yrs[,1:7,2])
 colnames(tol.ts)[12:18]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
-plot.TSM_Topt= ggplot(tol.ts, aes(x=abs(lat),y=minTSM) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)+ylab("TSM (Topt-Tmax)")
+#subset taxa
+tol.ts.topt= subset(tol.ts, tol.ts$taxa %in%c("insects","lizards","plankton"))
+
+plot.TSM_Topt= ggplot(tol.ts.topt, aes(x=abs(lat),y=TSM10p) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)+ylab("TSM (Topt-Tmax)")
 
 #performance detriment
 tol.ts= cbind(tol.h, tsm.yrs[,8:12,3])
 colnames(tol.ts)[12:16]=c('dTopt','sumI','countI','meanI','Perf')
-plot.perf= ggplot(tol.ts, aes(x=abs(lat),y=log(-Perf)) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)+ylab("Performance detriment")
+#subset taxa
+tol.ts.pd= subset(tol.ts, tol.ts$taxa %in%c("insects","lizards","plankton"))
+
+plot.perf= ggplot(tol.ts.pd, aes(x=abs(lat),y=log(-Perf)) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)+ylab("Performance detriment")
 
 #Plot out
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/out/")
 pdf("Figs_ThermalStress.pdf", height = 12, width = 12)
 plot_grid(plot.TSM_CTmax, plot.TSM_Topt, plot.perf, ncol = 1)
+dev.off()
+
+#plot points on top of each other
+plot.TSM= ggplot(tol.ts.ctmax, aes(x=abs(lat),y=TSM10p) ) +facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE, color="orange")+ylab("TSM")
+plot.TSM= plot.TSM + geom_smooth(data=tol.ts.topt, aes(x=abs(lat),y=TSM10p), method='loess',se=TRUE, lty="dashed", color="green")
+plot.TSM= plot.TSM + geom_smooth(data=tol.ts.pd, aes(x=abs(lat),y=log(-Perf)), method='loess',se=TRUE, lty="dotted", color="purple")#+geom_point(data=tol.ts.pd, aes(x=abs(lat),y=log(-Perf)))
+
+#Plot out
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/out/")
+pdf("Figs_ThermalLat.pdf", height = 6, width = 10)
+plot.TSM
 dev.off()
 

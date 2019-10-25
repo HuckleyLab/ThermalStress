@@ -23,11 +23,26 @@ library(ggplot2)
 #PLANT POPULATIONS? https://academic.oup.com/icb/article/51/5/733/627422
 #Algae: https://royalsocietypublishing.org/doi/full/10.1098/rspb.2018.1076
 
+# DATA from Angilletta Table 3.6, P63
+# Isopods: http://www.evolutionary-ecology.com/issues/v06n04/iiar1693.pdf (data thief CTmin and CTmax)
+# Frogs: https://www.jstor.org/stable/30164271?seq=9#metadata_info_tab_contents, https://www.sciencedirect.com/science/article/pii/S1095643307015115, look for CTmax and CTmin?
+# Frogs: https://www.jstor.org/stable/2461905?seq=4#metadata_info_tab_contents, temperatures not hot enough for Topt
+# Bacteria: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC546823/, data thief to extract data and fit for CTmin?
+#   Daphnia:https://onlinelibrary.wiley.com/doi/full/10.1046/j.1420-9101.2000.00193.x, not hot enough for CTmax
+# Nematodes: https://www.sciencedirect.com/science/article/pii/0306456594900477, suboptimal data
+
+#COPEPODS: https://www.sciencedirect.com/science/article/pii/S0022098102000254, could fit curves
+
+
+#Lab goldfish, 3 acclimation temperatures: https://www.journals.uchicago.edu/doi/full/10.1086/677317
+#Arctic char, Larsson: https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2427.2004.01326.x
+#trout: https://onlinelibrary.wiley.com/doi/full/10.1111/j.1095-8649.2008.02119.x
+#bonefish: https://link.springer.com/article/10.1007/s10641-015-0420-6
 
 #---------------
 #Assemble data in simplified form for easy plotting
 
-#PLANKTON- Thomas
+#PHYTOPLANKTON- Thomas
 #Thomas data downloaded from his website, https://mridulkthomas.weebly.com/data--code.html, https://onlinelibrary.wiley.com/doi/full/10.1111/geb.12387
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Phytoplankton_temperature_growth_rate_dataset_2016_01_29/")
 plank= read.csv('traits_derived_2016_01_29.csv')
@@ -141,20 +156,21 @@ for(ind in 1:nrow(phage)){
 if(ind==1) plot(1:60, phage.growth(1:60, phage[ind, "a"], phage[ind, "b"], phage[ind, "m"]), type="l")
   points(1:60, phage.growth(1:60, phage[ind, "a"], phage[ind, "b"], phage[ind, "m"]), type="l")
 }
-  
+#FITS ARE SYMETRIC
+
 #---
 #OTHERS GATHERED FROM LITERATURE
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/ToptAssembly/")
 dat= read.csv('Topt_Plantsetc.csv')
-#just add lizards
-dat<- subset(dat, dat$Taxa=="Australian lizards")
-dat$Taxa<- "lizards"
+#select data
+dat<- subset(dat, dat$Taxa %in% c("Australian lizards","Sea urchins","Isopod","Charr","Trout","Salmon","Bonefish")  )
+
 
 dat$family=NA
 dat$habitat<- "terrestrial"
-#dat$habitat[which(dat$Taxa=="Sea Urchins")]<-"marine"
+dat$habitat[which(dat$Taxa %in% c("Sea urchins","Charr","Trout","Salmon","Bonefish") )]<-"aquatic"
 
-tpc2= dat[,c("Species","Genus","family","CTmin","CTmax","Topt","habitat","Latitide","Longitude","Taxa")] #also EgglayingTopt
+tpc2= dat[,c("Species","Genus","family","CTmin","CTmax","Topt","habitat","Latitude","Longitude","Taxa")] 
 
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
