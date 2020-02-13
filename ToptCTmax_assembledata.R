@@ -21,10 +21,30 @@ library(ggplot2)
 #FRESH WATER?: https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2427.2004.01317.x
 #ABALONE: https://www.sciencedirect.com/science/article/pii/S0306456599000327
 
+#AMPHIBIAN LARVAE? https://onlinelibrary.wiley.com/doi/full/10.1111/evo.12711
+#PLANT POPULATIONS? https://academic.oup.com/icb/article/51/5/733/627422
+#Algae: https://royalsocietypublishing.org/doi/full/10.1098/rspb.2018.1076
+
+# DATA from Angilletta Table 3.6, P63
+# Isopods: http://www.evolutionary-ecology.com/issues/v06n04/iiar1693.pdf (data thief CTmin and CTmax)
+# Frogs: https://www.jstor.org/stable/30164271?seq=9#metadata_info_tab_contents, https://www.sciencedirect.com/science/article/pii/S1095643307015115, look for CTmax and CTmin?
+# Frogs: https://www.jstor.org/stable/2461905?seq=4#metadata_info_tab_contents, temperatures not hot enough for Topt
+# Bacteria: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC546823/, data thief to extract data and fit for CTmin?
+#   Daphnia:https://onlinelibrary.wiley.com/doi/full/10.1046/j.1420-9101.2000.00193.x, not hot enough for CTmax
+# Nematodes: https://www.sciencedirect.com/science/article/pii/0306456594900477, suboptimal data
+
+#COPEPODS: https://www.sciencedirect.com/science/article/pii/S0022098102000254, could fit curves
+
+
+#Lab goldfish, 3 acclimation temperatures: https://www.journals.uchicago.edu/doi/full/10.1086/677317
+#Arctic char, Larsson: https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2427.2004.01326.x
+#trout: https://onlinelibrary.wiley.com/doi/full/10.1111/j.1095-8649.2008.02119.x
+#bonefish: https://link.springer.com/article/10.1007/s10641-015-0420-6
+
 #---------------
 #Assemble data in simplified form for easy plotting
 
-#PLANKTON- Thomas
+#PHYTOPLANKTON- Thomas
 #Thomas data downloaded from his website, https://mridulkthomas.weebly.com/data--code.html, https://onlinelibrary.wiley.com/doi/full/10.1111/geb.12387
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Phytoplankton_temperature_growth_rate_dataset_2016_01_29/")
 plank= read.csv('traits_derived_2016_01_29.csv')
@@ -35,9 +55,19 @@ plank= read.csv('traits_derived_2016_01_29.csv')
 plank= subset(plank, plank$minqual=="good" & plank$maxqual=="good" & plank$curvequal=="good" )
 
 #subset
-tpc= plank[,c("species","genus","family","tmin","tmax","mu.g.opt.list","habitat")]
+tpc= plank[,c("species","genus","family","tmin","tmax","mu.g.opt.list","habitat", "isolation.latitude", "isolation.longitude")]
 tpc$taxa="plankton"
 names(tpc)[4:6]<- c("CTmin", "CTmax", "Topt")
+names(tpc)[8:9]<- c("lat", "lon")
+
+#analysis
+#Use max growth data to calculate as slope
+#mu.g.opt.val.list = estimated maximum specific growth rate (per day) based on the thermal reaction norm model fit
+slope= plank$mu.g.opt.val.list/(plank$tmax -plank$mu.g.opt.list)
+plot(plank$mu.g.opt.list, slope, log="y")
+#plot by CTmax and optima
+par(mfrow=c(1,2))
+plot(plank$tmax, slope, log="y")
 
 #---
 #LIZARDS- Huey
@@ -45,6 +75,7 @@ setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTl
 liz= read.csv('Hueyetal2009.csv', na.strings ='-9999')
 tpc2= liz[,c("Species","Genus","Family","CTmin","CTmax","newTopt")]
 tpc2$habitat="terrestrial"
+tpc2= cbind(tpc2, liz[,c("Lat","Long")])
 tpc2$taxa="lizards"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
@@ -57,6 +88,7 @@ ins= read.csv('Deutschetel.2008Insect.TPCdata.csv')
 
 tpc2= ins[,c("Species","genus","Order","Ctmin","CTmax","Topt")]
 tpc2$habitat="terrestrial"
+tpc2= cbind(tpc2, ins[,c("Lat","Long")])
 tpc2$taxa="insects"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
@@ -71,6 +103,8 @@ liz2$family=NA
 
 tpc2= liz2[,c("Species","genus","family","CTmin","CTmax","Tp")]
 tpc2$habitat="terrestrial"
+tpc2$lat= NA
+tpc2$lon= NA
 tpc2$taxa="lizards_Tp"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
@@ -85,6 +119,8 @@ fish$CTmin=NA
 
 tpc2= fish[,c("Species","Genus","family","CTmin","CTmax...C.","Topt...C.")]
 tpc2$habitat="aquatic"
+tpc2$lat= NA
+tpc2$lon= NA
 tpc2$taxa="fish"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
@@ -98,12 +134,52 @@ fly$Genus=NA
 
 tpc2= fly[,c("Species","Genus","family","CTMin","CTMax","Fitness.Topt")] #also EgglayingTopt
 tpc2$habitat="terrestrial"
+tpc2= cbind(tpc2, fly[,c("latitude")])
+tpc2$lon= NA
 tpc2$taxa="flies"
+#bind
+tpc= rbind(tpc, setNames(tpc2, names(tpc)))
+
+#---
+#PHAGE, https://www.journals.uchicago.edu/doi/full/10.1086/597224
+
+# a -height
+# m- location of optimum
+# b- width
+
+phage.growth= function(temp, a,b,m,P=1) {a +(1/b)*P*(1/b*(temp-m))}
+
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/phage/")
+phage= read.csv('TMV_output_Knies2009.csv')
+
+ggplot(phage) + aes(x=1:60, y = phage.growth(1:60,a,b,m), color=Genotype, group=Genotype)+geom_line()
+
+for(ind in 1:nrow(phage)){
+if(ind==1) plot(1:60, phage.growth(1:60, phage[ind, "a"], phage[ind, "b"], phage[ind, "m"]), type="l")
+  points(1:60, phage.growth(1:60, phage[ind, "a"], phage[ind, "b"], phage[ind, "m"]), type="l")
+}
+#FITS ARE SYMETRIC
+
+#---
+#OTHERS GATHERED FROM LITERATURE
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/ToptAssembly/")
+dat= read.csv('Topt_Plantsetc.csv')
+#select data
+dat<- subset(dat, dat$Taxa %in% c("Australian lizards","Sea urchins","Isopod","Charr","Trout","Salmon","Bonefish")  )
+
+
+dat$family=NA
+dat$habitat<- "terrestrial"
+dat$habitat[which(dat$Taxa %in% c("Sea urchins","Charr","Trout","Salmon","Bonefish") )]<-"aquatic"
+
+tpc2= dat[,c("Species","Genus","family","CTmin","CTmax","Topt","habitat","Latitude","Longitude","Taxa")] 
+
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
 #--------
 #Write out
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
 write.csv(tpc, "tpcs.csv")
 
 #=====================

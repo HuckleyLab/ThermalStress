@@ -149,7 +149,7 @@ tol.gt.marine= tol.gt.sub[tol.sub$habitat=='marine',]
 #ext <- extract(ocean,extract.pts,method="bilinear")
 
 #plot
-setwd("/Volumes/GoogleDrive/Team Drives/TrEnCh/Projects/ThermalStress/data/SST/")
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/SST/")
 ocean <- brick('sst.day.mean.2000.nc')  
 ocean= rotate(ocean[[1]])
 plot(ocean)
@@ -183,7 +183,7 @@ points(tol.marine$lon,tol.marine$lat, col="blue")
 
 #------
 #huey data
-setwd("/Volumes/GoogleDrive/Team Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
 tol.h= read.csv('Hueyetal2009.csv')
 #check locations
 plot(ocean)
