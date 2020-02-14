@@ -1,6 +1,8 @@
 #Compare CTmax and Topt
 library(ggplot2)
 
+#showing ray how to do this
+
 #Similar concept (plus fish data): https://onlinelibrary.wiley.com/doi/full/10.1111/ele.12707
 
 #Dataset notes
