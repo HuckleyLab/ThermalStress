@@ -177,10 +177,6 @@ tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
 #------------------
 #Add Rezende data 
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/ToptAssembly/")
-
-#--------
-#Write out
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Rezende")
 rez= read.csv("RezendeAppendixC.csv")
 
@@ -213,6 +209,11 @@ plot(CTmax, rez$Ctmax)
 plot(0:70, tpc.rezende(0:70,q10=rez[4,"Q10"], C=rez[4,"C"], Tth=rez[4,"Tth"], d=rez[4,"d"]), type="l")
 
 ctmax.rezende(tpc=rez[4,c("Q10","C","Tth","d")])
+
+#--------
+#Write out
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
+write.csv(tpc, "tpcs.csv")
 
 
 #=====================
