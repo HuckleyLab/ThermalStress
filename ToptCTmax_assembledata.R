@@ -175,10 +175,45 @@ tpc2= dat[,c("Species","Genus","family","CTmin","CTmax","Topt","habitat","Latitu
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
+#------------------
+#Add Rezende data 
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/ToptAssembly/")
+
 #--------
 #Write out
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
-write.csv(tpc, "tpcs.csv")
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Rezende")
+rez= read.csv("RezendeAppendixC.csv")
+
+rezende_2019(0:70, q10=2.27, a=0.109, b=9.02, c=0.00116)
+
+tpc.rezende<- function (temp, q10, C, Tth, d) 
+{ p<- C*2.71828^(temp*log(q10)/10)
+  p[which(temp>Tth)]<- C*2.71828^(temp*log(q10)/10)*(1-d*(temp-Tth)^2)
+  p[p<0]<-0
+return(p)
+}
+
+ctmin.rezende<- function(tpc){
+  q10=tpc[1]; C=tpc[2]; Tth=tpc[3]; d=tpc[4];
+  temp= seq(-40,100,0.1)
+  ps<- tpc.rezende(temp, q10, C, Tth, d)
+  temp[which.min(ps<0.01)]
+}
+
+ctmax.rezende<- function(tpc){
+  q10=tpc[1]; C=tpc[2]; Tth=tpc[3]; d=tpc[4];
+  temp= seq(-40,100,0.1)
+  ps=tpc.rezende(seq(-40,100,0.1), q10, C, Tth, d)
+  temp[which.max(ps<0.01)]
+}
+
+CTmax= apply(rez[,c("Q10","C","Tth","d")], FUN=ctmax.rezende, MARGIN=1)
+plot(CTmax, rez$Ctmax)
+
+plot(0:70, tpc.rezende(0:70,q10=rez[4,"Q10"], C=rez[4,"C"], Tth=rez[4,"Tth"], d=rez[4,"d"]), type="l")
+
+ctmax.rezende(tpc=rez[4,c("Q10","C","Tth","d")])
+
 
 #=====================
 #DELL ET AL.: https://www.pnas.org/content/pnas/suppl/2011/05/19/1015178108.DCSupplemental/sapp.pdf
