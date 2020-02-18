@@ -141,26 +141,6 @@ tpc2$taxa="flies"
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
 #---
-#PHAGE, https://www.journals.uchicago.edu/doi/full/10.1086/597224
-
-# a -height
-# m- location of optimum
-# b- width
-
-phage.growth= function(temp, a,b,m,P=1) {a +(1/b)*P*(1/b*(temp-m))}
-
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/phage/")
-phage= read.csv('TMV_output_Knies2009.csv')
-
-ggplot(phage) + aes(x=1:60, y = phage.growth(1:60,a,b,m), color=Genotype, group=Genotype)+geom_line()
-
-for(ind in 1:nrow(phage)){
-if(ind==1) plot(1:60, phage.growth(1:60, phage[ind, "a"], phage[ind, "b"], phage[ind, "m"]), type="l")
-  points(1:60, phage.growth(1:60, phage[ind, "a"], phage[ind, "b"], phage[ind, "m"]), type="l")
-}
-#FITS ARE SYMETRIC
-
-#---
 #OTHERS GATHERED FROM LITERATURE
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/ToptAssembly/")
 dat= read.csv('Topt_Plantsetc.csv')
@@ -182,41 +162,60 @@ tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Rezende")
 rez= read.csv("RezendeAppendixC.csv")
 
-rezende_2019(0:70, q10=2.27, a=0.109, b=9.02, c=0.00116)
+#library(rTPC), rezende_2019
 
 tpc.rezende<- function (temp, q10, C, Tth, d) 
-{ p<- C*2.71828^(temp*log(q10)/10)
-  p[which(temp>Tth)]<- C*2.71828^(temp*log(q10)/10)*(1-d*(temp-Tth)^2)
+{ temp=as.numeric(temp)
+  p= rep(NA, length(temp))
+  inds= which(temp<=Tth)
+  p[inds]<- C*2.71828^(temp[inds]*log(q10)/10)
+  inds= which(temp>Tth)
+  p[inds]<- C*2.71828^(temp[inds]*log(q10)/10)*(1-d*(temp[inds]-Tth)^2)
   p[p<0]<-0
 return(p)
 }
 
 ctmin.rezende<- function(tpc){
-  q10=tpc[1]; C=tpc[2]; Tth=tpc[3]; d=tpc[4];
-  temp= seq(-40,100,0.1)
-  ps<- tpc.rezende(temp, q10, C, Tth, d)
-  temp[which.min(ps<0.01)]
+  tpc=as.numeric(tpc)
+  temp= seq(tpc[5]-50,tpc[5],0.2)
+  ps=tpc.rezende(temp, q10=tpc[1], C=tpc[2], Tth=tpc[3], d=tpc[4])
+  temp[which.max(ps<0.2*tpc[6])]
 }
 
 ctmax.rezende<- function(tpc){
-  q10=tpc[1]; C=tpc[2]; Tth=tpc[3]; d=tpc[4];
-  temp= seq(-40,100,0.1)
-  ps=tpc.rezende(seq(-40,100,0.1), q10, C, Tth, d)
-  temp[which.max(ps<0.01)]
+  tpc=as.numeric(tpc)
+  temp= seq(tpc[5],tpc[5]+20,0.2)
+  ps=tpc.rezende(temp, q10=tpc[1], C=tpc[2], Tth=tpc[3], d=tpc[4])
+  temp[which.max(ps<0.2*tpc[6])]
 }
 
-CTmax= apply(rez[,c("Q10","C","Tth","d")], FUN=ctmax.rezende, MARGIN=1)
+CTmax= apply(rez[,c("Q10","C","Tth","d","Topt","Pmax")], FUN=ctmax.rezende, MARGIN=1)
 plot(CTmax, rez$Ctmax)
+abline(a=0, b=1)
 
-plot(0:70, tpc.rezende(0:70,q10=rez[4,"Q10"], C=rez[4,"C"], Tth=rez[4,"Tth"], d=rez[4,"d"]), type="l")
+ind=10
+plot(1:70, tpc.rezende(1:70,q10=rez[ind,"Q10"], C=rez[ind,"C"], Tth=rez[ind,"Tth"], d=rez[ind,"d"]), type="l")
+points(ctmax.rezende(tpc=rez[ind,c("Q10","C","Tth","d","Topt","Pmax")]),0)
+points(rez[ind,"Ctmax"],0,pch="*")
 
-ctmax.rezende(tpc=rez[4,c("Q10","C","Tth","d")])
+rez$Ctmin= apply(rez[,c("Q10","C","Tth","d","Topt","Pmax")], FUN=ctmin.rezende, MARGIN=1)
+rez$Genus=NA
+rez$family=NA
+rez$lat=NA
+
+#add data
+tpc2= rez[,c("Species","Genus","family","Ctmin","Ctmax","Topt")] 
+tpc2$habitat="terrestrial"
+tpc2$lat=NA
+tpc2$lon= NA
+tpc2$taxa= rez$Type
+#bind
+tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
 #--------
 #Write out
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
 write.csv(tpc, "tpcs.csv")
-
 
 #=====================
 #DELL ET AL.: https://www.pnas.org/content/pnas/suppl/2011/05/19/1015178108.DCSupplemental/sapp.pdf
@@ -288,5 +287,24 @@ ggplot(dat.sub) + aes(x=temperature, y = trait, color=curve.id, group=curve.id)+
 #write out
 write.csv(dat.sub, "Delletal2013_forfitting.csv")
 
+# #---
+# #PHAGE, https://www.journals.uchicago.edu/doi/full/10.1086/597224
+# 
+# # a -height
+# # m- location of optimum
+# # b- width
+# 
+# phage.growth= function(temp, a,b,m,P=1) {a +(1/b)*P*(1/b*(temp-m))}
+# 
+# setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/phage/")
+# phage= read.csv('TMV_output_Knies2009.csv')
+# 
+# ggplot(phage) + aes(x=1:60, y = phage.growth(1:60,a,b,m), color=Genotype, group=Genotype)+geom_line()
+# 
+# for(ind in 1:nrow(phage)){
+# if(ind==1) plot(1:60, phage.growth(1:60, phage[ind, "a"], phage[ind, "b"], phage[ind, "m"]), type="l")
+#   points(1:60, phage.growth(1:60, phage[ind, "a"], phage[ind, "b"], phage[ind, "m"]), type="l")
+# }
+# #FITS ARE SYMETRIC
 
 
