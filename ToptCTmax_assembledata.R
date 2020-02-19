@@ -94,22 +94,6 @@ tpc2$taxa="insects"
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
 #---
-
-#LIZARD Tp
-#Clusella-trullas et al., https://www.journals.uchicago.edu/doi/abs/10.1086/660021
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
-liz2= read.csv('SpeciesPerformanceData_SCT.csv')
-liz2$family=NA
-
-tpc2= liz2[,c("Species","genus","family","CTmin","CTmax","Tp")]
-tpc2$habitat="terrestrial"
-tpc2$lat= NA
-tpc2$lon= NA
-tpc2$taxa="lizards_Tp"
-#bind
-tpc= rbind(tpc, setNames(tpc2, names(tpc)))
-
-#---
 #FISH: https://core.ac.uk/download/pdf/51490125.pdf, https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/1365-2435.12618
 #CHECK DATA
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
@@ -122,21 +106,6 @@ tpc2$habitat="aquatic"
 tpc2$lat= NA
 tpc2$lon= NA
 tpc2$taxa="fish"
-#bind
-tpc= rbind(tpc, setNames(tpc2, names(tpc)))
-
-#---
-#DROSOPHILA: https://royalsocietypublishing.org/doi/full/10.1098/rstb.2018.0548
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
-fly= read.csv('DrosophilaTopt_Maclean.csv')
-fly$family=NA
-fly$Genus=NA
-
-tpc2= fly[,c("Species","Genus","family","CTMin","CTMax","Fitness.Topt")] #also EgglayingTopt
-tpc2$habitat="terrestrial"
-tpc2= cbind(tpc2, fly[,c("latitude")])
-tpc2$lon= NA
-tpc2$taxa="flies"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
@@ -160,55 +129,55 @@ tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 #------------------
 #Add Rezende data 
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Rezende")
-rez= read.csv("RezendeAppendixC.csv")
+#photosynthesis
+rez.photo= read.csv("RezPhotoFits.csv")
+#check distance between estimates and measurements
+plot(rez.photo$tmax-rez.photo$maxt.list, rez.photo$tmax)
+abline(v=17)
+plot(-rez.photo$tmin+rez.photo$mint.list, rez.photo$tmin)
+abline(v=17)
 
-#library(rTPC), rezende_2019
-
-tpc.rezende<- function (temp, q10, C, Tth, d) 
-{ temp=as.numeric(temp)
-  p= rep(NA, length(temp))
-  inds= which(temp<=Tth)
-  p[inds]<- C*2.71828^(temp[inds]*log(q10)/10)
-  inds= which(temp>Tth)
-  p[inds]<- C*2.71828^(temp[inds]*log(q10)/10)*(1-d*(temp[inds]-Tth)^2)
-  p[p<0]<-0
-return(p)
-}
-
-ctmin.rezende<- function(tpc){
-  tpc=as.numeric(tpc)
-  temp= seq(tpc[5]-50,tpc[5],0.2)
-  ps=tpc.rezende(temp, q10=tpc[1], C=tpc[2], Tth=tpc[3], d=tpc[4])
-  temp[which.max(ps<0.2*tpc[6])]
-}
-
-ctmax.rezende<- function(tpc){
-  tpc=as.numeric(tpc)
-  temp= seq(tpc[5],tpc[5]+20,0.2)
-  ps=tpc.rezende(temp, q10=tpc[1], C=tpc[2], Tth=tpc[3], d=tpc[4])
-  temp[which.max(ps<0.2*tpc[6])]
-}
-
-CTmax= apply(rez[,c("Q10","C","Tth","d","Topt","Pmax")], FUN=ctmax.rezende, MARGIN=1)
-plot(CTmax, rez$Ctmax)
-abline(a=0, b=1)
-
-ind=10
-plot(1:70, tpc.rezende(1:70,q10=rez[ind,"Q10"], C=rez[ind,"C"], Tth=rez[ind,"Tth"], d=rez[ind,"d"]), type="l")
-points(ctmax.rezende(tpc=rez[ind,c("Q10","C","Tth","d","Topt","Pmax")]),0)
-points(rez[ind,"Ctmax"],0,pch="*")
-
-rez$Ctmin= apply(rez[,c("Q10","C","Tth","d","Topt","Pmax")], FUN=ctmin.rezende, MARGIN=1)
-rez$Genus=NA
-rez$family=NA
-rez$lat=NA
+rez.photo$genus= NA
+rez.photo$family= NA
 
 #add data
-tpc2= rez[,c("Species","Genus","family","Ctmin","Ctmax","Topt")] 
+tpc2= rez.photo[,c("species","genus","family","tmin","tmax","topt.list")] 
+#cut tpcs with >17 degrees between last temperature and CTmin or CTmax estimate
+tpc2= tpc2[-which((rez.photo$tmax-rez.photo$maxt.list)>17), ]
+tpc2= tpc2[-which((-rez.photo$tmin+rez.photo$mint.list)>17), ]
+
 tpc2$habitat="terrestrial"
 tpc2$lat=NA
 tpc2$lon= NA
-tpc2$taxa= rez$Type
+tpc2$taxa= "photosyn"
+#bind
+tpc= rbind(tpc, setNames(tpc2, names(tpc)))
+
+#----
+#insect fitness
+rez.fit= read.csv("RezFitFits.csv")
+#check distance between estimates and measurements
+plot(rez.fit$tmax-rez.fit$maxt.list, rez.fit$tmax)
+abline(v=8)
+plot(-rez.fit$tmin+rez.fit$mint.list, rez.fit$tmin)
+abline(v=12)
+
+rez.fit$genus= NA
+rez.fit$family= NA
+
+#add data
+tpc2= rez.fit[,c("species","genus","family","tmin","tmax","topt.list")]
+#cut tpcs with >17 degrees between last temperature and CTmin or CTmax estimate
+tpc2= tpc2[-which((rez.fit$tmax-rez.fit$maxt.list)>8), ]
+tpc2= tpc2[-which((-rez.fit$tmin+rez.fit$mint.list)>12), ]
+
+tpc2$habitat="terrestrial"
+tpc2$lat=NA
+tpc2$lon= NA
+tpc2$taxa= "insect fit"
+#cut outliers
+tpc2=tpc2[-c(18,33),]
+
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
@@ -217,7 +186,40 @@ tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
 write.csv(tpc, "tpcs.csv")
 
-#=====================
+#===============================
+#Datasets not included
+
+#DROSOPHILA: https://royalsocietypublishing.org/doi/full/10.1098/rstb.2018.0548
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
+fly= read.csv('DrosophilaTopt_Maclean.csv')
+fly$family=NA
+fly$Genus=NA
+
+tpc2= fly[,c("Species","Genus","family","CTMin","CTMax","Fitness.Topt")] #also EgglayingTopt
+tpc2$habitat="terrestrial"
+tpc2= cbind(tpc2, fly[,c("latitude")])
+tpc2$lon= NA
+tpc2$taxa="flies"
+#bind
+tpc= rbind(tpc, setNames(tpc2, names(tpc)))
+
+#---
+
+#LIZARD Tp
+#Clusella-trullas et al., https://www.journals.uchicago.edu/doi/abs/10.1086/660021
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
+liz2= read.csv('SpeciesPerformanceData_SCT.csv')
+liz2$family=NA
+
+tpc2= liz2[,c("Species","genus","family","CTmin","CTmax","Tp")]
+tpc2$habitat="terrestrial"
+tpc2$lat= NA
+tpc2$lon= NA
+tpc2$taxa="lizards_Tp"
+#bind
+tpc= rbind(tpc, setNames(tpc2, names(tpc)))
+
+#---------------------------------
 #DELL ET AL.: https://www.pnas.org/content/pnas/suppl/2011/05/19/1015178108.DCSupplemental/sapp.pdf
 #ROHR et al.- Estimates Topt from Dell data but doesn't include CTmax, Can recaluculate or ask Jason
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
@@ -307,11 +309,7 @@ write.csv(dat.sub, "Delletal2013_forfitting.csv")
 # }
 # #FITS ARE SYMETRIC
 
-#=========================
-#Add Rezende data 
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Rezende")
-rez.photo= read.csv("RezendeTableA1.csv")
-rez.fit= read.csv("RezendeTableA3.csv")
+
 
 
 

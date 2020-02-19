@@ -57,10 +57,10 @@ tpc[which(tpc$taxa %in% c("Charr","Trout","Salmon","Bonefish")),"taxa"]<-"fish"
 tpc[which(tpc$taxa=="Australian lizards"),"taxa"]<-"lizards"
 
 #taxas= c("lizards","lizards_Tp","insects","flies","plankton","Sea urchins", "Australian lizards", "Charr","Trout","Salmon") #"Bonefish"
-taxas= c("flies","insects","lizards","lizards_Tp","plankton","fish")
+taxas= c("insects","lizards","plankton","fish","photosyn","insect fit")
 
 pdf("Fig1a_TPCs.pdf", height = 12, width = 4)
-par(mfrow=c(6,1), cex=1.1, lwd=1, mar=c(3,3,0,0), mgp=c(1.3, 0.5, 0), oma=c(0,2,0,0), bty="l", cex.lab=1.2)
+par(mfrow=c(length(taxas),1), cex=1.1, lwd=1, mar=c(3,3,0,0), mgp=c(1.3, 0.5, 0), oma=c(0,2,0,0), bty="l", cex.lab=1.2)
 
 for(taxa in 1:length(taxas) ){
 tpc.sub= tpc[which(tpc$taxa==taxas[taxa]),]
@@ -79,7 +79,7 @@ dev.off()
 #-----------
 #PLOT RELATIONSHIPS
 
-tpc$taxa= factor( tpc$taxa, levels=c("flies","insects","lizards","lizards_Tp","plankton","fish"))
+tpc$taxa= factor( tpc$taxa, levels=c("insects","lizards","plankton","fish","photosyn","insect fit"))
 
 #Fig 1b: warm cool and warm sections of tpcs
 #plot segments
@@ -165,7 +165,7 @@ pdf("Fig3_PCAs.pdf", height = 10, width = 10)
 par(mfrow=c(6,4), cex=1.1, lwd=1, mar=c(3,3,1,0), mgp=c(1.3, 0.5, 0), oma=c(0,0,0,0), bty="l", cex.lab=1.2)
 #taxas= c("flies","insects","lizards","lizards_Tp","plankton")
 
-for(taxa in 1:6){
+for(taxa in 1:length(taxas)){
 
   tpc.sub= tpc[which(tpc$taxa==taxas[taxa]),]
   #add a column of color values based on assymetry values
