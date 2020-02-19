@@ -155,8 +155,8 @@ for(spec.k in 1:nrow(tol.h)){
       group_by(doy) %>%
       summarise(min = min(temp), max= max(temp))
     ncep.cmm= as.matrix(ncep.cmm)
-    tmax.k= as.numeric( ncep.cmm[,3] )
-    tmin.k= as.numeric( ncep.cmm[,2] )
+    tmax.k= as.numeric( ncep.cmm[,"max"] )
+    tmin.k= as.numeric( ncep.cmm[,"min"] )
     
     #daily safety margins
     ts[year.k,spec.k,,1]= tol.h[spec.k,'CTmax']-tmax.k
@@ -326,8 +326,11 @@ tol.ts.ctmax= subset(tol.ts, tol.ts$taxa %in%c("insects","lizards","plankton"))
 
 plot.TSM_CTmax= ggplot(tol.ts.ctmax, aes(x=abs(lat),y=TSM10p) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)+ylab("TSM (CTmax-Tmax)")
 
+#add assymetry
+tol.h$asym2= (2*tol.h$Topt-tol.h$CTmax - tol.h$CTmin)/(tol.h$CTmax-tol.h$CTmin )
+
 tol.ts= cbind(tol.h, tsm.yrs[,1:7,2])
-colnames(tol.ts)[12:18]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
+colnames(tol.ts)[13:19]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
 #subset taxa
 tol.ts.topt= subset(tol.ts, tol.ts$taxa %in%c("insects","lizards","plankton"))
 
@@ -335,7 +338,7 @@ plot.TSM_Topt= ggplot(tol.ts.topt, aes(x=abs(lat),y=TSM10p) ) +geom_point()+face
 
 #performance detriment
 tol.ts= cbind(tol.h, tsm.yrs[,8:12,3])
-colnames(tol.ts)[12:16]=c('dTopt','sumI','countI','meanI','Perf')
+colnames(tol.ts)[13:17]=c('dTopt','sumI','countI','meanI','Perf')
 #subset taxa
 tol.ts.pd= subset(tol.ts, tol.ts$taxa %in%c("insects","lizards","plankton"))
 
@@ -356,5 +359,38 @@ plot.TSM= plot.TSM + geom_smooth(data=tol.ts.pd, aes(x=abs(lat),y=log(-Perf)), m
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/out/")
 pdf("Figs_ThermalLat.pdf", height = 6, width = 10)
 plot.TSM
+dev.off()
+
+#===============
+#more plots
+#performance relationships
+ggplot(tol.ts.pd, aes(x=abs(lat),y=log(-Perf)) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)+ylab("Performance detriment")
+ggplot(tol.ts.pd, aes(x=Topt,y=log(-Perf)) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='lm',se=TRUE)+ylab("Performance detriment")
+ggplot(tol.ts.pd, aes(x=asym2,y=log(-Perf)) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='lm',se=TRUE)+ylab("Performance detriment")
+ggplot(tol.ts.pd, aes(x=CTmax-Topt,y=log(-Perf)) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)+ylab("Performance detriment")
+#best relationship with Topt?
+
+#lat relationships
+ggplot(tol.ts.pd, aes(x=abs(lat),y=Topt) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='lm',se=TRUE)
+ggplot(tol.ts.pd, aes(x=abs(lat),y=CTmax-Topt) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='lm',se=TRUE)
+ggplot(tol.ts.pd, aes(x=abs(lat),y=asym2) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='lm',se=TRUE)
+
+#plot for plankton
+tol.ts.pd1= subset(tol.ts.pd, tol.ts.pd$taxa=="plankton")
+tol.ts.ctmax1= subset(tol.ts.ctmax, tol.ts.ctmax$taxa=="plankton")
+
+#lat vs Topt
+plot1= ggplot(tol.ts.pd1, aes(x=abs(lat),y=Topt) ) +geom_point() +geom_smooth(method='loess',se=TRUE)
+#TSM vs lat
+plot2= ggplot(tol.ts.ctmax1, aes(x=abs(lat),y=TSM10p) ) +geom_point() +geom_smooth(method='loess',se=TRUE)
+#Perf detriments vs Topt
+plot3= ggplot(tol.ts.pd1, aes(x=abs(lat),y=log(-Perf)) ) +geom_point() +geom_smooth(method='loess',se=TRUE)+ylab("Performance detriment")
+plot4= ggplot(tol.ts.pd1, aes(x=Topt,y=log(-Perf)) ) +geom_point() +geom_smooth(method='loess',se=TRUE)+ylab("Performance detriment")
+
+#Plot out
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/out/")
+pdf("Figs_planktonTSM.pdf", height = 8, width = 8)
+#combine plots
+plot_grid(plot1, plot2, plot3, plot4, labels = c('A', 'B','C','D'), label_size = 12, ncol=2)
 dev.off()
 

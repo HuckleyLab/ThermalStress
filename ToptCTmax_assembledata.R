@@ -307,4 +307,13 @@ write.csv(dat.sub, "Delletal2013_forfitting.csv")
 # }
 # #FITS ARE SYMETRIC
 
+#=========================
+#Add Rezende data 
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Rezende")
+rez.photo= read.csv("RezendeTableA1.csv")
+rez.fit= read.csv("RezendeTableA3.csv")
+
+
+
+
 
