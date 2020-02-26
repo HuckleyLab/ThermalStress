@@ -57,7 +57,7 @@ tpc[which(tpc$taxa %in% c("Charr","Trout","Salmon","Bonefish")),"taxa"]<-"fish"
 tpc[which(tpc$taxa=="Australian lizards"),"taxa"]<-"lizards"
 
 #taxas= c("lizards","lizards_Tp","insects","flies","plankton","Sea urchins", "Australian lizards", "Charr","Trout","Salmon") #"Bonefish"
-taxas= c("insects","lizards","plankton","fish","photosyn","insect fit")
+taxas= c("insects","lizards","plankton","fish","photosyn","ants")
 
 pdf("Fig1a_TPCs.pdf", height = 12, width = 4)
 par(mfrow=c(length(taxas),1), cex=1.1, lwd=1, mar=c(3,3,0,0), mgp=c(1.3, 0.5, 0), oma=c(0,2,0,0), bty="l", cex.lab=1.2)
@@ -68,7 +68,7 @@ tpc.sub= tpc[which(tpc$taxa==taxas[taxa]),]
 tpc.sub$col<-viridis(1)
 try(tpc.sub$col <- viridis(20)[as.numeric(cut(tpc.sub$asym,breaks = quantile(tpc.sub$asym, probs = seq(0, 1, 0.05)) ))])
 
-if(taxa %in% c(1,2,4,5)) plot(temps, tpc.plot(temps, Topt=tpc.sub[1,"Topt"] , CTmin=tpc.sub[1,"CTmin"], CTmax=tpc.sub[1,"CTmax"]), type="l", xlab="",ylab="", main="") #taxas[taxa]
+if(taxa %in% c(1,2,4,5,7)) plot(temps, tpc.plot(temps, Topt=tpc.sub[1,"Topt"] , CTmin=tpc.sub[1,"CTmin"], CTmax=tpc.sub[1,"CTmax"]), type="l", xlab="",ylab="", main="") #taxas[taxa]
 if(taxa==3) plot(temps, tpc.plot(temps, Topt=tpc.sub[1,"Topt"] , CTmin=tpc.sub[1,"CTmin"], CTmax=tpc.sub[1,"CTmax"]), type="l", xlab="",ylab="performance", main="")
 if(taxa==6) plot(temps, tpc.plot(temps, Topt=tpc.sub[1,"Topt"] , CTmin=tpc.sub[1,"CTmin"], CTmax=tpc.sub[1,"CTmax"]), type="l", xlab="temperature (C)",ylab="", main="")
 
@@ -79,7 +79,7 @@ dev.off()
 #-----------
 #PLOT RELATIONSHIPS
 
-tpc$taxa= factor( tpc$taxa, levels=c("insects","lizards","plankton","fish","photosyn","insect fit"))
+tpc$taxa= factor( tpc$taxa, levels=c("insects","lizards","plankton","fish","photosyn","ants"))
 
 #Fig 1b: warm cool and warm sections of tpcs
 #plot segments

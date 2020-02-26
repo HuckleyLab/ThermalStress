@@ -192,6 +192,56 @@ rez.fit.fits= read.csv("RezFitFits.csv")
 rez.fit.fits$species= rez.fit[match(rez.fit.fits$curve.id.list, rez.fit$ID),"Species"]
 write.csv(rez.fit.fits,'RezFitFits.csv')
 
+#==========================
+#Combine insect fitness data
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Rezende")
+
+rez= read.csv("RezFitFits.csv")
+
+#add reference
+rez.a3= read.csv("RezendeTableA3.csv")
+match1= match(rez$curve.id.list, rez.a3$ID)
+rez$reference= rez.a3$Reference[match1]
+
+#cut tpcs with >17 degrees between last temperature and CTmin or CTmax estimate
+rez= rez[-which((rez$tmax-rez$maxt.list)>8), ]
+rez= rez[-which((-rez$tmin+rez$mint.list)>12), ]
+
+#cut outliers
+rez=rez[-c(18,33),]
+
+#read Deutsch et al.
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/DeutschData/")
+ins= read.csv('InsectFit_Deutsch.csv')
+ins$spgen=paste(ins$gen, ins$sp, sep=" ")
+
+#find duplicate species
+match1= match(ins$spgen, rez$species)
+matched= which(!is.na(match1))
+
+ins[!is.na(match1),"Reference"]
+rez[na.omit(match1),"reference"]
+
+ins[matched[c(3,4)],]
+rez[na.omit(match1)[c(3,4)],]
+
+#add rez data
+rez.add= na.omit(match1)
+rez.drop= rez.add[-c(3,4)]
+rez.add= rez[-rez.drop,]
+rez.add$Lat=NA
+rez.add$Long=NA
+rez.add$Order=NA
+rez.add$Location=NA
+rez.add= rez.add[,c("Lat","Long","Order","species","Location","reference","tmin","topt.list","tmax")]
+
+#combine
+ins.add= ins[,c("Lat","Long","Order","spgen","Location","Reference","Ctmin","Topt","CTmax")]
+ins.comb= rbind(ins.add, setNames(rez.add, names(ins.add)))
+
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/DeutschData/")
+write.csv(ins.comb, 'InsectFit_DeutschRezende.csv')
+
 #=======================
 #Add Rezende data 
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Rezende")

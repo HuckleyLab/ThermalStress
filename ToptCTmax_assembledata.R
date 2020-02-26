@@ -81,19 +81,6 @@ tpc2$taxa="lizards"
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
 #---
-#INSECTS- Deutsch et al.
-#Load Deutsch Data
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/DeutschData/")
-ins= read.csv('Deutschetel.2008Insect.TPCdata.csv')
-
-tpc2= ins[,c("Species","genus","Order","Ctmin","CTmax","Topt")]
-tpc2$habitat="terrestrial"
-tpc2= cbind(tpc2, ins[,c("Lat","Long")])
-tpc2$taxa="insects"
-#bind
-tpc= rbind(tpc, setNames(tpc2, names(tpc)))
-
-#---
 #FISH: https://core.ac.uk/download/pdf/51490125.pdf, https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/1365-2435.12618
 #CHECK DATA
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
@@ -106,6 +93,25 @@ tpc2$habitat="aquatic"
 tpc2$lat= NA
 tpc2$lon= NA
 tpc2$taxa="fish"
+#bind
+tpc= rbind(tpc, setNames(tpc2, names(tpc)))
+
+#---
+#ANTS- Fengyi
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Ants_Fengyi/")
+
+##By Genus
+#ant= read.csv('AntSpecies_Fengyi.csv', na.strings ='-9999')
+##By species
+ant= read.csv('AntGenera_Fengyi.csv', na.strings ='-9999')
+ant$Species=NA
+ant$Family=NA
+
+tpc2= ant[,c("Species","Genus","Family","CTmin","CTmax","Topt")]
+tpc2$habitat="terrestrial"
+tpc2$Lat= NA
+tpc2$Long=NA
+tpc2$taxa="ants"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
@@ -155,28 +161,18 @@ tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
 #----
 #insect fitness
-rez.fit= read.csv("RezFitFits.csv")
-#check distance between estimates and measurements
-plot(rez.fit$tmax-rez.fit$maxt.list, rez.fit$tmax)
-abline(v=8)
-plot(-rez.fit$tmin+rez.fit$mint.list, rez.fit$tmin)
-abline(v=12)
 
-rez.fit$genus= NA
-rez.fit$family= NA
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/DeutschData/")
+ins= read.csv('InsectFit_DeutschRezende.csv')
+ins$family=NA
 
 #add data
-tpc2= rez.fit[,c("species","genus","family","tmin","tmax","topt.list")]
-#cut tpcs with >17 degrees between last temperature and CTmin or CTmax estimate
-tpc2= tpc2[-which((rez.fit$tmax-rez.fit$maxt.list)>8), ]
-tpc2= tpc2[-which((-rez.fit$tmin+rez.fit$mint.list)>12), ]
+tpc2= ins[,c("species","genus","family","Ctmin","CTmax","Topt")] 
 
 tpc2$habitat="terrestrial"
-tpc2$lat=NA
-tpc2$lon= NA
-tpc2$taxa= "insect fit"
-#cut outliers
-tpc2=tpc2[-c(18,33),]
+tpc2$lat=ins$Lat
+tpc2$lon= ins$Long
+tpc2$taxa= "insects"
 
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
