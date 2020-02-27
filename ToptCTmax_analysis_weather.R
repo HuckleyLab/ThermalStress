@@ -130,7 +130,7 @@ tol.h= subset(tol.h, !is.na(tol.h$CTmin) & !is.na(tol.h$Topt) & !is.na(tol.h$CTm
 #===================================================
 #THERMAL STRESS ESTIMATES
 
-ts= array(NA, dim= c(length(years), nrow(tol.h), 365,5) )
+ts= array(NA, dim= c(length(years), nrow(tol.h), 365,6) )
 
 #calculate degree days above Topt
 for(spec.k in 1:nrow(tol.h)){
@@ -171,6 +171,11 @@ for(spec.k in 1:nrow(tol.h)){
     slope= 1/(-tol.h[spec.k,'CTmax']+tol.h[spec.k,'Topt'])
     if(length(inds)>0) ts[year.k,spec.k,inds,5]= (tmax.k[inds]- tol.h[spec.k,'Topt'])*slope  
     
+    #number of days with >= 50% loss of performance
+    t50= tol.h[spec.k,'Topt']+(tol.h[spec.k,'CTmax']-tol.h[spec.k,'Topt'])/2
+    inds= which(tmax.k > t50)
+    ts[year.k,spec.k,inds,6]= 1
+    
     #thermodynamic scale
     Topt.tt= thermo.temp(tol.h[spec.k,'topt'])
     tmax.k.tt= thermo.temp(tmax.k)
@@ -185,7 +190,7 @@ for(spec.k in 1:nrow(tol.h)){
 
 #------------
 #TSM
-tsm<-  array(NA, dim= c(length(years),nrow(tol.h),12,4) )
+tsm<-  array(NA, dim= c(length(years),nrow(tol.h),13,4) )
 
 #reorder ts
 ts <- aperm(ts, c(2,1,3,4))
@@ -242,6 +247,15 @@ for(year.k in 1:length(years)){
   tsm[year.k,which(is.infinite(tsm[,year.k,11,4])),11,4]=NA
   tsm[year.k,which(is.infinite(tsm[,year.k,12,3])),12,3]=NA
 } #end year loop
+
+#number of days with 50% loss of performance
+d1= apply(ts[,,,6], MARGIN=c(1,2), FUN=sum, na.rm=TRUE)
+#average across years
+days_p50= rowMeans(d1)
+
+dat_p50= cbind(tol.h,days_p50)
+
+plot.p50= ggplot(dat_p50, aes(x=abs(lat),y=days_p50) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
 
 #----------------------
 #AGGREGATE ACROSS YEARS
@@ -387,10 +401,21 @@ plot2= ggplot(tol.ts.ctmax1, aes(x=abs(lat),y=TSM10p) ) +geom_point() +geom_smoo
 plot3= ggplot(tol.ts.pd1, aes(x=abs(lat),y=log(-Perf)) ) +geom_point() +geom_smooth(method='loess',se=TRUE)+ylab("Performance detriment")
 plot4= ggplot(tol.ts.pd1, aes(x=Topt,y=log(-Perf)) ) +geom_point() +geom_smooth(method='loess',se=TRUE)+ylab("Performance detriment")
 
+#number of days with 50% loss of performance
+plot5= ggplot(dat_p50[dat_p50$taxa=="plankton" & dat_p50$days_p50>0,], aes(x=abs(lat),y=days_p50/365) ) +geom_point()+geom_smooth(method='loess',se=TRUE)+ylab("days with 50% p detriment") +ylim(0,1)
+plot6= ggplot(dat_p50[dat_p50$taxa=="plankton" & dat_p50$days_p50>0,], aes(x=Topt,y=days_p50/365) ) +geom_point()+geom_smooth(method='loess',se=TRUE)+ylab("days with 50% p detriment")+ylim(0,1)
+
 #Plot out
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/out/")
 pdf("Figs_planktonTSM.pdf", height = 8, width = 8)
 #combine plots
-plot_grid(plot1, plot2, plot3, plot4, labels = c('A', 'B','C','D'), label_size = 12, ncol=2)
+plot_grid(plot1, plot2, plot3, plot4, plot5, plot6, labels = c('A', 'B','C','D','E','F'), label_size = 12, ncol=2)
 dev.off()
+
+#-----
+#comparison plots
+tol2= cbind(tol.h, tsm.yrs[,1:7,1],days_p50)
+colnames(tol2)[12:18]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
+
+ggplot(tol2, aes(x=TSM10p,y=days_p50/365, color=Topt)) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='lm',se=TRUE)+xlim(-15,10)+ylim(0,1)+scale_color_viridis()
 

@@ -178,6 +178,13 @@ tpc2$taxa= "insects"
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
 #--------
+#drop sea urchin data
+tpc= subset(tpc, tpc$taxa!="Sea urchins" & tpc$taxa!="Isopod" & tpc$taxa!="Bonefish")
+
+#combine fish and lizards
+tpc[which(tpc$taxa %in% c("Charr","Trout","Salmon","Bonefish")),"taxa"]<-"fish"
+tpc[which(tpc$taxa=="Australian lizards"),"taxa"]<-"lizards"
+
 #Write out
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
 write.csv(tpc, "tpcs.csv")

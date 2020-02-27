@@ -1,14 +1,17 @@
 library(ggplot2)
 library(cowplot)
 library(dplyr)
+library(reshape2)
+library(tidyr)
+library(cowplot)
 
 #load data
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
 tpc=read.csv("tpcs.csv")
 #drop data without all metrics
 tpc= subset(tpc, !is.na(tpc$CTmin) & !is.na(tpc$Topt) & !is.na(tpc$CTmax) )
-#drop sea urchin data
-tpc= subset(tpc, tpc$taxa!="Sea urchins" & tpc$taxa!="Isopod" & tpc$taxa!="Bonefish")
+
+taxas= c("insects","lizards","plankton","fish","photosyn","ants")
 
 #setwd for figures
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/figures/")
@@ -49,37 +52,40 @@ tpc.plot= function(T,Topt,CTmin, CTmax){
   return(F)
 }
 
+tpc.mat= function(tpc.dat){
+  T=-5:50
+  Topt= tpc.dat[1]
+  CTmin= tpc.dat[2]
+  CTmax= tpc.dat[3]
+  F=T
+  F[]=NA
+  sigma= (Topt-CTmin)/4
+  F[T<=Topt & !is.na(T)]= exp(-((T[T<=Topt & !is.na(T)]-Topt)/(2*sigma))^2) 
+  F[T>Topt & !is.na(T)]= 1- ((T[T>Topt & !is.na(T)]-Topt)/(Topt-CTmax))^2
+  #set negetative to zero
+  F[F<0]<-0
+  
+  return(F)
+}
+
 library(viridis)
 temps=-5:50
 
-#combine fish and lizards
-tpc[which(tpc$taxa %in% c("Charr","Trout","Salmon","Bonefish")),"taxa"]<-"fish"
-tpc[which(tpc$taxa=="Australian lizards"),"taxa"]<-"lizards"
+#ggplot
+out=t(apply(tpc[,c("Topt","CTmin","CTmax")], MARGIN=1, FUN=tpc.mat))
+colnames(out)= temps
+tpc.pred= cbind(tpc, out)
+#to long format
+tpc.l<- tpc.pred %>%
+  gather("temperature", "performance", 15:ncol(tpc.pred))
+tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
 
-#taxas= c("lizards","lizards_Tp","insects","flies","plankton","Sea urchins", "Australian lizards", "Charr","Trout","Salmon") #"Bonefish"
-taxas= c("insects","lizards","plankton","fish","photosyn","ants")
-
-pdf("Fig1a_TPCs.pdf", height = 12, width = 4)
-par(mfrow=c(length(taxas),1), cex=1.1, lwd=1, mar=c(3,3,0,0), mgp=c(1.3, 0.5, 0), oma=c(0,2,0,0), bty="l", cex.lab=1.2)
-
-for(taxa in 1:length(taxas) ){
-tpc.sub= tpc[which(tpc$taxa==taxas[taxa]),]
-#add a column of color values based on assymetry values
-tpc.sub$col<-viridis(1)
-try(tpc.sub$col <- viridis(20)[as.numeric(cut(tpc.sub$asym,breaks = quantile(tpc.sub$asym, probs = seq(0, 1, 0.05)) ))])
-
-if(taxa %in% c(1,2,4,5,7)) plot(temps, tpc.plot(temps, Topt=tpc.sub[1,"Topt"] , CTmin=tpc.sub[1,"CTmin"], CTmax=tpc.sub[1,"CTmax"]), type="l", xlab="",ylab="", main="") #taxas[taxa]
-if(taxa==3) plot(temps, tpc.plot(temps, Topt=tpc.sub[1,"Topt"] , CTmin=tpc.sub[1,"CTmin"], CTmax=tpc.sub[1,"CTmax"]), type="l", xlab="",ylab="performance", main="")
-if(taxa==6) plot(temps, tpc.plot(temps, Topt=tpc.sub[1,"Topt"] , CTmin=tpc.sub[1,"CTmin"], CTmax=tpc.sub[1,"CTmax"]), type="l", xlab="temperature (C)",ylab="", main="")
-
-for(r in 2:nrow(tpc.sub)) points(temps, tpc.plot(temps, Topt=tpc.sub[r,"Topt"] , CTmin=tpc.sub[r,"CTmin"], CTmax=tpc.sub[r,"CTmax"]), type="l", col=tpc.sub[r,"col"]) 
-}
-dev.off()
+#plot
+fig1a= ggplot(tpc.l)+aes(x=temperature, y = performance, color=log(asym), group=X)+facet_grid(taxa~1)+geom_line()+
+  theme_bw()+theme(legend.position="bottom")+scale_color_viridis()
 
 #-----------
-#PLOT RELATIONSHIPS
-
-tpc$taxa= factor( tpc$taxa, levels=c("insects","lizards","plankton","fish","photosyn","ants"))
+#plot relationships
 
 #Fig 1b: warm cool and warm sections of tpcs
 #plot segments
@@ -91,7 +97,8 @@ tpc.warm$section<- "warm"
 tpc.warm$breadth<- tpc.cold$CTmax-tpc.cold$Topt
 tpc2= rbind(tpc.cold, tpc.warm)
 
-fig1b= ggplot(tpc2) + aes(x=Topt, y = breadth, color=habitat, group=taxa)+geom_point()+facet_grid(taxa~section)+theme(legend.position="bottom")+ geom_smooth(method="lm")
+fig1b= ggplot(tpc2) + aes(x=Topt, y = breadth, color=log(asym), group=taxa)+geom_point()+facet_grid(taxa~section)+ geom_smooth(method="lm")+
+  theme_bw()+theme(legend.position="bottom")+scale_color_viridis()
 
 #Shuffling 
 #Need to bootstrap
@@ -107,16 +114,16 @@ tpc2r= rbind(tpc2.cold, tpc2.warm)
 #add random to initial plot
 fig1b= fig1b + geom_smooth(data=tpc2r,aes(x=Topt, y = breadth, group=taxa), method="lm", lty="dashed")
 
-pdf("Fig1b_TPCbreadth.pdf", height = 10, width = 6)
-fig1b
+pdf("Fig1.pdf", height = 10, width = 8)
+plot_grid(fig1a, fig1b, labels = c('A', 'B'), rel_widths = c(1.3, 2))
 dev.off()
 
 #-----------------------------------
 #assymetry vs Topt
-fig2a= ggplot(tpc) + aes(x=Topt, y = asym2, color=habitat, group=taxa)+geom_point()+ylim(0,1)+ylab("assymetry")+facet_grid(taxa~1)+theme(legend.position="bottom")+geom_smooth(method="lm")
+fig2a= ggplot(tpc) + aes(x=Topt, y = asym2, group=taxa)+geom_point()+ylim(0,1)+ylab("assymetry")+facet_grid(taxa~1)+theme_bw()+theme(legend.position="bottom")+geom_smooth(method="lm")
 
 #TPC vs assymetry
-fig2b= ggplot(tpc) + aes(x=asym2, y = CTmax.Topt.breadth, color=habitat, group=taxa)+geom_point()+xlim(0,1)+xlab("assymetry")+ylab("warm side breadth (CTmax-Topt)")+facet_grid(taxa~1)+theme(legend.position="bottom")+geom_smooth(method="lm")
+fig2b= ggplot(tpc) + aes(x=asym2, y = CTmax.Topt.breadth, group=taxa)+geom_point()+xlim(0,1)+xlab("assymetry")+ylab("warm side breadth (CTmax-Topt)")+facet_grid(taxa~1)+theme_bw()+theme(legend.position="bottom")+geom_smooth(method="lm")
 #+geom_smooth(method="lm", se=FALSE)
 
 #Shuffling 
@@ -131,11 +138,11 @@ tpc2$CTmax.Topt.breadth= tpc2$CTmax - tpc$Topt
 #add random to initial plot
 #assymetry vs Topt
 #fig2a= ggplot(tpc2) + aes(x=Topt, y = asym2, color=habitat, group=taxa)+geom_point()+ylim(0,1)+ylab("assymetry")+facet_grid(taxa~1)+theme(legend.position="bottom")+geom_smooth(method="lm")
-fig2a= fig2a + geom_smooth(data=tpc2,aes(x=Topt, y = asym2, color=habitat, group=taxa), method="lm", lty="dashed")
+fig2a= fig2a + geom_smooth(data=tpc2,aes(x=Topt, y = asym2, group=taxa), method="lm", lty="dashed")
 
 #TPC vs assymetry
 #fig2b= ggplot(tpc2) + aes(x=asym2, y = CTmax.Topt.breadth, color=habitat, group=taxa)+geom_point()+xlim(0,1)+xlab("assymetry")+ylab("warm side breadth (CTmax-Topt)")+facet_grid(taxa~1)+theme(legend.position="bottom")+geom_smooth(method="lm")
-fig2b= fig2b + geom_smooth(data=tpc2,aes(x=asym2, y = CTmax.Topt.breadth, color=habitat, group=taxa), method="lm", lty="dashed")
+fig2b= fig2b + geom_smooth(data=tpc2,aes(x=asym2, y = CTmax.Topt.breadth, group=taxa), method="lm", lty="dashed")
 
 pdf("Fig2_Assym.pdf", height = 10, width = 8)
 plot_grid(fig2a, fig2b, nrow=1)
@@ -156,77 +163,113 @@ plot_grid(fig2at, fig2bt, nrow=1)
 dev.off()
 
 #=================
-#JK suggestions:
 #Null analysis of asymmetry relationship based on TPC constraints
 
-#PCA analysis as in Knies et al. 
-pdf("Fig3_PCAs.pdf", height = 10, width = 10)
-
-par(mfrow=c(6,4), cex=1.1, lwd=1, mar=c(3,3,1,0), mgp=c(1.3, 0.5, 0), oma=c(0,0,0,0), bty="l", cex.lab=1.2)
-#taxas= c("flies","insects","lizards","lizards_Tp","plankton")
+ps= matrix(NA, nrow=nrow(tpc), ncol=10)
 
 for(taxa in 1:length(taxas)){
-
-  tpc.sub= tpc[which(tpc$taxa==taxas[taxa]),]
+  
+  inds= which(tpc$taxa==taxas[taxa])
+  tpc.sub= tpc[inds,]
   #add a column of color values based on assymetry values
-   
-pc=princomp(tpc.sub[,c("CTmin","Topt","CTmax")])
-tpc.sub= cbind(tpc.sub, pc$scores)
+  
+  pc=princomp(tpc.sub[,c("CTmin","Topt","CTmax")])
+  tpc.sub= cbind(tpc.sub, pc$scores)
+  
+  pc$loadings
+  #pc1: all parameters increase together, shift in asymmetry
+  #pc2: as CTmin increases, Topt and CTmax decrease, narrowing
+  #pc3: gets steeper
+  
+  #plot along pca axes
+  p=tpc.sub[,c("CTmin","Topt","CTmax")]
+  p.mean= colMeans(p)
+  
+  #pc1
+  #a_i= mean(a)+score*loading
+  p.pc1=p
+  p.pc1[,1]=p.mean[1]+pc$scores[,1]*pc$loadings[1,1]
+  p.pc1[,2]=p.mean[2]+pc$scores[,1]*pc$loadings[1,2]
+  p.pc1[,3]=p.mean[3]+pc$scores[,1]*pc$loadings[1,3]
+  
+  #estimate asmmetry
+  #p.pc1$asym= (p.pc1[,3] - p.pc1[,2])/(p.pc1[,2]- p.pc1[,1])
+  p.pc1$asym= (2*p.pc1[,2]-p.pc1[,3] - p.pc1[,1])/(p.pc1[,3]-p.pc1[,1] )
+  
+  #pc2
+  p.pc2=p
+  p.pc2[,1]=p.mean[1]+pc$scores[,2]*pc$loadings[2,1]
+  p.pc2[,2]=p.mean[2]+pc$scores[,2]*pc$loadings[2,2]
+  p.pc2[,3]=p.mean[3]+pc$scores[,2]*pc$loadings[2,3]
+  
+  #pc3
+  p.pc3=p
+  p.pc3[,1]=p.mean[1]+pc$scores[,3]*pc$loadings[3,1]
+  p.pc3[,2]=p.mean[2]+pc$scores[,3]*pc$loadings[3,2]
+  p.pc3[,3]=p.mean[3]+pc$scores[,3]*pc$loadings[3,3]
 
-pc$loadings
-#pc1: all parameters increase together, shift in asymmetry
-#pc2: as CTmin increases, Topt and CTmax decrease, narrowing
-#pc3: gets steeper
-
-#plot along pca axes
-p=tpc.sub[,c("CTmin","Topt","CTmax")]
-p.mean= colMeans(p)
-
-#pc1
-#a_i= mean(a)+score*loading
-p.pc1=p
-p.pc1[,1]=p.mean[1]+pc$scores[,1]*pc$loadings[1,1]
-p.pc1[,2]=p.mean[2]+pc$scores[,1]*pc$loadings[1,2]
-p.pc1[,3]=p.mean[3]+pc$scores[,1]*pc$loadings[1,3]
-
-#estimate asmmetry
-#p.pc1$asym= (p.pc1[,3] - p.pc1[,2])/(p.pc1[,2]- p.pc1[,1])
-p.pc1$asym= (2*p.pc1[,2]-p.pc1[,3] - p.pc1[,1])/(p.pc1[,3]-p.pc1[,1] )
-plot(p.pc1[,2], p.pc1$asym, ylim=c(-0.2,1), xlab="PC1", ylab="assymetry")
-#plot(p.pc1$asym, p.pc1[,3] - p.pc1[,2])
-#first pc captures asymmetry
-#add a column of color values based on assymetry values
-p.pc1$col <- viridis(20)[as.numeric(cut(tpc.sub$asym,breaks = quantile(p.pc1$asym, probs = seq(0, 1, 0.05)) ))]
-
-#plot
-plot(temps, tpc.plot(temps, Topt=p.pc1[1,2] , CTmin=p.pc1[1,1], CTmax=p.pc1[1,3]), type="l", xlab="temperature",ylab="performance")
-for(r in 2:nrow(p.pc1)) points(temps, tpc.plot(temps, Topt=p.pc1[r,2] , CTmin=p.pc1[r,1], CTmax=p.pc1[r,3]), type="l", col=p.pc1[r,"col"]) 
-
-#pc2
-p.pc2=p
-p.pc2[,1]=p.mean[1]+pc$scores[,2]*pc$loadings[2,1]
-p.pc2[,2]=p.mean[2]+pc$scores[,2]*pc$loadings[2,2]
-p.pc2[,3]=p.mean[3]+pc$scores[,2]*pc$loadings[2,3]
-
-#plot
-plot(temps, tpc.plot(temps, Topt=p.pc2[1,2] , CTmin=p.pc2[1,1], CTmax=p.pc2[1,3]), type="l", xlab="temperature",ylab="performance", main=taxas[taxa])
-for(r in 2:nrow(p.pc2)) points(temps, tpc.plot(temps, Topt=p.pc2[r,2] , CTmin=p.pc2[r,1], CTmax=p.pc2[r,3]), type="l") 
-
-#pc3
-p.pc3=p
-p.pc3[,1]=p.mean[1]+pc$scores[,3]*pc$loadings[3,1]
-p.pc3[,2]=p.mean[2]+pc$scores[,3]*pc$loadings[3,2]
-p.pc3[,3]=p.mean[3]+pc$scores[,3]*pc$loadings[3,3]
-
-#plot
-plot(temps, tpc.plot(temps, Topt=p.pc3[1,2] , CTmin=p.pc3[1,1], CTmax=p.pc3[1,3]), type="l", xlab="temperature",ylab="performance")
-for(r in 2:nrow(p.pc3)) points(temps, tpc.plot(temps, Topt=p.pc3[r,2] , CTmin=p.pc3[r,1], CTmax=p.pc3[r,3]), type="l") 
-
+  #combine data
+  add=cbind(p.pc1, p.pc2, p.pc3)
+  ps[inds,]=as.matrix(add)
+    
 } #end loop taxa
 
+#add names
+colnames(ps)=c('pc1.CTmin','pc1.Topt','pc1.CTmax','pc1.asym','pc2.CTmin','pc2.Topt','pc2.CTmax','pc3.CTmin','pc3.Topt','pc3.CTmax')
+#combine
+tpc.pca= cbind(tpc,ps)
+
+#------
+#plots
+#assymetry
+fig3a= ggplot(tpc.pca) + aes(x=pc1.Topt, y = pc1.asym, color=log(asym))+geom_point(size=2)+ylab("assymetry")+xlab("pc1 Topt")+facet_grid(taxa~1)+
+  theme_bw()+theme(legend.position="bottom")+scale_color_viridis()
+
+#pc1 plots
+out=t(apply(tpc.pca[,c("pc1.Topt","pc1.CTmin","pc1.CTmax")], MARGIN=1, FUN=tpc.mat))
+colnames(out)= temps
+tpc.pred= cbind(tpc, out)
+#to long format
+tpc.l<- tpc.pred %>%
+  gather("temperature", "performance", 15:ncol(tpc.pred))
+tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
+
+#plot
+fig3b= ggplot(tpc.l)+aes(x=temperature, y = performance, color=log(asym), group=X)+facet_grid(taxa~1)+geom_line()+
+  theme_bw()+theme(legend.position="bottom")+scale_color_viridis()+ylim(0,1)
+
+#pc2 plots
+out=t(apply(tpc.pca[,c("pc2.Topt","pc2.CTmin","pc2.CTmax")], MARGIN=1, FUN=tpc.mat))
+colnames(out)= temps
+tpc.pred= cbind(tpc, out)
+#to long format
+tpc.l<- tpc.pred %>%
+  gather("temperature", "performance", 15:ncol(tpc.pred))
+tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
+
+#plot
+fig3c= ggplot(tpc.l)+aes(x=temperature, y = performance, color=log(asym), group=X)+facet_grid(taxa~1)+geom_line()+
+  theme_bw()+theme(legend.position="bottom")+scale_color_viridis()+ylim(0,1)
+
+#pc3 plots
+out=t(apply(tpc.pca[,c("pc3.Topt","pc3.CTmin","pc3.CTmax")], MARGIN=1, FUN=tpc.mat))
+colnames(out)= temps
+tpc.pred= cbind(tpc, out)
+#to long format
+tpc.l<- tpc.pred %>%
+  gather("temperature", "performance", 15:ncol(tpc.pred))
+tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
+
+#plot
+fig3d= ggplot(tpc.l)+aes(x=temperature, y = performance, color=log(asym), group=X)+facet_grid(taxa~1)+geom_line()+
+  theme_bw()+theme(legend.position="bottom")+scale_color_viridis()+ylim(0,1)
+
+#PCA analysis as in Knies et al.
+pdf("Fig3_PCAs.pdf", height = 10, width = 10)
+plot_grid(fig3a, fig3b, fig3c, fig3d, nrow=1)
 dev.off()
 
-#--------------------
+#================
 #variances
 tpc.sub= tpc[which(tpc$taxa==taxas[5]),]
 
