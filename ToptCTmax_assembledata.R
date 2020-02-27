@@ -155,7 +155,7 @@ tpc2= tpc2[-which((-rez.photo$tmin+rez.photo$mint.list)>17), ]
 tpc2$habitat="terrestrial"
 tpc2$lat=NA
 tpc2$lon= NA
-tpc2$taxa= "photosyn"
+tpc2$taxa= "photosynthesis"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 

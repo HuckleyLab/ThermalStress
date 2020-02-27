@@ -259,11 +259,61 @@ plot.p50= ggplot(dat_p50, aes(x=abs(lat),y=days_p50) ) +geom_point()+facet_wrap(
 
 #----------------------
 #AGGREGATE ACROSS YEARS
-
 tsm.yrs= apply(tsm, MARGIN=c(2,3,4), FUN=mean, na.rm=T)
 
-#------------------
+#===============================
 #PLOT
+#comparison plots
+tol2= cbind(tol.h, days_p50, tsm.yrs[,1:7,1],tsm.yrs[,8:12,3])
+colnames(tol2)[14:20]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
+colnames(tol2)[21:25]=c('dTopt','sumI','countI','meanI','Perf')
+#drop fish
+tol2=tol2[-which(tol2$taxa=="fish"),] 
+
+fig4a= ggplot(tol2, aes(x=minTSM,y=log(-Perf), color=asym2)) +geom_point()+facet_wrap(~taxa, nrow=1) +
+  theme_bw()+scale_color_viridis()+xlim(-10,10)+ theme(legend.position = "none")+
+  ylab("log annual performance detriment")+xlab("annual minimum of daily TSM (°C)")
+
+fig4b= ggplot(tol2, aes(x=minTSM,y=days_p50/365, color=asym2)) +geom_point()+facet_wrap(~taxa, nrow=1) +
+  theme_bw()+xlim(-10,10)+ylim(0,0.65) +
+  scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom",legend.key.width = unit(2, "cm"))+
+  ylab("proportion days with 50% performance loss")+xlab("annual minimum of daily TSM (°C)")
+#+geom_smooth(method='loess',se=TRUE)
+
+#Plot
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/figures/")
+pdf("Figs4_TSM.pdf", height = 8, width = 8)
+plot_grid(fig4a,fig4b, labels = c("A", "B"), ncol = 1)
+dev.off()
+
+#----
+#latitudinal figure for plankton
+tol.p= tol2[which(tol2$taxa=="plankton"), c(1:12,13,14,25) ]
+#convert days_p50 to proportion
+tol.p$days_p50= tol.p$days_p50/365
+#conver performance
+tol.p$Perf= log(-tol.p$Perf)
+
+#to long format
+tol.pl<- tol.p %>%
+  gather("metric", "value", 13:15)
+#make labels
+tol.pl$metric.lab<-NA
+tol.pl$metric.lab[tol.pl$metric=="days_p50"]<- "proportion days with 50% performance loss"
+tol.pl$metric.lab[tol.pl$metric=="minTSM"]<- "annual minimum of daily TSM"
+tol.pl$metric.lab[tol.pl$metric=="Perf"]<- "log annual performance detriment"
+tol.pl$metric.lab= factor(tol.pl$metric.lab, levels=c("annual minimum of daily TSM","log annual performance detriment","proportion days with 50% performance loss"))
+
+fig5= ggplot(tol.pl, aes(x=abs(lat),y=value, color=asym2) ) +geom_point()+facet_wrap(~metric.lab,ncol=1,scales="free_y") +geom_smooth(method='loess',se=TRUE) +
+  theme_bw()+scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom",legend.key.width = unit(2, "cm"))+
+  xlab("absolute latitude (°)")
+
+pdf("Figs5_TSMlat.pdf", height = 12, width = 8)
+fig5
+dev.off()
+
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#CAN EVENTUALLY DROP ALL PLOTS BELOW?
 
 #TSM
 #plot two dimensions
@@ -413,9 +463,7 @@ plot_grid(plot1, plot2, plot3, plot4, plot5, plot6, labels = c('A', 'B','C','D',
 dev.off()
 
 #-----
-#comparison plots
-tol2= cbind(tol.h, tsm.yrs[,1:7,1],days_p50)
-colnames(tol2)[12:18]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
 
-ggplot(tol2, aes(x=TSM10p,y=days_p50/365, color=Topt)) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='lm',se=TRUE)+xlim(-15,10)+ylim(0,1)+scale_color_viridis()
+
+
 

@@ -11,7 +11,7 @@ tpc=read.csv("tpcs.csv")
 #drop data without all metrics
 tpc= subset(tpc, !is.na(tpc$CTmin) & !is.na(tpc$Topt) & !is.na(tpc$CTmax) )
 
-taxas= c("insects","lizards","plankton","fish","photosyn","ants")
+taxas= c("insects","lizards","plankton","fish","photosynthesis","ants")
 
 #setwd for figures
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/figures/")
@@ -82,7 +82,8 @@ tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
 
 #plot
 fig1a= ggplot(tpc.l)+aes(x=temperature, y = performance, color=log(asym), group=X)+facet_grid(taxa~1)+geom_line()+
-  theme_bw()+theme(legend.position="bottom")+scale_color_viridis()
+  theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="log asymmetry")+
+  ylab("relative performance")+xlab("temperature (°C)")
 
 #-----------
 #plot relationships
@@ -98,7 +99,8 @@ tpc.warm$breadth<- tpc.cold$CTmax-tpc.cold$Topt
 tpc2= rbind(tpc.cold, tpc.warm)
 
 fig1b= ggplot(tpc2) + aes(x=Topt, y = breadth, color=log(asym), group=taxa)+geom_point()+facet_grid(taxa~section)+ geom_smooth(method="lm")+
-  theme_bw()+theme(legend.position="bottom")+scale_color_viridis()
+  theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="log asymmetry")+
+  ylab("breath of side (°C)")+xlab("thermal optima, Topt (°C)")
 
 #Shuffling 
 #Need to bootstrap
@@ -120,10 +122,10 @@ dev.off()
 
 #-----------------------------------
 #assymetry vs Topt
-fig2a= ggplot(tpc) + aes(x=Topt, y = asym2, group=taxa)+geom_point()+ylim(0,1)+ylab("assymetry")+facet_grid(taxa~1)+theme_bw()+theme(legend.position="bottom")+geom_smooth(method="lm")
+fig2a= ggplot(tpc) + aes(x=Topt, y = asym2, group=taxa)+geom_point()+ylim(0,1)+ylab("asymmetry")+facet_grid(taxa~1)+theme_bw()+theme(legend.position="bottom")+geom_smooth(method="lm", color="black")+xlab("thermal optima, Topt (°C)")
 
 #TPC vs assymetry
-fig2b= ggplot(tpc) + aes(x=asym2, y = CTmax.Topt.breadth, group=taxa)+geom_point()+xlim(0,1)+xlab("assymetry")+ylab("warm side breadth (CTmax-Topt)")+facet_grid(taxa~1)+theme_bw()+theme(legend.position="bottom")+geom_smooth(method="lm")
+fig2b= ggplot(tpc) + aes(x=asym2, y = CTmax.Topt.breadth, group=taxa)+geom_point()+xlim(0,1)+xlab("asymmetry")+ylab("warm side breadth (CTmax-Topt, °C)")+facet_grid(taxa~1)+theme_bw()+theme(legend.position="bottom")+geom_smooth(method="lm", color="black")
 #+geom_smooth(method="lm", se=FALSE)
 
 #Shuffling 
@@ -137,12 +139,12 @@ tpc2$CTmax.Topt.breadth= tpc2$CTmax - tpc$Topt
 
 #add random to initial plot
 #assymetry vs Topt
-#fig2a= ggplot(tpc2) + aes(x=Topt, y = asym2, color=habitat, group=taxa)+geom_point()+ylim(0,1)+ylab("assymetry")+facet_grid(taxa~1)+theme(legend.position="bottom")+geom_smooth(method="lm")
-fig2a= fig2a + geom_smooth(data=tpc2,aes(x=Topt, y = asym2, group=taxa), method="lm", lty="dashed")
+#fig2a= ggplot(tpc2) + aes(x=Topt, y = asym2, color=habitat, group=taxa)+geom_point()+ylim(0,1)+ylab("asymmetry")+facet_grid(taxa~1)+theme(legend.position="bottom")+geom_smooth(method="lm")
+fig2a= fig2a + geom_smooth(data=tpc2,aes(x=Topt, y = asym2, group=taxa), method="lm", lty="dashed", color="black")
 
 #TPC vs assymetry
-#fig2b= ggplot(tpc2) + aes(x=asym2, y = CTmax.Topt.breadth, color=habitat, group=taxa)+geom_point()+xlim(0,1)+xlab("assymetry")+ylab("warm side breadth (CTmax-Topt)")+facet_grid(taxa~1)+theme(legend.position="bottom")+geom_smooth(method="lm")
-fig2b= fig2b + geom_smooth(data=tpc2,aes(x=asym2, y = CTmax.Topt.breadth, group=taxa), method="lm", lty="dashed")
+#fig2b= ggplot(tpc2) + aes(x=asym2, y = CTmax.Topt.breadth, color=habitat, group=taxa)+geom_point()+xlim(0,1)+xlab("asymmetry")+ylab("warm side breadth (CTmax-Topt)")+facet_grid(taxa~1)+theme(legend.position="bottom")+geom_smooth(method="lm")
+fig2b= fig2b + geom_smooth(data=tpc2,aes(x=asym2, y = CTmax.Topt.breadth, group=taxa), method="lm", lty="dashed", color="black")
 
 pdf("Fig2_Assym.pdf", height = 10, width = 8)
 plot_grid(fig2a, fig2b, nrow=1)
@@ -222,8 +224,8 @@ tpc.pca= cbind(tpc,ps)
 #------
 #plots
 #assymetry
-fig3a= ggplot(tpc.pca) + aes(x=pc1.Topt, y = pc1.asym, color=log(asym))+geom_point(size=2)+ylab("assymetry")+xlab("pc1 Topt")+facet_grid(taxa~1)+
-  theme_bw()+theme(legend.position="bottom")+scale_color_viridis()
+fig3a= ggplot(tpc.pca) + aes(x=pc1.Topt, y = pc1.asym, color=log(asym))+geom_point(size=2)+ylab("asymmetry")+xlab("pc1 Topt (°C)")+facet_grid(taxa~1)+
+  theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="log asymmetry")
 
 #pc1 plots
 out=t(apply(tpc.pca[,c("pc1.Topt","pc1.CTmin","pc1.CTmax")], MARGIN=1, FUN=tpc.mat))
@@ -236,7 +238,7 @@ tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
 
 #plot
 fig3b= ggplot(tpc.l)+aes(x=temperature, y = performance, color=log(asym), group=X)+facet_grid(taxa~1)+geom_line()+
-  theme_bw()+theme(legend.position="bottom")+scale_color_viridis()+ylim(0,1)
+  theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="log asymmetry")+ylim(0,1)+xlab("temperature (°C)")
 
 #pc2 plots
 out=t(apply(tpc.pca[,c("pc2.Topt","pc2.CTmin","pc2.CTmax")], MARGIN=1, FUN=tpc.mat))
@@ -249,7 +251,7 @@ tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
 
 #plot
 fig3c= ggplot(tpc.l)+aes(x=temperature, y = performance, color=log(asym), group=X)+facet_grid(taxa~1)+geom_line()+
-  theme_bw()+theme(legend.position="bottom")+scale_color_viridis()+ylim(0,1)
+  theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="log asymmetry")+ylim(0,1)+xlab("temperature (°C)")
 
 #pc3 plots
 out=t(apply(tpc.pca[,c("pc3.Topt","pc3.CTmin","pc3.CTmax")], MARGIN=1, FUN=tpc.mat))
@@ -262,7 +264,7 @@ tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
 
 #plot
 fig3d= ggplot(tpc.l)+aes(x=temperature, y = performance, color=log(asym), group=X)+facet_grid(taxa~1)+geom_line()+
-  theme_bw()+theme(legend.position="bottom")+scale_color_viridis()+ylim(0,1)
+  theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="log asymmetry")+ylim(0,1)+xlab("temperature (°C)")
 
 #PCA analysis as in Knies et al.
 pdf("Fig3_PCAs.pdf", height = 10, width = 10)
