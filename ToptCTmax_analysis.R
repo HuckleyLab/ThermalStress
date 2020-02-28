@@ -98,9 +98,9 @@ tpc.warm$section<- "warm"
 tpc.warm$breadth<- tpc.cold$CTmax-tpc.cold$Topt
 tpc2= rbind(tpc.cold, tpc.warm)
 
-fig1b= ggplot(tpc2) + aes(x=Topt, y = breadth, color=asym, group=taxa)+geom_point()+facet_grid(taxa~section)+ geom_smooth(method="lm")+
+fig1b= ggplot(tpc2) + aes(x=Topt, y = breadth, color=asym, group=taxa)+geom_point()+facet_grid(taxa~section,scales="free_y")+ geom_smooth(method="lm")+
   theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="asymmetry")+
-  ylab("breath of side (°C)")+xlab("thermal optima, Topt (°C)")
+  ylab("breath of side (°C)")+xlab("thermal optima, Topt (°C)")#+ylim(0,50)
 
 #Shuffling 
 #Need to bootstrap
@@ -130,6 +130,8 @@ tpc.boot= cbind(tpc, boot[,1:4])
 #to long format
 tpc.r<- tpc.boot %>%
   gather("section", "breadth", 16:17)
+#drop negative breaths
+tpc.r= tpc.r[which(tpc.r$breadth>0),]
 
 #add random to initial plot
 fig1b= fig1b + geom_smooth(data=tpc.r,aes(x=Topt, y = breadth, group=taxa), method="lm", se=FALSE, lty="dashed")
@@ -140,10 +142,13 @@ dev.off()
 
 #-----------------------------------
 #assymetry vs Topt
-fig2a= ggplot(tpc) + aes(x=Topt, y = asym, group=taxa)+geom_point()+ylim(0,1)+ylab("asymmetry")+facet_grid(taxa~1)+theme_bw()+theme(legend.position="bottom")+geom_smooth(method="lm", color="black")+xlab("thermal optima, Topt (°C)")
+fig2a= ggplot(tpc) + aes(x=Topt, y = asym, group=taxa)+geom_point()+ylab("asymmetry")+facet_grid(taxa~1)+
+  ylim(-0.5,0.75)+
+  theme_bw()+theme(legend.position="bottom")+geom_smooth(method="lm", color="black")+xlab("thermal optima, Topt (°C)")
 
 #TPC vs assymetry
-fig2b= ggplot(tpc) + aes(x=asym, y = CTmax.Topt.breadth, group=taxa)+geom_point()+xlim(0,1)+xlab("asymmetry")+ylab("warm side breadth (CTmax-Topt, °C)")+facet_grid(taxa~1)+theme_bw()+theme(legend.position="bottom")+geom_smooth(method="lm", color="black")
+fig2b= ggplot(tpc) + aes(x=asym, y = CTmax.Topt.breadth, group=taxa)+geom_point()+xlim(0,1)+xlab("asymmetry")+ylab("warm side breadth (CTmax-Topt, °C)")+facet_grid(taxa~1)+
+  theme_bw()+theme(legend.position="bottom")+geom_smooth(method="lm", color="black")+ylim(0,22)
 #+geom_smooth(method="lm", se=FALSE)
 
 #Shuffling
@@ -238,7 +243,8 @@ tpc.pca= cbind(tpc,ps)
 #------
 #plots
 #assymetry
-fig3a= ggplot(tpc.pca) + aes(x=pc1.Topt, y = pc1.asym, color=asym)+geom_point(size=2)+ylab("asymmetry")+xlab("pc1 Topt (°C)")+facet_grid(taxa~1)+
+tpc.pca$lab="PC1"
+fig3a= ggplot(tpc.pca) + aes(x=pc1.Topt, y = pc1.asym, color=asym)+geom_point(size=2)+ylab("asymmetry")+xlab("Topt (°C)")+facet_grid(taxa~lab)+
   theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="asymmetry")
 
 #pc1 plots
@@ -249,9 +255,10 @@ tpc.pred= cbind(tpc, out)
 tpc.l<- tpc.pred %>%
   gather("temperature", "performance", 15:ncol(tpc.pred))
 tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
+tpc.l$lab="PC1"
 
 #plot
-fig3b= ggplot(tpc.l)+aes(x=temperature, y = performance, color=asym, group=X)+facet_grid(taxa~1)+geom_line()+
+fig3b= ggplot(tpc.l)+aes(x=temperature, y = performance, color=asym, group=X)+facet_grid(taxa~lab)+geom_line()+
   theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="asymmetry")+ylim(0,1)+xlab("temperature (°C)")
 
 #pc2 plots
@@ -262,9 +269,10 @@ tpc.pred= cbind(tpc, out)
 tpc.l<- tpc.pred %>%
   gather("temperature", "performance", 15:ncol(tpc.pred))
 tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
+tpc.l$lab="PC2"
 
 #plot
-fig3c= ggplot(tpc.l)+aes(x=temperature, y = performance, color=asym, group=X)+facet_grid(taxa~1)+geom_line()+
+fig3c= ggplot(tpc.l)+aes(x=temperature, y = performance, color=asym, group=X)+facet_grid(taxa~lab)+geom_line()+
   theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="asymmetry")+ylim(0,1)+xlab("temperature (°C)")
 
 #pc3 plots
@@ -275,9 +283,10 @@ tpc.pred= cbind(tpc, out)
 tpc.l<- tpc.pred %>%
   gather("temperature", "performance", 15:ncol(tpc.pred))
 tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
+tpc.l$lab="PC3"
 
 #plot
-fig3d= ggplot(tpc.l)+aes(x=temperature, y = performance, color=asym, group=X)+facet_grid(taxa~1)+geom_line()+
+fig3d= ggplot(tpc.l)+aes(x=temperature, y = performance, color=asym, group=X)+facet_grid(taxa~lab)+geom_line()+
   theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="asymmetry")+ylim(0,1)+xlab("temperature (°C)")
 
 #PCA analysis as in Knies et al.
