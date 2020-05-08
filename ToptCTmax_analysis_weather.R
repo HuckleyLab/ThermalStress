@@ -127,6 +127,9 @@ tol.h= subset(tol.h, !is.na(tol.h$lat) & !is.na(tol.h$lon) )
 #drop data without all metrics
 tol.h= subset(tol.h, !is.na(tol.h$CTmin) & !is.na(tol.h$Topt) & !is.na(tol.h$CTmax) )
 
+#add asym
+tol.h$asym= (2*tol.h$Topt-tol.h$CTmax - tol.h$CTmin)/(tol.h$CTmax-tol.h$CTmin )
+
 #===================================================
 #THERMAL STRESS ESTIMATES
 
@@ -165,16 +168,19 @@ for(spec.k in 1:nrow(tol.h)){
     #metabolic scaled thermal stress
     inds= which(tmax.k > tol.h[spec.k,'Topt'])
     
-    if(length(inds)>0) ts[year.k,spec.k,inds,3]= tmax.k[inds]- tol.h[spec.k,'Topt']  
+    if(length(inds)>0){ 
+      ts[year.k,spec.k,inds,3]= tmax.k[inds]- tol.h[spec.k,'Topt']  
     
     #performance detriment
-    slope= 1/(-tol.h[spec.k,'CTmax']+tol.h[spec.k,'Topt'])
-    if(length(inds)>0) ts[year.k,spec.k,inds,5]= (tmax.k[inds]- tol.h[spec.k,'Topt'])*slope  
+      ts[year.k,spec.k,inds,5]= 1- tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax'])  
     
     #number of days with >= 50% loss of performance
-    t50= tol.h[spec.k,'Topt']+(tol.h[spec.k,'CTmax']-tol.h[spec.k,'Topt'])/2
-    inds= which(tmax.k > t50)
-    ts[year.k,spec.k,inds,6]= 1
+    perf= tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax']) 
+    t50= rep(NA, length(inds))
+    t50[perf<0.5]<-1
+    ts[year.k,spec.k,inds,6]= t50
+    
+    } #end check >Topt
     
     #thermodynamic scale
     Topt.tt= thermo.temp(tol.h[spec.k,'topt'])
@@ -270,11 +276,11 @@ colnames(tol2)[21:25]=c('dTopt','sumI','countI','meanI','Perf')
 #drop fish
 tol2=tol2[-which(tol2$taxa=="fish"),] 
 
-fig4a= ggplot(tol2, aes(x=minTSM,y=log(-Perf), color=asym2)) +geom_point()+facet_wrap(~taxa, nrow=1) +
+fig4a= ggplot(tol2, aes(x=minTSM,y=log(Perf), color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
   theme_bw()+scale_color_viridis()+xlim(-10,10)+ theme(legend.position = "none")+
   ylab("log annual performance detriment")+xlab("annual minimum of daily TSM (°C)")
 
-fig4b= ggplot(tol2, aes(x=minTSM,y=days_p50/365, color=asym2)) +geom_point()+facet_wrap(~taxa, nrow=1) +
+fig4b= ggplot(tol2, aes(x=minTSM,y=days_p50/365, color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
   theme_bw()+xlim(-10,10)+ylim(0,0.65) +
   scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom",legend.key.width = unit(2, "cm"))+
   ylab("proportion days with 50% performance loss")+xlab("annual minimum of daily TSM (°C)")
@@ -291,8 +297,8 @@ dev.off()
 tol.p= tol2[which(tol2$taxa=="plankton"), c(1:12,13,14,25) ]
 #convert days_p50 to proportion
 tol.p$days_p50= tol.p$days_p50/365
-#conver performance
-tol.p$Perf= log(-tol.p$Perf)
+#convert performance
+tol.p$Perf= log(tol.p$Perf)
 
 #to long format
 tol.pl<- tol.p %>%
@@ -304,7 +310,7 @@ tol.pl$metric.lab[tol.pl$metric=="minTSM"]<- "annual minimum of daily TSM"
 tol.pl$metric.lab[tol.pl$metric=="Perf"]<- "log annual performance detriment"
 tol.pl$metric.lab= factor(tol.pl$metric.lab, levels=c("annual minimum of daily TSM","log annual performance detriment","proportion days with 50% performance loss"))
 
-fig5= ggplot(tol.pl, aes(x=abs(lat),y=value, color=asym2) ) +geom_point()+facet_wrap(~metric.lab,ncol=1,scales="free_y") +geom_smooth(method='loess',se=TRUE) +
+fig5= ggplot(tol.pl, aes(x=abs(lat),y=value, color=asym) ) +geom_point()+facet_wrap(~metric.lab,ncol=1,scales="free_y") +geom_smooth(method='loess',se=TRUE) +
   theme_bw()+scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom",legend.key.width = unit(2, "cm"))+
   xlab("absolute latitude (°)")
 
