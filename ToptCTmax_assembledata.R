@@ -35,7 +35,6 @@ library(ggplot2)
 
 #COPEPODS: https://www.sciencedirect.com/science/article/pii/S0022098102000254, could fit curves
 
-
 #Lab goldfish, 3 acclimation temperatures: https://www.journals.uchicago.edu/doi/full/10.1086/677317
 #Arctic char, Larsson: https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2427.2004.01326.x
 #trout: https://onlinelibrary.wiley.com/doi/full/10.1111/j.1095-8649.2008.02119.x

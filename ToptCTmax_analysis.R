@@ -150,6 +150,17 @@ dev.off()
 ps= matrix(NA, nrow=nrow(tpc), ncol=10)
 pc.var= as.data.frame(matrix(NA, nrow=length(taxas), ncol=4))
 pc.var[,1]= taxas
+#loadings
+pc.load= array(NA, dim=c(3,3,length(taxas) ))
+
+tpc$CTmin.Topt.breadth= tpc$Topt -tpc$CTmin
+
+#pick PC variables
+pc.vars=1
+# 1 is Topt, CTmax, breadth
+# 2 is Topt, cool breadth, warm breadth
+# 3 is Topt, CTmin, CTmax
+# 4 is CTmin, Topt, CTmax
 
 for(taxa in 1:length(taxas)){
   
@@ -157,19 +168,23 @@ for(taxa in 1:length(taxas)){
   tpc.sub= tpc[inds,]
   #add a column of color values based on assymetry values
   
-  pc=princomp(tpc.sub[,c("CTmin","Topt","CTmax")], cor=FALSE)
+  if(pc.vars==1) pc=princomp(tpc.sub[,c("Topt","CTmax","breadth")], cor=FALSE, fix_sing=FALSE)
+  if(pc.vars==2) pc=princomp(tpc.sub[,c("Topt","CTmin.Topt.breadth","CTmax.Topt.breadth")], cor=FALSE, fix_sing=FALSE)
+  if(pc.vars==3) pc=princomp(tpc.sub[,c("Topt", "CTmin","CTmax")], cor=FALSE, fix_sing=FALSE)
+  if(pc.vars==4) pc=princomp(tpc.sub[,c("CTmin","Topt","CTmax")], cor=FALSE, fix_sing=FALSE)
   tpc.sub= cbind(tpc.sub, pc$scores)
   
-  pc$loadings
-  #pc1: all parameters increase together, shift in asymmetry
-  #pc2: as CTmin increases, Topt and CTmax decrease, narrowing
-  #pc3: gets steeper
+  pc.load[,,taxa]=pc$loadings
   
   #variances
   pc.var[taxa,2:4] <- pc$sdev^2/sum(pc$sdev^2)
   
   #plot along pca axes
-  p=tpc.sub[,c("CTmin","Topt","CTmax")]
+  if(pc.vars==1) p=tpc.sub[,c("Topt","CTmax","breadth")]
+  if(pc.vars==2) p=tpc.sub[,c("Topt","CTmin.Topt.breadth","CTmax.Topt.breadth")]
+  if(pc.vars==3) p=tpc.sub[,c("Topt", "CTmin","CTmax")]
+  if(pc.vars==4) p=tpc.sub[,c("CTmin","Topt", "CTmax")]
+  
   p.mean= colMeans(p)
   
   #pc1
@@ -180,8 +195,13 @@ for(taxa in 1:length(taxas)){
   p.pc1[,3]=p.mean[3]+pc$scores[,1]*pc$loadings[1,3]
   
   #estimate asmmetry
-  #p.pc1$asym= (p.pc1[,3] - p.pc1[,2])/(p.pc1[,2]- p.pc1[,1])
-  p.pc1$asym= (2*p.pc1[,2]-p.pc1[,3] - p.pc1[,1])/(p.pc1[,3]-p.pc1[,1] )
+  p.Topt= p.pc1[,1]
+  if(pc.vars==1) {p.CTmin= p.pc1[,2]-p.pc1[,3]; p.CTmax= p.pc1[,2]}
+  if(pc.vars==2) {p.CTmin= p.pc1[,1]-p.pc1[,2]; p.CTmax= p.pc1[,1]+p.pc1[,3]}
+  if(pc.vars==3) {p.CTmin= p.pc1[,2]; p.CTmax= p.pc1[,3]}
+  if(pc.vars==4) {p.Topt= p.pc1[,2]; p.CTmin= p.pc1[,1]; p.CTmax= p.pc1[,3]}
+  
+  p.pc1$asym= (2*p.Topt -p.CTmax -p.CTmin)/(p.CTmax -p.CTmin )
   
   #pc2
   p.pc2=p
@@ -202,30 +222,46 @@ for(taxa in 1:length(taxas)){
 } #end loop taxa
 
 #add names
-colnames(ps)=c('pc1.CTmin','pc1.Topt','pc1.CTmax','pc1.asym','pc2.CTmin','pc2.Topt','pc2.CTmax','pc3.CTmin','pc3.Topt','pc3.CTmax')
+if(pc.vars==1) colnames(ps)=c('pc1.Topt','pc1.CTmax','pc1.breadth','pc1.asym','pc2.Topt','pc2.CTmax','pc2.breadth','pc3.Topt','pc3.CTmax','pc3.breadth')
+if(pc.vars==2) colnames(ps)=c('pc1.Topt','pc1.coolb', 'pc1.warmb','pc1.asym','pc2.Topt','pc2.coolb', 'pc2.warmb','pc3.Topt','pc3.coolb', 'pc3.warmb')
+if(pc.vars==3) colnames(ps)=c('pc1.Topt','pc1.CTmin', 'pc1.CTmax','pc1.asym','pc2.Topt','pc2.CTmin', 'pc2.CTmax','pc3.Topt','pc3.CTmin', 'pc3.CTmax')
+if(pc.vars==4) colnames(ps)=c('pc1.CTmin','pc1.Topt', 'pc1.CTmax','pc1.asym','pc2.CTmin','pc2.Topt', 'pc2.CTmax','pc3.CTmin','pc3.Topt', 'pc3.CTmax')
+
 #combine
 tpc.pca= cbind(tpc,ps)
 
 colnames(pc.var)=c("taxa","pc1.var","pc2.var", "pc3.var")
 pc.var$asym=0
 
+#estimate CTmin and CTmax
+if(pc.vars==1){tpc.pca$pc1.CTmin= tpc.pca$pc1.CTmax - tpc.pca$pc1.breadth
+tpc.pca$pc2.CTmin= tpc.pca$pc2.CTmax - tpc.pca$pc2.breadth
+tpc.pca$pc3.CTmin= tpc.pca$pc3.CTmax - tpc.pca$pc3.breadth}
+
+if(pc.vars==2){tpc.pca$pc1.CTmin= tpc.pca$pc1.Topt - tpc.pca$pc1.coolb
+tpc.pca$pc1.CTmax= tpc.pca$pc1.Topt + tpc.pca$pc1.warmb
+tpc.pca$pc2.CTmin= tpc.pca$pc2.Topt - tpc.pca$pc2.coolb
+tpc.pca$pc2.CTmax= tpc.pca$pc2.Topt + tpc.pca$pc2.warmb
+tpc.pca$pc3.CTmin= tpc.pca$pc3.Topt - tpc.pca$pc3.coolb
+tpc.pca$pc3.CTmax= tpc.pca$pc3.Topt + tpc.pca$pc3.warmb}
+
 #------
 #plots
 #assymetry
 tpc.pca$lab="PC1"
 fig3a= ggplot(tpc.pca) + aes(x=pc1.Topt, y = pc1.asym, color=asym)+geom_point(size=2)+ylab("asymmetry")+xlab("Topt (°C)")+facet_grid(taxa~lab)+
-  theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="asymmetry")
+  theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="asymmetry")+ylim(-1,1)
 
 pc.var$label=paste(" PC1=",round(pc.var$pc1.var,2),"\n PC2=",round(pc.var$pc2.var,2),"\n PC3=",round(pc.var$pc3.var,2), sep=" ")
 fig3a= fig3a +geom_text(data= pc.var, mapping=aes(x=8, y=0.9,label=label))
 
 #pc1 plots
-out=t(apply(tpc.pca[,c("pc1.Topt","pc1.CTmin","pc1.CTmax","var.pc1")], MARGIN=1, FUN=tpc.mat))
+out=t(apply(tpc.pca[,c("pc1.Topt","pc1.CTmin","pc1.CTmax")], MARGIN=1, FUN=tpc.mat))
 colnames(out)= temps
 tpc.pred= cbind(tpc, out)
 #to long format
 tpc.l<- tpc.pred %>%
-  gather("temperature", "performance", 15:ncol(tpc.pred))
+  gather("temperature", "performance", 18:ncol(tpc.pred))
 tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
 tpc.l$lab="PC1"
 
@@ -239,7 +275,7 @@ colnames(out)= temps
 tpc.pred= cbind(tpc, out)
 #to long format
 tpc.l<- tpc.pred %>%
-  gather("temperature", "performance", 15:ncol(tpc.pred))
+  gather("temperature", "performance", 18:ncol(tpc.pred))
 tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
 tpc.l$lab="PC2"
 
@@ -253,7 +289,7 @@ colnames(out)= temps
 tpc.pred= cbind(tpc, out)
 #to long format
 tpc.l<- tpc.pred %>%
-  gather("temperature", "performance", 15:ncol(tpc.pred))
+  gather("temperature", "performance", 18:ncol(tpc.pred))
 tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
 tpc.l$lab="PC3"
 
@@ -261,11 +297,33 @@ tpc.l$lab="PC3"
 fig3d= ggplot(tpc.l)+aes(x=temperature, y = performance, color=asym, group=X)+facet_grid(taxa~lab)+geom_line()+
   theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="asymmetry")+ylim(0,1)+xlab("temperature (°C)")
 
+#labels
+pc.lab= c("ToptCTmaxBreadth","ToptCoolbWarmb","ToptCTminCTmax","CTminToptCTmax")
+
 #PCA analysis as in Knies et al.
-pdf("Fig3_PCAs.pdf", height = 10, width = 10)
+pdf(paste("Fig3_PCAs_",pc.lab[pc.vars],".pdf",sep=""), height = 10, width = 10)
 plot_grid(fig3a, fig3b, fig3c, fig3d, nrow=1)
 dev.off()
 
+#------
+#plot write out loadings
+pc.out=rbind(pc.load[,,1],pc.load[,,2],pc.load[,,3],pc.load[,,4],pc.load[,,5],pc.load[,,6])
+pc.out=as.data.frame(round(pc.out,2))
+colnames(pc.out)=c("1st","2nd","3rd")
+pc.out$var=rep(c("Topt","CTmax","breadth"),6)
+pc.out$var= ordered(pc.out$var, levels=c("Topt","CTmax","breadth") )
+pc.out$taxa=rep(taxas, each=3)
+
+#write.csv(pc.out, "pcload_ToptCTmaxBreadth.csv")
+
+#to long format
+pc.plot <- melt(pc.out, id=c("var","taxa"))
+
+#plot
+pdf(paste("LoadingsPCAs_",pc.lab[pc.vars],".pdf",sep=""), height = 8, width = 5)
+ggplot(pc.plot)+aes(x=var, y = value)+facet_grid(taxa~variable)+geom_col()+
+  theme_bw()+theme(legend.position="bottom")+xlab("parameter")+ylab("loading")+geom_hline(yintercept=0)
+dev.off()
 #================
 #variances
 tpc.sub= tpc[which(tpc$taxa==taxas[5]),]
