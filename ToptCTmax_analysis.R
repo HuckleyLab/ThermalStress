@@ -120,21 +120,24 @@ fig1b= ggplot(tpc) + aes(x=Topt, y = asym, color=asym, group=taxa)+geom_point()+
 #CTmax
 fig1c= ggplot(data=tpc, aes(x=Topt, y = CTmax, color=asym, group=taxa))+geom_point()+
   facet_grid(taxa~.)+ geom_smooth(method="lm")+
-  theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="asymmetry")+
+  theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
+  scale_color_viridis(name="asymmetry")+
   ylab("CTmax (°C)")+xlab("Topt (°C)")+
   guides(color = FALSE)
 
 #breadth
 fig1d= ggplot(data=tpc, aes(x=Topt, y = breadth, color=asym, group=taxa))+geom_point()+
   facet_grid(taxa~.)+ geom_smooth(method="lm")+
-  theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="asymmetry")+
+  theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
+  scale_color_viridis(name="asymmetry")+
   ylab("breath (°C)")+xlab("Topt (°C)")+
 guides(color = FALSE) #+ylim(0,50)
 
 #warm breadth
 fig1e= ggplot(data=tpc, aes(x=Topt, y = CTmax.Topt.breadth, color=asym, group=taxa))+geom_point()+
   facet_grid(taxa~.)+ geom_smooth(method="lm")+
-  theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="asymmetry")+
+  theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
+  scale_color_viridis(name="asymmetry")+
   ylab("warm side breath (°C)")+xlab("Topt (°C)")+
   guides(color = FALSE) #+ylim(0,50)
 
@@ -172,6 +175,48 @@ fig2at= ggplot(tpc) + aes(x=thermo.temp(Topt), y = asym.thermo, group=taxa)+geom
 pdf("FigSX_ThermoAssym.pdf", height = 10, width = 4)
 fig2at
 dev.off()
+
+#------------
+#Fig 1 stats by taxa
+
+#MODELS:
+#Asymm~Topt
+#CTmax~Topt
+#breadth~Topt
+#warm side breadth ~Topt
+
+for(var.k in 1:4){
+
+  if(var.k==1) models <- dlply(tpc, "taxa", function(df) lm(asym ~ Topt, data = df))
+  if(var.k==2) models <- dlply(tpc, "taxa", function(df) lm(CTmax ~ Topt, data = df))
+  if(var.k==3) models <- dlply(tpc, "taxa", function(df) lm(breadth ~ Topt, data = df))
+  if(var.k==4) models <- dlply(tpc, "taxa", function(df) lm(CTmax.Topt.breadth ~ Topt, data = df))
+
+# Print the summary of each model
+#l_ply(models, summary, .print = TRUE)
+
+# Apply coef to each model and return a data frame
+# see https://stats.stackexchange.com/questions/5135/interpretation-of-rs-lm-output
+coefs= ldply(models, coef)
+ses= ldply(models, function(mod) sqrt(diag(vcov(mod))) )
+ts= ldply(models, function(mod) coef(mod) / sqrt(diag(vcov(mod))) )
+ps= ldply(models, function(mod) 2 * pt(abs(coef(mod) / sqrt(diag(vcov(mod)))), df = df.residual(mod), lower.tail = FALSE)  )
+
+#combine slope data
+asymm.mod= cbind(coefs$Topt, ses$Topt, ts$Topt, ps$Topt)
+
+if(var.k==1) slope.mod= asymm.mod
+if(var.k>1) slope.mod= cbind(slope.mod, asymm.mod)
+} #end loop var.k
+
+colnames(slope.mod)= rep(c("slope","se","t value","p"),4)
+#round
+slope.mod= round(slope.mod, 2)
+#add taxa
+rownames(slope.mod)= coefs$taxa
+
+#write out
+write.csv(slope.mod, "Fig1stats.csv", row.names = TRUE)
 
 #==============================================
 #Null analysis of asymmetry relationship based on TPC constraints
