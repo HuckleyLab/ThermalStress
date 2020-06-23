@@ -93,14 +93,14 @@ fig1a= ggplot(tpc.l)+aes(x=temperature, y = performance, color=asym, group=X)+fa
 #-----------------------------------
 # #TRY BUT ABANDON PLOTTING TOGETHER
 # #Topt vs plots
-# tpc.plot=tpc[,c("taxa","asym","Topt","CTmax","breadth","CTmax.Topt.breadth") ]
-# tpc.plot$asymmetry= tpc.plot$asym
-# names(tpc.plot)[6]="warm side breadth"
-# 
-# #to long format
-# tpc.plot <- melt(tpc.plot, id=c("taxa","asym","Topt"))
-# tpc.plot$variable= factor(tpc.plot$variable, levels=c("CTmax","breadth","warm side breadth","asymmetry") )
-# 
+tpc.plot=tpc[,c("taxa","asym","Topt","CTmax","CTmin","breadth","CTmax.Topt.breadth") ]
+tpc.plot$asymmetry= tpc.plot$asym
+names(tpc.plot)[7]="warm side breadth"
+ 
+#to long format
+tpc.plot <- melt(tpc.plot, id=c("taxa","asym","Topt"))
+tpc.plot$variable= factor(tpc.plot$variable, levels=c("CTmax","CTmin","breadth","warm side breadth","asymmetry") )
+ 
 # #plot
 # ggplot(tpc.plot) + aes(x=Topt, y = value, color=asym, group=taxa)+geom_point()+
 #   facet_grid(taxa~variable, scales="free")+
@@ -126,6 +126,15 @@ fig1c= ggplot(data=tpc, aes(x=Topt, y = CTmax, color=asym, group=taxa))+geom_poi
   ylab("CTmax (°C)")+xlab("Topt (°C)")+
   guides(color = FALSE)
 
+#combine CTmin and CTmax
+tpc.plot2= subset(tpc.plot, tpc.plot$variable %in% c("CTmax","CTmin") )
+fig1c= ggplot(data=tpc.plot2, aes(x=Topt, y = value, color=asym, shape=variable))+geom_point()+
+  facet_grid(taxa~.)+ geom_smooth(method="lm")+
+  theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
+  scale_color_viridis(name="asymmetry")+
+  ylab("CTmin and CTmax (°C)")+xlab("Topt (°C)")+
+  guides(color = FALSE)
+
 #breadth
 fig1d= ggplot(data=tpc, aes(x=Topt, y = breadth, color=asym, group=taxa))+geom_point()+
   facet_grid(taxa~.)+ geom_smooth(method="lm")+
@@ -133,6 +142,15 @@ fig1d= ggplot(data=tpc, aes(x=Topt, y = breadth, color=asym, group=taxa))+geom_p
   scale_color_viridis(name="asymmetry")+
   ylab("breath (°C)")+xlab("Topt (°C)")+
 guides(color = FALSE) #+ylim(0,50)
+
+#combine breadth and warm side breadth
+tpc.plot2= subset(tpc.plot, tpc.plot$variable %in% c("breadth", "warm side breadth") )
+fig1d= ggplot(data=tpc.plot2, aes(x=Topt, y = value, color=asym, shape=variable))+geom_point()+
+  facet_grid(taxa~.)+ geom_smooth(method="lm")+
+  theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
+  scale_color_viridis(name="asymmetry")+
+  ylab("breadth (°C)")+xlab("Topt (°C)")+
+  guides(color = FALSE)
 
 #warm breadth
 fig1e= ggplot(data=tpc, aes(x=Topt, y = CTmax.Topt.breadth, color=asym, group=taxa))+geom_point()+
@@ -157,7 +175,8 @@ tpc$asym.null= (2*tpc$Topt-tpc$CTmax.mean - tpc$CTmin.mean)/(tpc$CTmax.mean-tpc$
 #fig1b= fig1b + geom_smooth(data=tpc,aes(x=Topt, y = asym.null, group=taxa), method="lm", se=FALSE, lty="dashed", color="blue")
 
 #-----
-combined <- fig1a +fig1b +fig1c +fig1d +fig1e + plot_annotation(tag_levels = 'a') +plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom") 
+combined <- fig1a +fig1b +fig1c +fig1d + plot_annotation(tag_levels = 'a') +plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom") 
+#+fig1e
 
 pdf("Fig1.pdf", height = 8, width = 12)
 combined
@@ -186,12 +205,13 @@ dev.off()
 #breadth~Topt
 #warm side breadth ~Topt
 
-for(var.k in 1:4){
+for(var.k in 1:5){
 
   if(var.k==1) models <- dlply(tpc, "taxa", function(df) lm(asym ~ Topt, data = df))
-  if(var.k==2) models <- dlply(tpc, "taxa", function(df) lm(CTmax ~ Topt, data = df))
-  if(var.k==3) models <- dlply(tpc, "taxa", function(df) lm(breadth ~ Topt, data = df))
-  if(var.k==4) models <- dlply(tpc, "taxa", function(df) lm(CTmax.Topt.breadth ~ Topt, data = df))
+  if(var.k==2) models <- dlply(tpc, "taxa", function(df) lm(CTmin ~ Topt, data = df))
+  if(var.k==3) models <- dlply(tpc, "taxa", function(df) lm(CTmax ~ Topt, data = df))
+  if(var.k==4) models <- dlply(tpc, "taxa", function(df) lm(breadth ~ Topt, data = df))
+  if(var.k==5) models <- dlply(tpc, "taxa", function(df) lm(CTmax.Topt.breadth ~ Topt, data = df))
 
 # Print the summary of each model
 #l_ply(models, summary, .print = TRUE)
@@ -210,7 +230,7 @@ if(var.k==1) slope.mod= asymm.mod
 if(var.k>1) slope.mod= cbind(slope.mod, asymm.mod)
 } #end loop var.k
 
-colnames(slope.mod)= rep(c("slope","se","t value","p"),4)
+colnames(slope.mod)= rep(c("slope","se","t value","p"),5)
 #round
 slope.mod= round(slope.mod, 2)
 #add taxa

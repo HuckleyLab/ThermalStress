@@ -155,7 +155,9 @@ tol.h$Topt.aveasym= (asym*(tol.h$CTmax - tol.h$CTmin) +tol.h$CTmax +tol.h$CTmin)
 #===================================================
 #THERMAL STRESS ESTIMATES
 
-ts= array(NA, dim= c(length(years), nrow(tol.h), 365,6) )
+ts= array(NA, dim= c(length(years), nrow(tol.h), 365,13) )
+#counts of Topt exceedences
+ts.exceed= array(NA, dim= c(length(years), nrow(tol.h), 2) )
 
 #calculate degree days above Topt
 for(spec.k in 1:nrow(tol.h)){
@@ -190,30 +192,74 @@ for(spec.k in 1:nrow(tol.h)){
     ts[year.k,spec.k,,1]= tol.h[spec.k,'CTmax']-tmax.k
     #ts[year.k,spec.k,,2]= tol.h[spec.k,'Topt']-tmax.k 
     
-    #metabolic scaled thermal stress
+    #find Topt exceedences
+    inds.s= which(tmax.k > tol.h[spec.k,'Topt.noasym'])
     inds= which(tmax.k > tol.h[spec.k,'Topt'])
     
-    if(length(inds)>0){ 
       ts[year.k,spec.k,inds,2]= tmax.k[inds]- tol.h[spec.k,'Topt']  
+      
+      #find Topt exceedences
+      inds.s= which(tmax.k > tol.h[spec.k,'Topt.noasym'])
+      inds= which(tmax.k > tol.h[spec.k,'Topt'])
+      
+      #count exceed Topt
+      ts.exceed[year.k,spec.k,1]= length(inds.s)
+      ts.exceed[year.k,spec.k,2]= length(inds)
       
       #performance detriment
       #Topt no asymetry
-      ts[year.k,spec.k,inds,3]= 1- tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt.noasym'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax'])  
+      if(length(inds.s)>0) ts[year.k,spec.k,inds.s,3]= 1- tpc.plot(tmax.k[inds.s],tol.h[spec.k,'Topt.noasym'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax'])  
+      
+      #shift Topt
+      Topt.shift= tol.h[spec.k,'Topt']-tol.h[spec.k,'Topt.noasym']
+      if(length(inds)>0) ts[year.k,spec.k,inds,4]= 1- tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], (tol.h[spec.k,'CTmax']+Topt.shift) )  
+      
+      #shift slope
+      if(length(inds.s)>0) ts[year.k,spec.k,inds.s,5]= 1- tpc.plot(tmax.k[inds.s],tol.h[spec.k,'Topt.noasym'],tol.h[spec.k,'CTmin'], (tol.h[spec.k,'CTmax']-Topt.shift) )  
       
       #Topt average asymetry
-      ts[year.k,spec.k,inds,4]= 1- tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt.aveasym'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax'])  
+      if(length(inds)>0) ts[year.k,spec.k,inds,6]= 1- tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt.aveasym'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax'])  
       
       #actual Topt
-      ts[year.k,spec.k,inds,5]= 1- tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax'])  
+      if(length(inds)>0) ts[year.k,spec.k,inds,7]= 1- tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax'])  
       
       #number of days with >= 50% loss of performance
+      #symetric
+      if(length(inds.s)>0) {
+      perf= tpc.plot(tmax.k[inds.s],tol.h[spec.k,'Topt.noasym'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax']) 
+      t50= rep(NA, length(inds.s))
+      t50[perf<0.5]<-1
+      ts[year.k,spec.k,inds.s,8]= t50
+     
+      #shift Topt
+      perf= tpc.plot(tmax.k[inds.s],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], (tol.h[spec.k,'CTmax']+Topt.shift) )
+      t50= rep(NA, length(inds.s))
+      t50[perf<0.5]<-1
+      ts[year.k,spec.k,inds.s,9]= t50}
+      
+      if(length(inds)>0) {
+      #shift slope
+      perf= tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt.noasym'],tol.h[spec.k,'CTmin'], (tol.h[spec.k,'CTmax']-Topt.shift) )  
+      t50= rep(NA, length(inds))
+      t50[perf<0.5]<-1
+      ts[year.k,spec.k,inds,10]= t50
+      
+      #Topt ave sym
+      perf= tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt.aveasym'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax']) 
+      t50= rep(NA, length(inds))
+      t50[perf<0.5]<-1
+      ts[year.k,spec.k,inds,11]= t50
+      
+      #Actual Topt
       perf= tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax']) 
       t50= rep(NA, length(inds))
       t50[perf<0.5]<-1
-      ts[year.k,spec.k,inds,6]= t50
+      ts[year.k,spec.k,inds,12]= t50}
       
-    } #end check >Topt
-    
+      #-----
+      #performance
+      if(length(inds)>0) ts[year.k,spec.k,inds,13]= tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax'])  
+      
     # #thermodynamic scale
     # Topt.tt= thermo.temp(tol.h[spec.k,'topt'])
     # tmax.k.tt= thermo.temp(tmax.k)
@@ -228,7 +274,7 @@ for(spec.k in 1:nrow(tol.h)){
 
 #------------
 #TSM
-tsm<-  array(NA, dim= c(length(years),nrow(tol.h),6) )
+tsm<-  array(NA, dim= c(length(years),nrow(tol.h),8) )
 
 #reorder ts
 ts2 <- aperm(ts, c(2,1,3,4))
@@ -242,10 +288,17 @@ for(year.k in 1:length(years)){
   #performace detriment
   #no asym
   tsm[year.k,,3]= apply(ts2[,year.k,,3], MARGIN=1, FUN=sum, na.rm=T)
-  #ave asym
+  #shift Topt
   tsm[year.k,,4]= apply(ts2[,year.k,,4], MARGIN=1, FUN=sum, na.rm=T)
-  #actual asym
+  #shift slope
   tsm[year.k,,5]= apply(ts2[,year.k,,5], MARGIN=1, FUN=sum, na.rm=T)
+  #ave asym
+  tsm[year.k,,6]= apply(ts2[,year.k,,6], MARGIN=1, FUN=sum, na.rm=T)
+  #actual asym
+  tsm[year.k,,7]= apply(ts2[,year.k,,7], MARGIN=1, FUN=sum, na.rm=T)
+  
+  #perf
+  tsm[year.k,,8]= apply(ts2[,year.k,,13], MARGIN=1, FUN=sum, na.rm=T)
   
   #Replace -Inf with NA
   tsm[year.k,which(is.infinite(tsm[,year.k,2])),2]=NA
@@ -258,26 +311,37 @@ tsm.yrs= apply(tsm, MARGIN=c(2,3), FUN=mean, na.rm=T)
 
 #----
 #number of days with 50% loss of performance
-d1= apply(ts2[,,,6], MARGIN=c(1,2), FUN=sum, na.rm=TRUE)
+d1= apply(ts2[,,,8:12], MARGIN=c(1,2,4), FUN=sum, na.rm=TRUE)
 #average across years
-days_p50= rowMeans(d1)
+days_p50= apply(d1, MARGIN=c(1,3), FUN=mean, na.rm=TRUE)
 
 #----------------------
 #PLOT
 #comparison plots
-tol2= cbind(tol.h, days_p50, tsm.yrs)
-colnames(tol2)[c(16,18:20)]=c('minTSM','Perf.noAsym','Perf.aveAsym','Perf')
+tol2= cbind(tol.h, tsm.yrs)
+colnames(tol2)[c(15,17:21 )]=c('minTSM','Perf.noAsym','Perf.dTopt','Perf.dSlope','Perf.aveAsym','Perf')
 #drop fish
 tol2=tol2[-which(tol2$taxa=="fish"),] 
 
 #drop unneeded columns
-tol2s= tol2[,c("taxa","asym","days_p50","minTSM","Perf.noAsym","Perf.aveAsym","Perf")]
+tol2s= tol2[,c("taxa","asym","minTSM","Perf.noAsym",'Perf.dTopt','Perf.dSlope',"Perf.aveAsym","Perf")]
 #change names
-names(tol2s)[5:6]=c("without asymetry","fitted asymetry")
+#names(tol2s)[5:6]=c("without asymetry","fitted asymetry")
 
 #-----
 #compare to TSM
-fig4a= ggplot(tol2, aes(x=log(Perf),y=minTSM, color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
+
+#max performance by taxa
+max.perf= aggregate(tol2s$Perf, list(tol2s$taxa), FUN="max")
+colnames(max.perf)=c("taxa","Perf")
+
+#Scale
+match1= match(tol2$taxa, max.perf$taxa)
+
+tol2$PerfS= tol2$Perf/max.perf$Perf[match1]
+tol2$PerfS[tol2$PerfS>0.5]=0.5
+
+fig4a= ggplot(tol2, aes(x=PerfS,y=minTSM, color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
   theme_bw()+scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom")+
   xlab("log annual performance detriment")+ylab("annual minimum of daily TSM (°C)")+
   ylim(-10,15)
@@ -285,22 +349,46 @@ fig4a= ggplot(tol2, aes(x=log(Perf),y=minTSM, color=asym)) +geom_point()+facet_w
 #-----
 #Compare performance estimates
 #to long format
-tol.l <- melt(tol2s, id=c("taxa","asym","days_p50","minTSM","Perf"))
+tol.l <- melt(tol2s, id=c("taxa","asym","minTSM","Perf"))
 
-fig4b= ggplot(tol.l, aes(x=log(Perf),y=log(value), color=variable)) +geom_point()+facet_wrap(~taxa, nrow=1) +
+#scale to max
+match1= match(tol.l$taxa, max.perf$taxa)
+tol.l$Perf= tol.l$Perf/max.perf$Perf[match1]
+tol.l$value= tol.l$value/max.perf$Perf[match1]
+
+#set max to 2.5
+tol.l$Perf[tol.l$Perf>2.5]=2.5
+tol.l$value[tol.l$value>2.5]=2.5
+
+fig4b= ggplot(tol.l, aes(x=(Perf),y=(value), color=variable)) +geom_point()+facet_wrap(~taxa, nrow=1) +
   theme_bw()+ theme(legend.position = "bottom", legend.title = element_blank())+
-  ylab("Estimated log annual performance detriment")+xlab("log annual performance detriment")+
+  ylab("estimated annual performance detriment")+xlab("annual performance detriment")+
   scale_color_viridis(discrete=TRUE)+geom_abline(slope=1, intercept=0)
 
 #-----
 #proportion days with 50% performance loss
 
-fig4c= ggplot(tol2, aes(x=minTSM,y=days_p50/365, color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
-  theme_bw()+xlim(-10,10)+ylim(0,0.65) +
-  scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom",legend.key.width = unit(2, "cm"))+
-  ylab("proportion days with 50% performance loss")+xlab("annual minimum of daily TSM (°C)")
-#+geom_smooth(method='loess',se=TRUE)
+#comparison plots
+tol2d= cbind(tol.h, days_p50)
+colnames(tol2d)[(ncol(tol.h)+1):(ncol(tol.h)+5)]=c('Perf.noAsym','Perf.dTopt','Perf.dSlope','Perf.aveAsym','Perf')
+#drop fish
+tol2d=tol2d[-which(tol2d$taxa=="fish"),] 
 
+#drop unneeded columns
+tol2sd= tol2d[,c("taxa","asym","Perf.noAsym",'Perf.dTopt','Perf.dSlope',"Perf.aveAsym","Perf")]
+
+#to long format
+tol.l <- melt(tol2sd, id=c("taxa","asym", "Perf"))
+
+#scale to max
+match1= match(tol.l$taxa, max.perf$taxa)
+tol.l$Perf= tol.l$Perf/max.perf$Perf[match1]
+tol.l$value= tol.l$value/max.perf$Perf[match1]
+
+fig4c= ggplot(tol.l, aes(x=Perf,y=value, color=variable)) +geom_point()+facet_wrap(~taxa, nrow=1) +
+  theme_bw()+theme(legend.position = "bottom", legend.title = element_blank())+
+  ylab("estimated days with 50% performance loss")+xlab("days with 50% performance loss")+
+  scale_color_viridis(discrete=TRUE)+geom_abline(slope=1, intercept=0)
 #----
 #Plot
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/figures/")
@@ -313,17 +401,16 @@ dev.off()
 #----
 #LATITUDINAL PLOT
 #latitudinal figure for plankton
-tol.p= tol2[which(tol2$taxa=="plankton"), c(1:12,15:16,18:20) ]
-#convert days_p50 to proportion
-tol.p$days_p50= tol.p$days_p50/365
-#convert performance
-tol.p$Perf= log(tol.p$Perf)
-tol.p$Perf.noAsym= log(tol.p$Perf.noAsym)
-tol.p$Perf.aveAsym= log(tol.p$Perf.aveAsym)
+tol.p= tol2[which(tol2$taxa=="plankton"), c(1:12,15,17:21) ]
 
 #to long format
 tol.pl<- tol.p %>%
-  gather("metric", "value", c("minTSM","Perf","Perf.noAsym","Perf.aveAsym") ) #"days_p50"
+  gather("metric", "value", c("Perf","Perf.noAsym","Perf.aveAsym","Perf.dTopt","Perf.dSlope") ) #"days_p50"
+
+#Scale
+match1= match(tol.pl$taxa, max.perf$taxa)
+tol.pl$value= tol.pl$value/max.perf$Perf[match1]
+
 #make labels
 tol.pl$metric.lab<-NA
 tol.pl$metric.lab[tol.pl$metric=="days_p50"]<- "proportion days with 50% performance loss"
@@ -344,203 +431,9 @@ tol.p2= tol.pl[which(tol.pl$metric %in% c("Perf","Perf.noAsym")),]
 
 fig5b= ggplot(tol.p2, aes(x=abs(lat),y=value, color=metric.lab) ) +geom_point()+geom_smooth(method='loess',se=TRUE) +
   theme_bw()+scale_color_viridis(name="", discrete=TRUE)+ theme(legend.position = "bottom",legend.key.width = unit(2, "cm"))+
-  xlab("absolute latitude (°)")+ylab("log annual performance detriment")
+  xlab("absolute latitude (°)")+ylab("annual performance detriment")
 
 pdf("Figs5_TSMlat.pdf", height = 8, width = 8)
 fig5a +fig5b +plot_annotation(tag_levels = 'a') +plot_layout(nrow=2) 
 dev.off()
-
-
-
-
-#OLD VERSION***********************************
-#THERMAL STRESS ESTIMATES
-
-ts= array(NA, dim= c(length(years), nrow(tol.h), 365,6) )
-
-#calculate degree days above Topt
-for(spec.k in 1:nrow(tol.h)){
-  
-  #find closest grid cell
-  lon.ind= which.min(abs(ncep.lons.neg - tol.h[spec.k, "lon" ]))
-  lat.ind= which.min(abs(ncep.lats - tol.h[spec.k, "lat" ]))
-  
-  #loop years
-  for(year.k in 1:length(years)){
-    
-    #extract data
-    #daily min max
-    ncep.cell= cbind(year, doy, hours, ncep.temp.yrs[year.k,lon.ind,lat.ind,])
-    colnames(ncep.cell)[4]="temp"
-    ncep.cell= as.data.frame(ncep.cell)
-    #make day factor
-    ncep.cell$doy= as.factor(ncep.cell$doy)
-    
-    #daily min and max
-    ncep.cmm= ncep.cell %>%
-      group_by(doy) %>%
-      summarise(min = min(temp), max= max(temp))
-    ncep.cmm= as.matrix(ncep.cmm)
-    tmax.k= as.numeric( ncep.cmm[,"max"] )
-    tmin.k= as.numeric( ncep.cmm[,"min"] )
-    
-    #daily safety margins
-    ts[year.k,spec.k,,1]= tol.h[spec.k,'CTmax']-tmax.k
-    ts[year.k,spec.k,,2]= tol.h[spec.k,'Topt']-tmax.k 
-    
-    #metabolic scaled thermal stress
-    inds= which(tmax.k > tol.h[spec.k,'Topt'])
-    
-    if(length(inds)>0){ 
-      ts[year.k,spec.k,inds,3]= tmax.k[inds]- tol.h[spec.k,'Topt']  
-    
-    #performance detriment
-      ts[year.k,spec.k,inds,5]= 1- tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax'])  
-    
-    #number of days with >= 50% loss of performance
-    perf= tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax']) 
-    t50= rep(NA, length(inds))
-    t50[perf<0.5]<-1
-    ts[year.k,spec.k,inds,6]= t50
-    
-    } #end check >Topt
-    
-    #thermodynamic scale
-    Topt.tt= thermo.temp(tol.h[spec.k,'topt'])
-    tmax.k.tt= thermo.temp(tmax.k)
-    
-    inds= which(tmax.k.tt > Topt.tt)
-    
-    if(length(inds>0)) ts[year.k,spec.k,inds,4]= tmax.k.tt[inds]- Topt.tt  
-    
-  } # end year loop
-  
-} # end loop species
-
-#------------
-#TSM
-tsm<-  array(NA, dim= c(length(years),nrow(tol.h),13,4) )
-
-#reorder ts
-ts <- aperm(ts, c(2,1,3,4))
-
-#loop years
-for(year.k in 1:length(years)){
-  
-  #TSM daily: min, 10%, 50%, 90%
-  #CTmax-Tmax
-  tsm[year.k,,1:4,1]=t(apply(ts[,year.k,,1], MARGIN=1, FUN='quantile', probs=c(0,0.1,0.5,0.9), na.rm=TRUE))
-  #Topt-Tmax
-  tsm[year.k,,1:4,2]= t(apply(ts[,year.k,,2], MARGIN=1, FUN='quantile', probs=c(0,0.1,0.5,0.9), na.rm=TRUE))
-  
-  #lowest 7 day average
-  tsm[year.k,,5,1]= apply(rollmean(ts[,year.k,,1], 7, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
-  tsm[year.k,,5,2]= apply(rollmean(ts[,year.k,,2], 7, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
-  #lowest 14 day average
-  tsm[year.k,,6,1]= apply(rollmean(ts[,year.k,,1], 14, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
-  tsm[year.k,,6,2]= apply(rollmean(ts[,year.k,,2], 14, fill=NA), MARGIN=1, FUN='min', na.rm=TRUE)
-  
-  #count of days <5
-  count.sub5= function(x) sum(x<5)
-  tsm[year.k,,7,1]= apply(rollmean(ts[,year.k,,1], 14, fill=NA), MARGIN=1, FUN='count.sub5')
-  tsm[year.k,,7,2]= apply(rollmean(ts[,year.k,,2], 14, fill=NA), MARGIN=1, FUN='count.sub5')
-  
-  #Metabolic integration
-  tsm[year.k,,8,3]= apply(ts[,year.k,,3], MARGIN=1, FUN='maxc.overTopt')
-  tsm[year.k,,8,4]= apply(ts[,year.k,,4], MARGIN=1, FUN='maxc.overTopt')
-  #Replace -Inf with NA
-  tsm[year.k,which(is.infinite(tsm[,year.k,8,3])),8,3]=NA
-  tsm[year.k,which(is.infinite(tsm[,year.k,8,4])),8,4]=NA
-  
-  #-----
-  #aggregate
-  #sum, count, mean
-  tsm[year.k,,9,3]= apply(ts[,year.k,,3], MARGIN=1, FUN=sum, na.rm=T)
-  tsm[year.k,,9,4]= apply(ts[,year.k,,4], MARGIN=1, FUN=sum, na.rm=T)
-  
-  tsm[year.k,,10,3]= apply(ts[,year.k,,3], MARGIN=1, FUN=count)
-  tsm[year.k,,10,4]= apply(ts[,year.k,,4], MARGIN=1, FUN=count)
-  
-  tsm[year.k,,11,3]= apply(ts[,year.k,,3], MARGIN=1, FUN=mean, na.rm=T)
-  tsm[year.k,,11,4]= apply(ts[,year.k,,4], MARGIN=1, FUN=mean, na.rm=T)
-  
-  #performance detriment
-  tsm[year.k,,12,3]= apply(ts[,year.k,,5], MARGIN=1, FUN=sum, na.rm=T)
-  
-  #Replace -Inf with NA
-  tsm[year.k,which(is.infinite(tsm[,year.k,9,3])),9,3]=NA
-  tsm[year.k,which(is.infinite(tsm[,year.k,9,4])),9,4]=NA
-  tsm[year.k,which(is.infinite(tsm[,year.k,10,3])),10,3]=NA
-  tsm[year.k,which(is.infinite(tsm[,year.k,10,4])),10,4]=NA
-  tsm[year.k,which(is.infinite(tsm[,year.k,11,3])),11,3]=NA
-  tsm[year.k,which(is.infinite(tsm[,year.k,11,4])),11,4]=NA
-  tsm[year.k,which(is.infinite(tsm[,year.k,12,3])),12,3]=NA
-} #end year loop
-
-#number of days with 50% loss of performance
-d1= apply(ts[,,,6], MARGIN=c(1,2), FUN=sum, na.rm=TRUE)
-#average across years
-days_p50= rowMeans(d1)
-
-dat_p50= cbind(tol.h,days_p50)
-
-plot.p50= ggplot(dat_p50, aes(x=abs(lat),y=days_p50) ) +geom_point()+facet_wrap(~taxa) +geom_smooth(method='loess',se=TRUE)
-
-#----------------------
-#AGGREGATE ACROSS YEARS
-tsm.yrs= apply(tsm, MARGIN=c(2,3,4), FUN=mean, na.rm=T)
-
-#===============================
-#PLOT
-#comparison plots
-tol2= cbind(tol.h, days_p50, tsm.yrs[,1:7,1],tsm.yrs[,8:12,3])
-colnames(tol2)[14:20]=c('minTSM','TSM10p','TSM50p', 'TSM90p', 'low7d', 'low14d', 'count5' )
-colnames(tol2)[21:25]=c('dTopt','sumI','countI','meanI','Perf')
-#drop fish
-tol2=tol2[-which(tol2$taxa=="fish"),] 
-
-fig4a= ggplot(tol2, aes(x=minTSM,y=log(Perf), color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
-  theme_bw()+scale_color_viridis()+xlim(-10,10)+ theme(legend.position = "none")+
-  ylab("log annual performance detriment")+xlab("annual minimum of daily TSM (°C)")
-
-fig4b= ggplot(tol2, aes(x=minTSM,y=days_p50/365, color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
-  theme_bw()+xlim(-10,10)+ylim(0,0.65) +
-  scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom",legend.key.width = unit(2, "cm"))+
-  ylab("proportion days with 50% performance loss")+xlab("annual minimum of daily TSM (°C)")
-#+geom_smooth(method='loess',se=TRUE)
-
-#Plot
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/figures/")
-pdf("Figs4_TSM.pdf", height = 8, width = 8)
-plot_grid(fig4a,fig4b, labels = c("A", "B"), ncol = 1)
-dev.off()
-
-#----
-#latitudinal figure for plankton
-tol.p= tol2[which(tol2$taxa=="plankton"), c(1:12,13,14,25) ]
-#convert days_p50 to proportion
-tol.p$days_p50= tol.p$days_p50/365
-#convert performance
-tol.p$Perf= log(tol.p$Perf)
-
-#to long format
-tol.pl<- tol.p %>%
-  gather("metric", "value", 13:15)
-#make labels
-tol.pl$metric.lab<-NA
-tol.pl$metric.lab[tol.pl$metric=="days_p50"]<- "proportion days with 50% performance loss"
-tol.pl$metric.lab[tol.pl$metric=="minTSM"]<- "annual minimum of daily TSM"
-tol.pl$metric.lab[tol.pl$metric=="Perf"]<- "log annual performance detriment"
-tol.pl$metric.lab= factor(tol.pl$metric.lab, levels=c("annual minimum of daily TSM","log annual performance detriment","proportion days with 50% performance loss"))
-
-fig5= ggplot(tol.pl, aes(x=abs(lat),y=value, color=asym) ) +geom_point()+facet_wrap(~metric.lab,ncol=1,scales="free_y") +geom_smooth(method='loess',se=TRUE) +
-  theme_bw()+scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom",legend.key.width = unit(2, "cm"))+
-  xlab("absolute latitude (°)")
-
-pdf("Figs5_TSMlat.pdf", height = 12, width = 8)
-fig5
-dev.off()
-
-
-
 
