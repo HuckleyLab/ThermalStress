@@ -343,7 +343,7 @@ tol2$PerfS[tol2$PerfS>0.5]=0.5
 
 fig4a= ggplot(tol2, aes(x=PerfS,y=minTSM, color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
   theme_bw()+scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom")+
-  xlab("log annual performance detriment")+ylab("annual minimum of daily TSM (°C)")+
+  xlab("annual proportional performance detriment")+ylab("annual minimum of daily TSM (°C)")+
   ylim(-10,15)
 
 #-----
@@ -360,9 +360,19 @@ tol.l$value= tol.l$value/max.perf$Perf[match1]
 tol.l$Perf[tol.l$Perf>2.5]=2.5
 tol.l$value[tol.l$value>2.5]=2.5
 
-fig4b= ggplot(tol.l, aes(x=(Perf),y=(value), color=variable)) +geom_point()+facet_wrap(~taxa, nrow=1) +
+#make labels
+tol.l$metric.lab<-NA
+tol.l$metric.lab[tol.l$variable=="Perf.noAsym"]<- "no asymmetry"
+tol.l$metric.lab[tol.l$variable=="Perf.dTopt"]<- "omit slope"
+tol.l$metric.lab[tol.l$variable=="Perf.dSlope"]<- "omit Topt shift"
+tol.l$metric.lab[tol.l$variable=="Perf.aveAsym"]<- "taxa asymmetry"
+#drop symmetric
+tol.l= subset(tol.l, tol.l$metric.lab %in% c("omit Topt shift","omit slope","taxa asymmetry"))
+tol.l$metric.lab= factor(tol.l$metric.lab, levels=c("omit Topt shift","omit slope","taxa asymmetry")) #drop symmetric
+
+fig4b= ggplot(tol.l, aes(x=(Perf),y=(value), color=metric.lab)) +geom_point()+facet_wrap(~taxa, nrow=1) +
   theme_bw()+ theme(legend.position = "bottom", legend.title = element_blank())+
-  ylab("estimated annual performance detriment")+xlab("annual performance detriment")+
+  ylab("estimated annual performance detriment")+xlab("annual proportional performance detriment")+
   scale_color_viridis(discrete=TRUE)+geom_abline(slope=1, intercept=0)
 
 #-----
@@ -410,6 +420,8 @@ tol.pl<- tol.p %>%
 #Scale
 match1= match(tol.pl$taxa, max.perf$taxa)
 tol.pl$value= tol.pl$value/max.perf$Perf[match1]
+#set max to 0.5
+tol.pl$value[tol.pl$value>0.5]=0.5
 
 #make labels
 tol.pl$metric.lab<-NA
@@ -431,7 +443,7 @@ tol.p2= tol.pl[which(tol.pl$metric %in% c("Perf","Perf.noAsym")),]
 
 fig5b= ggplot(tol.p2, aes(x=abs(lat),y=value, color=metric.lab) ) +geom_point()+geom_smooth(method='loess',se=TRUE) +
   theme_bw()+scale_color_viridis(name="", discrete=TRUE)+ theme(legend.position = "bottom",legend.key.width = unit(2, "cm"))+
-  xlab("absolute latitude (°)")+ylab("annual performance detriment")
+  xlab("absolute latitude (°)")+ylab("annual proportional performance detriment")
 
 pdf("Figs5_TSMlat.pdf", height = 8, width = 8)
 fig5a +fig5b +plot_annotation(tag_levels = 'a') +plot_layout(nrow=2) 

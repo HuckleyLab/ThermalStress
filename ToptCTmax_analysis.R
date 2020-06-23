@@ -6,6 +6,7 @@ library(tidyr)
 library(cowplot)
 library(viridis)
 library(patchwork)
+library(latex2exp)
 
 #load data
 #setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
@@ -75,7 +76,86 @@ tpc.mat= function(tpc.dat){
 
 temps=-5:60
 
-#ggplot
+#================
+#Fig 0 Conceptual
+
+#make TPC matrix
+solve.asym= function(asym, CTmin=0, CTmax=40){
+Topt= (asym*(CTmax-CTmin)+CTmin+CTmax)/2  
+return(Topt)
+}
+
+tpc0=as.data.frame(rbind( c(solve.asym(0.0), 0, 40), c(solve.asym(0.5), 0, 40)) )
+
+out=t(apply(tpc0, MARGIN=1, FUN=tpc.mat))
+tpc0$asym= c(0.0, 0.5)
+colnames(tpc0)[1:3]=c("Topt","CTmin","CTmax")
+
+colnames(out)= temps
+tpc.pred= cbind(tpc0, out)
+
+#to long format
+tpc.l<- tpc.pred %>%
+  gather("temperature", "performance", 5:ncol(tpc.pred))
+tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
+
+#plot
+tpc.l$asym= factor(tpc.l$asym)
+fig0a= ggplot(tpc.l)+aes(x=temperature, y = performance, group=asym)+geom_line(aes(color=asym))+
+  theme_bw(base_size=14)+theme(legend.position="bottom")+scale_color_viridis(discrete=TRUE, name="asymmetry")+
+  xlim(-2,45)+
+  ylab("relative performance")+xlab("body temperature (°C)")+
+  geom_segment(data=tpc0, aes(x = 35, y = 1, xend = 35, yend = 0), colour = "blue", size=1, linetype = "dashed")+ #draw performance detriment
+  geom_segment(data=tpc0, aes(x = 35, y = 0, xend = 40, yend = 0), colour = "red", size=2)+  #draw TSM
+  geom_segment(data=tpc0, aes(x = 35, y = 1, xend = 35, yend = tpc.plot(35,tpc0[1,1],tpc0[1,2],tpc0[1,3]) ), colour = "blue", size=2)+ #draw performance detriment
+  geom_segment(data=tpc0, aes(x = 35.3, y = 1, xend = 35.3, yend = tpc.plot(35,tpc0[2,1],tpc0[2,2],tpc0[2,3]) ), colour = "blue", size=2)+ #draw performance detriment
+  geom_text(data=tpc0, x=0, y=0.05, label="CTmin")+
+  geom_text(data=tpc0, x=43, y=0.05, label="CTmax")+
+  geom_text(data=tpc0, x=tpc0[1,1]-3, y=1, label="Topt")+
+  geom_text(data=tpc0, x=35, y=0.85, label="performance detriment")+
+  geom_text(data=tpc0,x=33, y=0, label="TSM")+
+  geom_text(data=tpc0,x=33, y=0, label="TSM")
+
+#add equations
+fig0a= fig0a + 
+  geom_text(data=tpc0,x=9, y=0.9, label="annual performance detriment=", size=4)+
+  geom_text(data=tpc0,x=5, y=0.8, label=TeX("$\\sum_{d=1}^{365} 1-P(T_d)$ if $T_d>Topt$"), size=4)+
+  geom_text(data=tpc0,x=4, y=0.6, label=TeX("TSM=$min_{d \\in \\lbrack 1,365 \\rbrack} T_d$"), size=4)
+
+#----
+#plot other curves
+
+tpc0=as.data.frame(rbind( c(solve.asym(0.5), 0, 40), c(solve.asym(0.5), 0, 40+10), c(solve.asym(0.0), 0, 40-10) ))
+
+out=t(apply(tpc0, MARGIN=1, FUN=tpc.mat))
+tpc0$lab= c("observed", "omit slope", "omit Topt shift")
+colnames(tpc0)[1:3]=c("Topt","CTmin","CTmax")
+
+colnames(out)= temps
+tpc.pred= cbind(tpc0, out)
+
+#to long format
+tpc.l<- tpc.pred %>%
+  gather("temperature", "performance", 5:ncol(tpc.pred))
+tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
+
+#plot
+tpc.l$lab= factor(tpc.l$lab, levels=c("omit Topt shift","omit slope","observed"))
+fig0b= ggplot(tpc.l)+aes(x=temperature, y = performance, group=lab)+geom_line(aes(color=lab))+
+  theme_bw(base_size=14)+theme(legend.position="bottom")+scale_color_viridis(discrete=TRUE, name="")+
+  xlim(-2,45)+
+  ylab("relative performance")+xlab("body temperature (°C)")+
+  geom_segment(data=tpc0, aes(x = 35, y = 1, xend = 35, yend = 0), colour = "blue", linetype = "dashed") #draw performance detriment
+
+#----
+combined <- fig0a +fig0b + plot_annotation(tag_levels = 'a') +plot_layout(nrow=1)
+
+pdf("Fig0.pdf", height = 8, width = 12)
+combined
+dev.off()
+
+#================
+#FIGURE 1
 out=t(apply(tpc[,c("Topt","CTmin","CTmax")], MARGIN=1, FUN=tpc.mat))
 colnames(out)= temps
 tpc.pred= cbind(tpc, out)
@@ -133,7 +213,7 @@ fig1c= ggplot(data=tpc.plot2, aes(x=Topt, y = value, color=asym, shape=variable)
   theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
   scale_color_viridis(name="asymmetry")+
   ylab("CTmin and CTmax (°C)")+xlab("Topt (°C)")+
-  guides(color = FALSE)
+  guides(color = FALSE, shape=FALSE)
 
 #breadth
 fig1d= ggplot(data=tpc, aes(x=Topt, y = breadth, color=asym, group=taxa))+geom_point()+
@@ -149,8 +229,8 @@ fig1d= ggplot(data=tpc.plot2, aes(x=Topt, y = value, color=asym, shape=variable)
   facet_grid(taxa~.)+ geom_smooth(method="lm")+
   theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
   scale_color_viridis(name="asymmetry")+
-  ylab("breadth (°C)")+xlab("Topt (°C)")+
-  guides(color = FALSE)
+  ylab("breadth (CTmax-CTmin and CTmax-Topt, °C)")+xlab("Topt (°C)")+
+  guides(color = FALSE, shape=FALSE)
 
 #warm breadth
 fig1e= ggplot(data=tpc, aes(x=Topt, y = CTmax.Topt.breadth, color=asym, group=taxa))+geom_point()+
