@@ -1,5 +1,6 @@
 library(ggplot2)
 library(cowplot)
+library(plyr)
 library(dplyr)
 library(reshape2)
 library(tidyr)
@@ -7,6 +8,7 @@ library(cowplot)
 library(viridis)
 library(patchwork)
 library(latex2exp)
+library(ggnewscale)
 
 #load data
 #setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
@@ -14,8 +16,10 @@ setwd("./data/")
 tpc=read.csv("tpcs.csv")
 #drop data without all metrics
 tpc= subset(tpc, !is.na(tpc$CTmin) & !is.na(tpc$Topt) & !is.na(tpc$CTmax) )
+#change photosynthesis to plants
+tpc$taxa[tpc$taxa=="photosynthesis"]="plants"
 
-taxas= c("insects","lizards","plankton","fish","photosynthesis","ants")
+taxas= c("insects","lizards","plankton","fish","plants","ants")
 
 #setwd for figures
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/figures/")
@@ -167,7 +171,7 @@ tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
 #plot
 fig1a= ggplot(tpc.l)+aes(x=temperature, y = performance, color=asym, group=X)+facet_grid(taxa~.)+geom_line()+
   theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="asymmetry")+
-  xlim(-5,55)+
+  xlim(-5,55)+ylim(0,1)+
   ylab("relative performance")+xlab("temperature (°C)")
 
 #-----------------------------------
@@ -194,51 +198,31 @@ fig1b= ggplot(tpc) + aes(x=Topt, y = asym, color=asym, group=taxa)+geom_point()+
   ylim(-0.5,0.75)+
   theme_bw()+
   theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
-  geom_smooth(method="lm")+scale_color_viridis(name="asymmetry")+
+  geom_smooth(method="lm", color="black")+scale_color_viridis(name="asymmetry")+
   xlab("Topt (°C)")+
-  guides(color = FALSE)
-
-#CTmax
-fig1c= ggplot(data=tpc, aes(x=Topt, y = CTmax, color=asym, group=taxa))+geom_point()+
-  facet_grid(taxa~.)+ geom_smooth(method="lm")+
-  theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
-  scale_color_viridis(name="asymmetry")+
-  ylab("CTmax (°C)")+xlab("Topt (°C)")+
   guides(color = FALSE)
 
 #combine CTmin and CTmax
 tpc.plot2= subset(tpc.plot, tpc.plot$variable %in% c("CTmax","CTmin") )
-fig1c= ggplot(data=tpc.plot2, aes(x=Topt, y = value, color=asym, shape=variable))+geom_point()+
-  facet_grid(taxa~.)+ geom_smooth(method="lm")+
-  theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
+fig1c= ggplot(data=tpc.plot2, aes(x=Topt, y = value, shape=variable))+geom_point(aes(color=asym))+
+  facet_grid(taxa~.)+ 
   scale_color_viridis(name="asymmetry")+
+  new_scale_color() +
+  geom_smooth(method="lm", aes(color=variable))+
+  theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
   ylab("CTmin and CTmax (°C)")+xlab("Topt (°C)")+
   guides(color = FALSE, shape=FALSE)
 
-#breadth
-fig1d= ggplot(data=tpc, aes(x=Topt, y = breadth, color=asym, group=taxa))+geom_point()+
-  facet_grid(taxa~.)+ geom_smooth(method="lm")+
-  theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
-  scale_color_viridis(name="asymmetry")+
-  ylab("breath (°C)")+xlab("Topt (°C)")+
-guides(color = FALSE) #+ylim(0,50)
-
 #combine breadth and warm side breadth
 tpc.plot2= subset(tpc.plot, tpc.plot$variable %in% c("breadth", "warm side breadth") )
-fig1d= ggplot(data=tpc.plot2, aes(x=Topt, y = value, color=asym, shape=variable))+geom_point()+
-  facet_grid(taxa~.)+ geom_smooth(method="lm")+
-  theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
+fig1d= ggplot(data=tpc.plot2, aes(x=Topt, y = value, shape=variable))+geom_point(aes(color=asym))+
+  facet_grid(taxa~.)+ 
   scale_color_viridis(name="asymmetry")+
+  new_scale_color() +
+  geom_smooth(method="lm", aes(color=variable))+
+  theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
   ylab("breadth (CTmax-CTmin and CTmax-Topt, °C)")+xlab("Topt (°C)")+
   guides(color = FALSE, shape=FALSE)
-
-#warm breadth
-fig1e= ggplot(data=tpc, aes(x=Topt, y = CTmax.Topt.breadth, color=asym, group=taxa))+geom_point()+
-  facet_grid(taxa~.)+ geom_smooth(method="lm")+
-  theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
-  scale_color_viridis(name="asymmetry")+
-  ylab("warm side breath (°C)")+xlab("Topt (°C)")+
-  guides(color = FALSE) #+ylim(0,50)
 
 #----
 #Null analysis
@@ -322,7 +306,7 @@ write.csv(slope.mod, "Fig1stats.csv", row.names = TRUE)
 #==============================================
 #Null analysis of asymmetry relationship based on TPC constraints
 
-ps= matrix(NA, nrow=nrow(tpc), ncol=10)
+ps= matrix(NA, nrow=nrow(tpc), ncol=11)
 pc.var= as.data.frame(matrix(NA, nrow=length(taxas), ncol=4))
 pc.var[,1]= taxas
 #loadings
@@ -337,7 +321,7 @@ pc.vars=1
 # 3 is Topt, CTmin, CTmax
 # 4 is CTmin, Topt, CTmax
 
-for(pc.vars in 1:4){
+#for(pc.vars in 1:1){
 
 for(taxa in 1:length(taxas)){
   
@@ -399,6 +383,11 @@ for(taxa in 1:length(taxas)){
   p.pc2[,2]=p.mean[2]+pc$scores[,2]*pc$loadings[2,2]
   p.pc2[,3]=p.mean[3]+pc$scores[,2]*pc$loadings[2,3]
   
+  #estimate asmmetry
+  p.Topt= p.pc1[,1]
+  if(pc.vars==1) {p.CTmin= p.pc2[,2]-p.pc2[,3]; p.CTmax= p.pc2[,2]}
+  p.pc2$asym= (2*p.Topt -p.CTmax -p.CTmin)/(p.CTmax -p.CTmin )
+  
   #pc3
   p.pc3=p
   # p.pc3[,1]=p.mean[1]+pc$x[,3]*pc$rotation[3,1]
@@ -415,7 +404,7 @@ for(taxa in 1:length(taxas)){
 } #end loop taxa
 
 #add names
-if(pc.vars==1) colnames(ps)=c('pc1.Topt','pc1.CTmax','pc1.breadth','pc1.asym','pc2.Topt','pc2.CTmax','pc2.breadth','pc3.Topt','pc3.CTmax','pc3.breadth')
+if(pc.vars==1) colnames(ps)=c('pc1.Topt','pc1.CTmax','pc1.breadth','pc1.asym','pc2.Topt','pc2.CTmax','pc2.breadth','pc2.asym','pc3.Topt','pc3.CTmax','pc3.breadth')
 if(pc.vars==2) colnames(ps)=c('pc1.Topt','pc1.coolb', 'pc1.warmb','pc1.asym','pc2.Topt','pc2.coolb', 'pc2.warmb','pc3.Topt','pc3.coolb', 'pc3.warmb')
 if(pc.vars==3) colnames(ps)=c('pc1.Topt','pc1.CTmin', 'pc1.CTmax','pc1.asym','pc2.Topt','pc2.CTmin', 'pc2.CTmax','pc3.Topt','pc3.CTmin', 'pc3.CTmax')
 if(pc.vars==4) colnames(ps)=c('pc1.CTmin','pc1.Topt', 'pc1.CTmax','pc1.asym','pc2.CTmin','pc2.Topt', 'pc2.CTmax','pc3.CTmin','pc3.Topt', 'pc3.CTmax')
@@ -440,12 +429,22 @@ tpc.pca$pc3.CTmax= tpc.pca$pc3.Topt + tpc.pca$pc3.warmb}
 
 #------
 #plots
-#assymetry
-tpc.pca$lab="PC1"
-fig3a= ggplot(tpc.pca) + aes(x=pc1.Topt, y = pc1.asym, color=asym)+geom_point(size=2)+ylab("asymmetry")+xlab("Topt (°C)")+facet_grid(taxa~lab)+
-  theme_bw()+theme(legend.position="bottom")+scale_color_viridis(name="asymmetry")+ylim(-1,1)
+#asymmetry
+tpc.a1= tpc.pca[,c("pc1.Topt","pc1.asym", "asym","taxa")]
+tpc.a1$pc="PC1"
+names(tpc.a1)[1:2]=c("Topt","pc.asym")
+tpc.a2= tpc.pca[,c("pc2.Topt","pc2.asym", "asym","taxa")]
+tpc.a2$pc="PC2"
+names(tpc.a2)[1:2]=c("Topt","pc.asym")
+tpc.a= rbind(tpc.a1, tpc.a2)
+tpc.a$lab2="PC1:blue, PC2:yellow"
 
-pc.var$label=paste(" PC1=",round(pc.var$pc1.var,2),"\n PC2=",round(pc.var$pc2.var,2),"\n PC3=",round(pc.var$pc3.var,2), sep=" ")
+fig3a= ggplot(tpc.a) + aes(x=Topt, y = pc.asym, color=pc)+geom_point(size=2, alpha=0.7)+ylab("asymmetry")+
+  xlab("Topt (°C)")+facet_grid(taxa~lab2)+
+  theme_bw()+theme(legend.position="bottom")+ylim(-1,1) + scale_color_viridis(discrete=TRUE)+guides(color=FALSE)
+
+pc.var$pc=""
+pc.var$label=paste(" PC1=",round(pc.var$pc1.var,2),"\n PC2=",round(pc.var$pc2.var,2), sep=" ") #"\n PC3=",round(pc.var$pc3.var,2),
 fig3a= fig3a +geom_text(data= pc.var, mapping=aes(x=10, y=0.6,label=label))
 
 #pc plots
@@ -483,7 +482,7 @@ tpc.l$lab="PC3"
 tpc.pc3=tpc.l
 
 #combine
-tpc.l=rbind(tpc.pc1, tpc.pc2, tpc.pc3)
+tpc.l=rbind(tpc.pc1, tpc.pc2)
 
 #plot
 fig3b= ggplot(tpc.l)+aes(x=temperature, y = performance, color=asym, group=X)+facet_grid(taxa~lab)+geom_line()+
@@ -517,7 +516,7 @@ ggplot(pc.plot)+aes(x=var, y = value)+facet_grid(taxa~variable)+geom_col()+
   theme_bw()+theme(legend.position="bottom")+xlab("parameter")+ylab("loading")+geom_hline(yintercept=0)
 dev.off()
 
-}#end PC vars loop
+#}#end PC vars loop
 
 
 #================

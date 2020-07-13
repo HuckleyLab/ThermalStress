@@ -408,10 +408,36 @@ fig4a +fig4b +plot_annotation(tag_levels = 'a') +plot_layout(nrow=2)
 
 dev.off()
 
+#-----
+#stats
+#fig 4a
+mod1= lm(minTSM~poly(PerfS,2)*asym, data=tol2[tol2$taxa=="insects",])
+mod1= lm(minTSM~poly(PerfS,2)*asym, data=tol2[tol2$taxa=="lizards",])
+mod1= lm(minTSM~poly(PerfS,2)*asym, data=tol2[tol2$taxa=="plankton",])
+
+#combine taxa
+mod1= lm(minTSM~poly(PerfS,2)*asym*taxa, data=tol2)
+
+library(nlme)
+mod1= lme(minTSM~poly(PerfS,2)*asym, random =~1|taxa, data=tol2)
+
+#fig 4b
+mod1= lme(value~Perf-1, random =~1|taxa, data=tol.l[tol.l$metric.lab %in% c("omit Topt shift"),])
+mod1= lme(value~Perf-1, random =~1|taxa, data=tol.l[tol.l$metric.lab %in% c("taxa asymmetry"),])
+mod1= lme(value~Perf-1, random =~1|taxa, data=tol.l[tol.l$metric.lab %in% c("omit slope"),])
+
+#95% CI
+#Topt: 1.23 + 0.33
+#taxa asym: 1.003785 +0.044
+#omit slope: 0.73 + 0.038
+
+summary(mod1)
+anova(mod1)
+
 #----
 #LATITUDINAL PLOT
 #latitudinal figure for plankton
-tol.p= tol2[which(tol2$taxa=="plankton"), c(1:12,15,17:21) ]
+tol.p= tol2[which(tol2$taxa %in% c("plankton")), c(1:12,15,17:21) ] #"insects","lizards",
 
 #to long format
 tol.pl<- tol.p %>%
@@ -433,7 +459,9 @@ tol.pl$metric.lab[tol.pl$metric=="Perf.aveAsym"]<- "average asymetry"
 tol.pl$metric.lab= factor(tol.pl$metric.lab, levels=c("annual minimum of daily TSM","observed","without asymetry","average asymetry"))
 
 #TSM plot
-fig5a= ggplot(tol.p, aes(x=abs(lat),y=minTSM, color=asym) ) +geom_point() +geom_smooth(method='loess',se=TRUE) +
+fig5a= ggplot(tol.p, aes(x=abs(lat),y=minTSM, color=asym) ) +
+ # facet_wrap(~taxa, nrow=1)+
+  geom_point() +geom_smooth(method='loess',se=TRUE) +
   theme_bw()+scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom",legend.key.width = unit(2, "cm"))+
   xlab("absolute latitude (°)")+ylab("annual minimum of daily TSM (°C)")+
   ylim(-10,15)
@@ -441,11 +469,22 @@ fig5a= ggplot(tol.p, aes(x=abs(lat),y=minTSM, color=asym) ) +geom_point() +geom_
 #Perf plot
 tol.p2= tol.pl[which(tol.pl$metric %in% c("Perf","Perf.noAsym")),]
 
-fig5b= ggplot(tol.p2, aes(x=abs(lat),y=value, color=metric.lab) ) +geom_point()+geom_smooth(method='loess',se=TRUE) +
+fig5b= ggplot(tol.p2, aes(x=abs(lat),y=value, color=metric.lab) ) +
+  geom_point()+geom_smooth(method='loess',se=TRUE) +
+ # facet_wrap(~taxa, nrow=1)+
   theme_bw()+scale_color_viridis(name="", discrete=TRUE)+ theme(legend.position = "bottom",legend.key.width = unit(2, "cm"))+
   xlab("absolute latitude (°)")+ylab("annual proportional performance detriment")
 
 pdf("Figs5_TSMlat.pdf", height = 8, width = 8)
 fig5a +fig5b +plot_annotation(tag_levels = 'a') +plot_layout(nrow=2) 
 dev.off()
+
+
+
+
+
+
+
+
+
 
