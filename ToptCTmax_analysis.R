@@ -221,7 +221,7 @@ fig1d= ggplot(data=tpc.plot2, aes(x=Topt, y = value, shape=variable))+geom_point
   new_scale_color() +
   geom_smooth(method="lm", aes(color=variable))+
   theme_bw()+theme(legend.position="bottom",strip.background = element_blank(), strip.text = element_blank())+
-  ylab("breadth (CTmax-CTmin and CTmax-Topt, °C)")+xlab("Topt (°C)")+
+  ylab("tolerance range (CTmax-CTmin and CTmax-Topt, °C)")+xlab("Topt (°C)")+
   guides(color = FALSE, shape=FALSE)
 
 #----
@@ -239,7 +239,7 @@ tpc$asym.null= (2*tpc$Topt-tpc$CTmax.mean - tpc$CTmin.mean)/(tpc$CTmax.mean-tpc$
 #fig1b= fig1b + geom_smooth(data=tpc,aes(x=Topt, y = asym.null, group=taxa), method="lm", se=FALSE, lty="dashed", color="blue")
 
 #-----
-combined <- fig1a +fig1b +fig1c +fig1d + plot_annotation(tag_levels = 'a') +plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom") 
+combined <- fig1a +fig1b +fig1c +fig1d + plot_annotation(tag_levels = 'A') +plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom") 
 #+fig1e
 
 pdf("Fig1.pdf", height = 8, width = 12)
@@ -296,7 +296,8 @@ if(var.k>1) slope.mod= cbind(slope.mod, asymm.mod)
 
 colnames(slope.mod)= rep(c("slope","se","t value","p"),5)
 #round
-slope.mod= round(slope.mod, 2)
+slope.mod= signif(slope.mod, 2)
+
 #add taxa
 rownames(slope.mod)= coefs$taxa
 
@@ -493,7 +494,7 @@ pc.lab= c("ToptCTmaxBreadth","ToptCoolbWarmb","ToptCTminCTmax","CTminToptCTmax")
 
 #PCA analysis as in Knies et al.
 pdf(paste("Fig3_PCAs_",pc.lab[pc.vars],".pdf",sep=""), height = 10, width = 8)
-fig3a +fig3b +plot_annotation(tag_levels = 'a') +plot_layout(nrow=1, guides = "collect", widths = c(0.35, 1)) & theme(legend.position = "bottom") 
+fig3a +fig3b +plot_annotation(tag_levels = 'A') +plot_layout(nrow=1, guides = "collect", widths = c(0.35, 1)) & theme(legend.position = "bottom") 
 dev.off()
 
 #------
@@ -501,14 +502,17 @@ dev.off()
 pc.out=rbind(pc.load[,,1],pc.load[,,2],pc.load[,,3],pc.load[,,4],pc.load[,,5],pc.load[,,6])
 pc.out=as.data.frame(round(pc.out,2))
 colnames(pc.out)=c("PC1","PC2","PC3")
-pc.out$var=rep(c("Topt","CTmax","breadth"),6)
-pc.out$var= ordered(pc.out$var, levels=c("Topt","CTmax","breadth") )
+pc.out$var=rep(c("Topt","CTmax","range"),6)
+pc.out$var= ordered(pc.out$var, levels=c("Topt","CTmax","range") )
 pc.out$taxa=rep(taxas, each=3)
 
 #write.csv(pc.out, "pcload_ToptCTmaxBreadth.csv")
 
 #to long format
 pc.plot <- melt(pc.out, id=c("var","taxa"))
+
+#remove PCA3
+pc.plot= pc.plot[pc.plot$variable %in% c("PC1","PC2"),]
 
 #plot
 pdf(paste("LoadingsPCAs_",pc.lab[pc.vars],".pdf",sep=""), height = 8, width = 6)

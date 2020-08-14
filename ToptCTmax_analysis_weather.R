@@ -404,7 +404,7 @@ fig4c= ggplot(tol.l, aes(x=Perf,y=value, color=variable)) +geom_point()+facet_wr
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/figures/")
 pdf("Figs4_TSM.pdf", height = 8, width = 8)
 
-fig4a +fig4b +plot_annotation(tag_levels = 'a') +plot_layout(nrow=2) 
+fig4a +fig4b +plot_annotation(tag_levels = 'A') +plot_layout(nrow=2) 
 
 dev.off()
 
@@ -476,7 +476,7 @@ fig5b= ggplot(tol.p2, aes(x=abs(lat),y=value, color=metric.lab) ) +
   xlab("absolute latitude (°)")+ylab("annual proportional performance detriment")
 
 pdf("Figs5_TSMlat.pdf", height = 8, width = 8)
-fig5a +fig5b +plot_annotation(tag_levels = 'a') +plot_layout(nrow=2) 
+fig5a +fig5b +plot_annotation(tag_levels = 'A') +plot_layout(nrow=2) 
 dev.off()
 
 
