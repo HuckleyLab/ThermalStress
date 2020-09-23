@@ -343,7 +343,7 @@ tol2$PerfS[tol2$PerfS>0.5]=0.5
 
 fig4a= ggplot(tol2, aes(x=PerfS,y=minTSM, color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
   theme_bw()+scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom")+
-  xlab("annual proportional performance detriment")+ylab("annual minimum of daily TSM (°C)")+
+  xlab("CPD (normalized)")+ylab("TSM (°C)")+
   ylim(-10,15)
 
 #-----
@@ -372,7 +372,7 @@ tol.l$metric.lab= factor(tol.l$metric.lab, levels=c("omit Topt shift","omit slop
 
 fig4b= ggplot(tol.l, aes(x=(Perf),y=(value), color=metric.lab)) +geom_point()+facet_wrap(~taxa, nrow=1) +
   theme_bw()+ theme(legend.position = "bottom", legend.title = element_blank())+
-  ylab("estimated annual performance detriment")+xlab("annual proportional performance detriment")+
+  ylab("estimated CPD (normalized)")+xlab("observed CPD (normalized)")+
   scale_color_viridis(discrete=TRUE)+geom_abline(slope=1, intercept=0)
 
 #-----
@@ -463,8 +463,8 @@ fig5a= ggplot(tol.p, aes(x=abs(lat),y=minTSM, color=asym) ) +
  # facet_wrap(~taxa, nrow=1)+
   geom_point() +geom_smooth(method='loess',se=TRUE) +
   theme_bw()+scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom",legend.key.width = unit(2, "cm"))+
-  xlab("absolute latitude (°)")+ylab("annual minimum of daily TSM (°C)")+
-  ylim(-10,15)
+  xlab("absolute latitude (°)")+ylab("TSM (°C)")+
+  ylim(-10,15) +geom_vline(xintercept=23.55)+geom_vline(xintercept=66.6)
 
 #Perf plot
 tol.p2= tol.pl[which(tol.pl$metric %in% c("Perf","Perf.noAsym")),]
@@ -473,7 +473,8 @@ fig5b= ggplot(tol.p2, aes(x=abs(lat),y=value, color=metric.lab) ) +
   geom_point()+geom_smooth(method='loess',se=TRUE) +
  # facet_wrap(~taxa, nrow=1)+
   theme_bw()+scale_color_viridis(name="", discrete=TRUE)+ theme(legend.position = "bottom",legend.key.width = unit(2, "cm"))+
-  xlab("absolute latitude (°)")+ylab("annual proportional performance detriment")
+  xlab("absolute latitude (°)")+ylab("CPD (normalized)")+
+  geom_vline(xintercept=23.55)+geom_vline(xintercept=66.6)
 
 pdf("Figs5_TSMlat.pdf", height = 8, width = 8)
 fig5a +fig5b +plot_annotation(tag_levels = 'A') +plot_layout(nrow=2) 

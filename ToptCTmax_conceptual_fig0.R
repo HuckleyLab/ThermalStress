@@ -93,9 +93,9 @@ return(Topt)
 }
 
 tpc0=as.data.frame(rbind( c(solve.asym(0.0), 0, 40),c(solve.asym(0.25), 0, 40), c(solve.asym(0.5), 0, 40)) )
-tpc0$scen="shift in asymmetry"
+tpc0$scen="shift in asymmetry (Topt shift)"
 tpc0.2= as.data.frame(rbind( c(20, -5, 35),c(25, 0, 40), c(30, 5, 45)) )
-tpc0.2$scen="shift in TPC"
+tpc0.2$scen="shift in TPC (CTmin, Topt, CTmax shift)"
 tpc0= rbind(tpc0, tpc0.2)
 
 out=t(apply(tpc0[,1:3], MARGIN=1, FUN=tpc.mat))
@@ -117,7 +117,7 @@ names(tpc.lab)=c("temperature","performance","lab")
 tpc.lab[,1]=c(0, 43, tpc0[1,1]-3, 9, 5, 4)
 tpc.lab[,2]=c(0.05, 0.05, 1, 0.9, 0.8, 0.6)
 tpc.lab[,3]=c("CTmin","CTmax","Topt","","","" )
-tpc.lab$scen= "shift in asymmetry"
+tpc.lab$scen= "shift in asymmetry (Topt shift)"
 
 #plot
 tpc.l$asym= factor(tpc.l$asym)
@@ -139,7 +139,7 @@ fig0a= fig0a +
   
 #add text
 fig0a= fig0a +
-  geom_text(data=tpc0, x=40, y=0.85, label="performance \n detriment", color="blue", angle=90)+
+  geom_text(data=tpc0, x=37, y=0.9, label="PD", color="blue", angle=90)+
   geom_text(data=tpc0,x=33, y=0.05, label="TSM", color="red")
   #geom_segment(data=tpc0, aes(x = 35, y = 1, xend = 35, yend = 0),arrow = arrow(length = unit(0.5, "cm")) )
 
@@ -220,23 +220,23 @@ asym.shift= (2*topt-ctmax - ctmin)/(ctmax-ctmin )
 
 #plot
 tpc1= as.data.frame(cbind(tpc.p[,2,1], tsm[,1], 1:length(asyms),asyms ))
-tpc1$scen="shift in asymmetry"
+tpc1$scen="shift in asymmetry (Topt shift)"
 tpc1$var="TSM"
 names(tpc1)[4]="asym"
 
 tpc2= as.data.frame(cbind(tpc.p[,2,2], tsm[,2], 1:length(asyms),asym.shift ))
-tpc2$scen="shift in TPC"
+tpc2$scen="shift in TPC (CTmin, Topt, CTmax shift)"
 tpc2$var="TSM"
 names(tpc2)[4]="asym"
 
 tpc3= as.data.frame(cbind(tpc.p[,2,1], pd[,1], 1:length(asyms),asyms ))
-tpc3$scen="shift in asymmetry"
-tpc3$var="pd"
+tpc3$scen="shift in asymmetry (Topt shift)"
+tpc3$var="CPD"
 names(tpc3)[4]="asym"
 
 tpc4= as.data.frame(cbind(tpc.p[,2,2], pd[,2], 1:length(asyms),asym.shift ))
-tpc4$scen="shift in TPC"
-tpc4$var="pd"
+tpc4$scen="shift in TPC (CTmin, Topt, CTmax shift)"
+tpc4$var="CPD"
 names(tpc4)[4]="asym"
 
 #tpc4$scen= factor(tpc4$scen, levels=c("TSM","performance detriment"), ordered=TRUE)
