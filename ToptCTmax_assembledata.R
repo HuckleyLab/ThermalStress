@@ -58,6 +58,7 @@ tpc= plank[,c("species","genus","family","tmin","tmax","mu.g.opt.list","habitat"
 tpc$taxa="plankton"
 names(tpc)[4:6]<- c("CTmin", "CTmax", "Topt")
 names(tpc)[8:9]<- c("lat", "lon")
+tpc$source<-"Thomas et al. 2012, 2016"
 
 #analysis
 #Use max growth data to calculate as slope
@@ -76,6 +77,7 @@ tpc2= liz[,c("Species","Genus","Family","CTmin","CTmax","newTopt")]
 tpc2$habitat="terrestrial"
 tpc2= cbind(tpc2, liz[,c("Lat","Long")])
 tpc2$taxa="lizards"
+tpc2$source="Huey et al. 2009"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
@@ -92,6 +94,7 @@ tpc2$habitat="aquatic"
 tpc2$lat= NA
 tpc2$lon= NA
 tpc2$taxa="fish"
+tpc2$source="Payne et al. 2016"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
@@ -111,6 +114,7 @@ tpc2$habitat="terrestrial"
 tpc2$Lat= NA
 tpc2$Long=NA
 tpc2$taxa="ants"
+tpc2$source="Guo et al. 2020"
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
@@ -126,7 +130,7 @@ dat$family=NA
 dat$habitat<- "terrestrial"
 dat$habitat[which(dat$Taxa %in% c("Sea urchins","Charr","Trout","Salmon","Bonefish") )]<-"aquatic"
 
-tpc2= dat[,c("Species","Genus","family","CTmin","CTmax","Topt","habitat","Latitude","Longitude","Taxa")] 
+tpc2= dat[,c("Species","Genus","family","CTmin","CTmax","Topt","habitat","Latitude","Longitude","Taxa","Citation")] 
 
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
@@ -155,6 +159,8 @@ tpc2$habitat="terrestrial"
 tpc2$lat=NA
 tpc2$lon= NA
 tpc2$taxa= "photosynthesis"
+tpc2$source= "Rezende and Bozinovic 2019"
+
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
@@ -172,6 +178,7 @@ tpc2$habitat="terrestrial"
 tpc2$lat=ins$Lat
 tpc2$lon= ins$Long
 tpc2$taxa= "insects"
+tpc2$source= ins$Source
 
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
@@ -186,7 +193,7 @@ tpc[which(tpc$taxa=="Australian lizards"),"taxa"]<-"lizards"
 
 #Write out
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
-write.csv(tpc, "tpcs.csv")
+write.csv(tpc, "tpcs_wSource.csv")
 
 #===============================
 #Datasets not included
