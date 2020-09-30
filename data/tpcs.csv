@@ -1,442 +1,442 @@
-"","species","genus","family","CTmin","CTmax","Topt","habitat","lat","lon","taxa"
-"1","antarctica","Koliella","Koliellaceae",2.684283869,20.00002464,12.60374739,"marine",-74.83,164.5,"plankton"
-"3","","Klebsormidium","Klebsormidiaceae",1.472359922,31.54463071,13.61144785,"marine",-66.28,110.48,"plankton"
-"4","antarctica","Phaeocystis","Phaeocystaceae",-1.986312195,7.892356092,3.462879644,"marine",-64.78,-64.06,"plankton"
-"9","turgiduloides","Pseudo-nitzschia","Bacillariaceae",-1.364725126,9.066391361,4.248702399,"marine",-58,62,"plankton"
-"12","huxleyi","Emiliania","No�laerhabdaceae",10.01125299,30.00053413,22.66390315,"marine",-46.98,168.12,"plankton"
-"15","salina","Dunaliella","Dunaliellaceae",5.241743956,35.25563772,24.04136555,"saline lake",-41.73,174.17,"plankton"
-"16","japonica","Fibrocapsa","Chattonellaceae",5.772252331,34.85717079,22.65169693,"marine",-41.27,174.85,"plankton"
-"19","oceanica","Gephyrocapsa","No�laerhabdaceae",5.236139316,30.13725665,22.29491187,"marine",-36.3,174.81,"plankton"
-"21","leptoporus","Calcidiscus","Calcidiscaceae",6.533056387,24.93226755,15.46532963,"marine",-34.28,17.18,"plankton"
-"24","huxleyi","Emiliania","No�laerhabdaceae",8.571599607,31.35519631,23.58273862,"marine",-29.82,31.02,"plankton"
-"25","aeruginosa","Microcystis","Microcystaceae",11.76295177,39.17449357,32.16545468,"freshwater",-25.75,27.86,"plankton"
-"27","leptoporus","Calcidiscus","Calcidiscaceae",6.785844489,24.98802763,18.50424672,"marine",-23,14,"plankton"
-"28","","Isochrysis","Isochrysidaceae",8.645771111,37.26951256,22.29850642,"marine",-18.51,121.8,"plankton"
-"31","erythraeum","Trichodesmium","Phormidiaceae",15.90112402,34.96834839,28.55694943,"marine",-16.37,145.57,"plankton"
-"33","closterium","Cylindrotheca","Bacillariaceae",15.96478792,37.65384225,23.21859481,"estuarine",-12.48,130.8,"plankton"
-"36","tuberosa","Pernambugia","",11.50484845,32.53279821,23.83795659,"marine",-11.54,-28.58,"plankton"
-"37","raciborskii","Cylindrospermopsis","Nostocaceae",10.6341162,40.776421,29.34894022,"freshwater",-8.1,-36.22,"plankton"
-"38","globosa","Phaeocystis","Phaeocystaceae",9.576999527,36.52076039,25.46180958,"marine",-1.38,-89.65,"plankton"
-"39","tropicum","Skeletonema","Skeletonemaceae",11.8695229,36.23314924,27.14348294,"marine",5,-52,"plankton"
-"42","mobiliensis","Odontella","Triceratiaceae",12.49339993,34.84882435,26.85191783,"marine",6,-54,"plankton"
-"43","didymus","Chaetoceros","Chaetocerotaceae",10.9799901,35.37964312,21.20477853,"marine",6,-54,"plankton"
-"44","setigera","Rhizosolenia","Rhizosoleniaceae",10.83853101,34.5080558,24.02837696,"marine",6,-54,"plankton"
-"45","tropicum","Skeletonema","Skeletonemaceae",10.2646778,36.25740448,25.75524262,"marine",6,-54,"plankton"
-"47","nitzschioides","Thalassionema","Thalassionemataceae",8.119941723,34.07539318,27.01490387,"marine",6,-54,"plankton"
-"50","granifera","Leonella","",14.49021928,32.02381222,26.55024552,"marine",8.71,-52.5,"plankton"
-"52","","Gymnodinium","Gymnodiniaceae",15.36930765,32.33305025,25.98823527,"marine",9.81,-89.24,"plankton"
-"54","watsonii","Crocosphaera","Cyanobacteriaceae",24.49213158,31.09526754,28.83732041,"marine",12.31,-56.04,"plankton"
-"56","","Gymnodinium","Gymnodiniaceae",14.96421695,33.02447641,24.99489219,"marine",14.67,-96.98,"plankton"
-"58","quadricaudatus","Desmodesmus","Scenedesmaceae",21.61533024,41.10258533,30.84753728,"freshwater",14.87,74.42,"plankton"
-"61","raciborskii","Cylindrospermopsis","Nostocaceae",11.68972714,39.33161518,30.13323467,"freshwater",22.73,-99.8,"plankton"
-"62","radians","Trichodesmium","Phormidiaceae",23.0811759,35.5251165,26.28269007,"marine",22.75,-158,"plankton"
-"63","watsonii","Crocosphaera","Cyanobacteriaceae",24.4530928,31.12679576,28.69128562,"marine",22.76,-158.01,"plankton"
-"64","watsonii","Crocosphaera","Cyanobacteriaceae",24.92357843,31.05446665,28.75878899,"marine",22.76,-158.01,"plankton"
-"65","costatum","Skeletonema","Skeletonemaceae",8.393079864,34.20859649,26.93807172,"marine",24.49,118.11,"plankton"
-"66","tamesis","Helicotheca","Lithodesmiaceae",9.227247622,32.70153297,24.34244147,"marine",24.49,118.11,"plankton"
-"69","catenatum","Gymnodinium","Gymnodiniaceae",7.103237861,32.73772404,24.18859962,"estuarine",26.65,-111.8,"plankton"
-"70","brevis","Karenia","Kareniaceae",12.9856863,29.56679097,20.63421151,"marine",27.01,-82.42,"plankton"
-"71","rotula","Thalassiosira","Thalassiosiraceae",1.098857339,33.66302139,22.05376417,"marine",27.5,-115,"plankton"
-"72","","Synechococcus","Synechococcaceae",12.02171824,34.44632579,26.77017664,"marine",28.5,-67.39,"plankton"
-"73","","Amphiprora","Amphipleuraceae",9.639337432,33.99368941,28.20807009,"marine",28.9,50.75,"plankton"
-"74","lorenzianus","Chaetoceros","Chaetocerotaceae",11.18138737,36.53421208,24.99943272,"marine",28.9,50.75,"plankton"
-"75","danicus","Leptocylindrus","Leptocylindraceae",13.18597877,33.90884138,27.61186782,"marine",28.9,50.75,"plankton"
-"76","marinus","Prochlorococcus","Synechococcaceae",12.07591082,28.04087176,23.26107388,"marine",28.98,-64.35,"plankton"
-"78","brevis","Karenia","Kareniaceae",11.16694211,31.41491012,23.74853107,"marine",29.71,-84.98,"plankton"
-"79","parvum","Prymnesium","Prymnesiaceae",11.42486634,32.74919932,19.30027049,"freshwater",30.25,-97.69,"plankton"
-"80","sorokiniana","Chlorella","Chlorellaceae",12.05808999,43.80433774,36.35558437,"freshwater",30.26,-97.74,"plankton"
-"83","marina","Chattonella","Chattonellaceae",10.03534329,34.97887969,23.66323851,"marine",31.39,130.66,"plankton"
-"88","","","",10.39038196,37.33053523,27.30088507,"marine",32.3,-64.7,"plankton"
-"91","sanguinea","Akashiwo","",9.5610927,30.09304507,23.38200038,"marine",32.87,-117.26,"plankton"
-"92","polykrikoides","Cochlodinium","Gymnodiniaceae",9.799805023,34.95526699,28.18608002,"marine",32.93,128.26,"plankton"
-"98","japonica","Fibrocapsa","Chattonellaceae",9.882964367,31.84022098,22.74809998,"marine",34.3,134.25,"plankton"
-"100","marina","Chattonella","Chattonellaceae",10.47473325,30.97743803,26.03512105,"marine",34.5,134.58,"plankton"
-"103","erythraeum","Trichodesmium","Phormidiaceae",19.26654392,35.36356281,27.33105828,"marine",35,-76,"plankton"
-"107","furca","Biceratium","Ceratiaceae",10.37163152,31.96907795,24.64981831,"marine",35.15,139.35,"plankton"
-"108","fusus","Neoceratium","Ceratiaceae",9.501299194,31.94442617,25.4947875,"marine",35.15,139.35,"plankton"
-"109","pseudocurvisetus","Chaetoceros","Chaetocerotaceae",15.0342219,34.94705306,24.41590163,"marine",35.15,139.35,"plankton"
-"114","costatum","Skeletonema","Skeletonemaceae",2.265132082,34.89272574,23.06399847,"marine",35.5,140,"plankton"
-"117","crassisquama","Mallomonas","Mallomonadaceae",5.567754056,24.68895308,16.09751372,"freshwater",35.8,128.62,"plankton"
-"119","tonsurata","Mallomonas","Mallomonadaceae",9.96219173,24.88215543,20.04570792,"freshwater",35.8,128.62,"plankton"
-"122","areolata","Mallomonas","Mallomonadaceae",5.684399398,26.12820622,19.94967256,"freshwater",35.95,128.33,"plankton"
-"124","acaroides","Mallomonas","Mallomonadaceae",9.043199808,24.03419285,19.85289603,"freshwater",35.97,128.63,"plankton"
-"125","caudata","Mallomonas","Mallomonadaceae",6.947786541,24.02801127,17.15768801,"freshwater",36,129.47,"plankton"
-"126","hantzschii","Stephanodiscus","Stephanodiscaceae",5.089541783,34.94713034,23.85388053,"freshwater",36,140,"plankton"
-"127","","Peridinium","Peridiniaceae",7.068112304,29.47066159,17.9411089,"marine",36.61,-121.89,"plankton"
-"128","gracile","Prorocentrum","Prorocentraceae",7.906985802,24.85102906,16.95163289,"marine",36.61,-121.89,"plankton"
-"129","micans","Prorocentrum","Prorocentraceae",4.584456988,30.05193519,23.55714388,"marine",36.61,-121.89,"plankton"
-"130","uncatenum","Gyrodinium","Gymnodiniaceae",7.729698665,35.79983445,27.59066745,"estuarine",38.22,-76.85,"plankton"
-"133","guillardii","Conticribra","Thalassiosiraceae",1.754799963,29.89306286,16.66148716,"marine",39.6,-70.1,"plankton"
-"135","closterium","Cylindrotheca","Bacillariaceae",7.766342016,34.75007045,22.24638066,"marine",40.44,-73.98,"plankton"
-"137","atomus","Picochlorum","",5.810558927,31.7200832,22.34979059,"estuarine",40.68,-73.13,"plankton"
-"138","tricornutum","Phaeodactylum","Phaeodactylaceae",0.519693072,29.80705856,13.46490003,"estuarine",40.68,-73.13,"plankton"
-"139","","Stichococcus","Prasiolaceae",5.582757264,33.19353761,21.44435136,"estuarine",40.68,-73.13,"plankton"
-"145","globator","Volvox","Volvocaceae",5.836263344,29.93842082,21.83513438,"freshwater",41.53,-70.67,"plankton"
-"146","subterranea","Monodopsis","Monodopsidaceae",10.26094574,31.53377924,26.04211355,"freshwater",41.56,-72.93,"plankton"
-"148","confervacea","Detonula","Skeletonemaceae",0.786062158,18.07830998,7.186515206,"estuarine",41.57,-71.34,"plankton"
-"152","nordenskioeldii","Thalassiosira","Thalassiosiraceae",-4.835759195,15.68643112,9.720040388,"estuarine",41.57,-71.34,"plankton"
-"153","rotula","Thalassiosira","Thalassiosiraceae",-0.20827323,29.92245844,19.52169736,"estuarine",41.57,-71.34,"plankton"
-"155","tamarense","Alexandrium","Gonyaulacaceae",4.017339028,25.99998551,17.75243334,"estuarine",41.79,-69.95,"plankton"
-"157","setigera","Rhizosolenia","Rhizosoleniaceae",1.081330133,20.1313379,10.27695763,"marine",41.9,-70.32,"plankton"
-"159","catenatum","Gymnodinium","Gymnodiniaceae",7.457265026,29.27870408,24.11874221,"estuarine",42.43,-8.95,"plankton"
-"161","aeruginosa","Microcystis","Microcystaceae",8.382671676,36.16257458,28.24534023,"freshwater",43.11,-89.42,"plankton"
-"163","minimum","Prorocentrum","Prorocentraceae",7.949887184,32.23509483,23.33986138,"marine",43.32,5.32,"plankton"
-"164","fundyense","Alexandrium","Gonyaulacaceae",2.881949739,23.92547272,16.96930785,"marine",43.56,-69.45,"plankton"
-"167","reinhardtii","Chlamydomonas","Chlamydomonadaceae",5.214384105,37.59045118,27.59323415,"freshwater",44.47,-78.72,"plankton"
-"169","fundyense","Alexandrium","Gonyaulacaceae",1.998380173,24.14261948,15.75863192,"marine",44.7,-66.51,"plankton"
-"170","granii","Pseudo-nitzschia","Bacillariaceae",3.752539098,23.51204112,13.7308047,"marine",45,-145,"plankton"
-"179","costatum","Skeletonema","Skeletonemaceae",0.14749603,27.939463,17.89035061,"marine",48.54,-123.01,"plankton"
-"181","raciborskii","Cylindrospermopsis","Nostocaceae",13.24013825,42.56459936,29.7498108,"freshwater",48.94,2.31,"plankton"
-"184","sphagnicola","Synura","Mallomonadaceae",3.261082862,24.51864448,16.11983788,"freshwater",49.69,-93.75,"plankton"
-"187","","Tribonema","Tribonemataceae",-0.899571139,30.18888138,20.27655472,"freshwater",51.75,-1.36,"plankton"
-"190","avicula","Staurastrum","Desmidiaceae",5.218019321,34.69277591,26.79752662,"freshwater",52.14,5.06,"plankton"
-"201","chaetoceras","Staurastrum","Desmidiaceae",7.936347491,34.10130426,26.7374244,"freshwater",52.38,5.09,"plankton"
-"204","raciborskii","Cylindrospermopsis","Nostocaceae",10.23536612,36.46968314,27.40272812,"freshwater",52.92,12.94,"plankton"
-"211","limnetica","Synechocystis","Merismopediaceae",3.132594003,20.00384943,12.51491798,"freshwater",53.62,108.38,"plankton"
-"213","japonica","Fibrocapsa","Chattonellaceae",8.939543951,32.18142293,22.88156927,"marine",54.12,8.86,"plankton"
-"214","flos-aquae","Anabaena","Nostocaceae",5.013410933,29.21188556,16.87033047,"freshwater",54.35,-2.94,"plankton"
-"216","agardhii","Planktothrix","Phormidiaceae",0.556111297,35.0076817,27.88145803,"freshwater",54.4,-6.6,"plankton"
-"218","furcoides","Ceratium","Ceratiaceae",8.355020325,29.98320961,22.80918763,"freshwater",54.57,-3,"plankton"
-"219","marssonii","Cryptomonas","Cryptomonadaceae",-0.513746513,30.21123246,16.22341175,"freshwater",54.57,-3,"plankton"
-"220","divergens","Dinobryon","Dinobryaceae",-0.80299123,29.84726862,16.70896857,"freshwater",54.57,-3,"plankton"
-"222","bourrellyi","Tychonema","Phormidiaceae",2.289404375,29.69746785,21.68485029,"freshwater",54.57,-3,"plankton"
-"223","flos-aquae","Aphanizomenon","Nostocaceae",4.048280427,34.87463032,24.30971442,"freshwater",54.62,-6.41,"plankton"
-"224","italica","Melosira","Melosiraceae",-0.243259329,27.18733828,17.84518979,"freshwater",54.62,-6.41,"plankton"
-"225","redekei","Limnothrix","Pseudoanabaenaceae",0.709800367,34.86040437,26.78881044,"freshwater",54.62,-6.41,"plankton"
-"226","astraea","Stephanodiscus","Stephanodiscaceae",0.515692734,25.05401194,14.25061568,"freshwater",54.62,-6.41,"plankton"
-"229","osterfeldii","Alexandrium","Gonyaulacaceae",9.089443345,26.27443164,20.33422812,"estuarine",56.57,9.07,"plankton"
-"231","corollarium","Gymnodinium","Gymnodiniaceae",-2.518190927,10.73392719,2.849833517,"marine",58.88,20.32,"plankton"
-"237","rotundata","Heterocapsa","Heterocapsaceae",1.880551068,29.37886755,17.31784002,"estuarine",59.45,10.52,"plankton"
-"239","luteus","Olisthodiscus","Chattonellaceae",2.545730008,23.65628033,14.42134085,"estuarine",59.45,10.52,"plankton"
-"240","pyriformis","Pseudopedinella","Pedinellaceae",2.317436705,26.18813413,12.38210733,"estuarine",59.45,10.52,"plankton"
-"241","disomata","Pyramimonas","Pyramimonadaceae",8.000334816,28.00041452,17.2638359,"estuarine",59.45,10.52,"plankton"
-"243","furca","Biceratium","Ceratiaceae",5.716244997,26.96458077,20.74705841,"estuarine",59.67,10.61,"plankton"
-"244","fusus","Neoceratium","Ceratiaceae",5.09592885,29.48355644,16.12133425,"estuarine",59.67,10.61,"plankton"
-"245","lineatum","Neoceratium","Ceratiaceae",1.317552291,28.96357107,21.50728615,"estuarine",59.67,10.61,"plankton"
-"254","huxleyi","Emiliania","No�laerhabdaceae",5.854763159,27.07652179,21.71487,"marine",66,2,"plankton"
-"258","","Micromonas","Mamiellaceae",-2.088129293,14.93260634,6.607881357,"marine",76.28,-74.75,"plankton"
-"259","marinus","Prochlorococcus","Synechococcaceae",12.58941241,30.0751522,25.44666293,"marine",37.51,-68.24,"plankton"
-"260","marinus","Prochlorococcus","Synechococcaceae",13.7219789,33.21498628,27.19960463,"marine",0,-140,"plankton"
-"262","monilatum","Alexandrium","Gonyaulacaceae",15.54183347,33.80914638,28.23945961,"marine",30.23,-88.8,"plankton"
-"268","incerta","Aphanocapsa","Merismopediaceae",6.125260473,38.07255277,28.04230397,"freshwater",23.13,-82.38,"plankton"
-"269","","Chlorella","Chlorellaceae",13.54419782,38.94215014,26.28930456,"freshwater",NA,NA,"plankton"
-"272","quadricaudatus","Desmodesmus","Scenedesmaceae",13.82373048,38.31717991,22.52268378,"freshwater",NA,NA,"plankton"
-"278","bipes","Peridinium","Peridiniaceae",3.590516514,29.00915944,20.82686329,"freshwater",NA,NA,"plankton"
-"286","affinis","Chaetoceros","Chaetocerotaceae",8.16353406,30.0396719,23.78186879,"marine",NA,NA,"plankton"
-"287","calcitrans","Chaetoceros","Chaetocerotaceae",14.99436091,33.39611833,22.89805344,"marine",NA,NA,"plankton"
-"289","gracilis","Chaetoceros","Chaetocerotaceae",13.30120501,40.12809636,31.09360978,"marine",NA,NA,"plankton"
-"297","huxleyi","Emiliania","No�laerhabdaceae",10.06781519,28.86294015,22.25782296,"marine",NA,NA,"plankton"
-"298","huxleyi","Emiliania","No�laerhabdaceae",0.770448351,25.56548392,21.71492775,"marine",NA,NA,"plankton"
-"300","lutheri","Diacronema","Pavlovaceae",13.00149696,28.90349329,21.03434081,"marine",NA,NA,"plankton"
-"305","carterae","Pleurochrysis","Pleurochrysidaceae",8.017423401,27.55085374,20.14783121,"marine",NA,NA,"plankton"
-"312","fusiformis","Arthrospira","Phormidiaceae",18.97362147,41.64179904,32.98627254,"unknown",NA,NA,"plankton"
-"314","platensis","Spirulina","Pseudoanabaenaceae",18.73108173,40.51535065,31.41391647,"unknown",NA,NA,"plankton"
-"328","tropicum","Skeletonema","Skeletonemaceae",9.703554566,35.10403836,24.35209536,"marine",33.93,130.83,"plankton"
-"329","tropicum","Skeletonema","Skeletonemaceae",9.238343046,35.04625745,26.07774814,"marine",33.93,130.83,"plankton"
-"330","tropicum","Skeletonema","Skeletonemaceae",9.593319764,35.06387902,25.88285886,"marine",33.93,130.83,"plankton"
-"331","tropicum","Skeletonema","Skeletonemaceae",8.77401985,35.06117848,26.76665394,"marine",33.93,130.83,"plankton"
-"332","tropicum","Skeletonema","Skeletonemaceae",9.880862819,35.03436314,26.09600946,"marine",33.93,130.83,"plankton"
-"333","menzelii","Skeletonema","Skeletonemaceae",6.933197671,39.65904654,25.75313498,"marine",33.93,130.83,"plankton"
-"336","menzelii","Skeletonema","Skeletonemaceae",7.306575472,39.57217622,23.53551391,"marine",33.93,130.83,"plankton"
-"338","ardens","Skeletonema","Skeletonemaceae",9.830397047,35.05078026,26.62628439,"marine",33.93,130.83,"plankton"
-"348","aeruginosa","Microcystis","Microcystaceae",17.54001749,39.18162858,30.33694093,"freshwater",52.26,-105.53,"plankton"
-"356","simplicissimum","Phormidium","Phormidiaceae",18.94304511,38.80532356,27.88304412,"freshwater",-27.4,26.51,"plankton"
-"360","viridis","Microcystis","Microcystaceae",10.14639017,34.88442096,24.62622484,"freshwater",36.04,140.39,"plankton"
-"361","aeruginosa","Microcystis","Microcystaceae",15.00004867,39.94726743,27.91098288,"freshwater",36.04,140.39,"plankton"
-"362","aeruginosa","Microcystis","Microcystaceae",14.89898033,44.84284526,32.70485731,"freshwater",36.04,140.39,"plankton"
-"363","aeruginosa","Microcystis","Microcystaceae",15.68476819,44.73074069,34.42622015,"freshwater",36.04,140.39,"plankton"
-"364","ukrainica","Anabaena","Nostocaceae",6.16945328,36.44738803,28.68729366,"freshwater",35.21,136.28,"plankton"
-"376","bidens","Fragilaria","Fragilariaceae",6.216882572,34.39730746,20.99721895,"freshwater",42.65,2.53,"plankton"
-"378","acerosum","Closterium","Closteriaceae",4.774334783,30.61759388,16.34802955,"freshwater",36.49,-119.7,"plankton"
-"379","trabecula","Pleurotaenium","Desmidiaceae",2.24697927,35.14291281,23.89082655,"freshwater",65,26,"plankton"
-"380","swartzii","Desmidium","Desmidiaceae",3.601797302,36.62369741,23.38303294,"freshwater",53.27,-9.05,"plankton"
-"381","monotaenium","Gonatozygon","Gonatozygaceae",7.920748901,35.0333076,26.44778576,"freshwater",46,-94,"plankton"
-"384","anglica","Roya","Mesotaeniaceae",4.275453174,29.92647959,20.94200375,"freshwater",35.6,-79.45,"plankton"
-"385","aureus","Volvox","Volvocaceae",9.465717358,31.91214889,21.63448202,"freshwater",39.17,-86.53,"plankton"
-"386","kramstae","Mesotaenium","Mesotaeniaceae",3.813092196,34.66592395,22.23065034,"freshwater",30.27,-97.74,"plankton"
-"387","morum","Pandorina","Volvocaceae",4.563037516,34.98397701,15.63536019,"freshwater",52.5,-1.5,"plankton"
-"388","californica","Pleodorina","Volvocaceae",10.79594955,34.78935101,23.67408481,"freshwater",36.17,-86.78,"plankton"
-"389","boryanum","Pediastrum","Hydrodictyaceae",3.465989471,30.04443247,19.4762965,"freshwater",54.1,-2.17,"plankton"
-"391","botrytis","Cosmarium","Desmidiaceae",3.009012568,35.56997459,20.57797147,"freshwater",49.37,16.95,"plankton"
-"393","subcaudata","Chlamydomonas","Chlamydomonadaceae",-4.417510517,19.63453623,11.23295873,"freshwater",-77.5,162.5,"plankton"
-"394","alpina","Chlamydomonas","Chlamydomonadaceae",-0.213724594,19.70706202,13.71196382,"freshwater",-77.5,162.5,"plankton"
-"399","rotula","Thalassiosira","Thalassiosiraceae",3.98387636,30.00138563,21.34035494,"marine",40.75,14.33,"plankton"
-"400","rotula","Thalassiosira","Thalassiosiraceae",0.885142355,30.03861102,18.92418951,"marine",40.49,14.14,"plankton"
-"408","weissflogii","Conticribra","Thalassiosiraceae",5.233393498,26.07248184,19.68540345,"marine",39.5,-9.33,"plankton"
-"411","sanguinea","Akashiwo","",11.72785771,34.89110837,22.25441025,"marine",36.96,-122.02,"plankton"
-"413","","Proboscia","Rhizosoleniaceae",-3.563524133,7.810882396,3.788610388,"marine",-57.85,139.85,"plankton"
-"414","erythraeum","Trichodesmium","Phormidiaceae",16.23724354,34.92924022,27.54945393,"marine",-15.05,155.03,"plankton"
-"415","erythraeum","Trichodesmium","Phormidiaceae",16.42160565,34.95297068,27.86970425,"marine",7.53,-49.25,"plankton"
-"416","watsonii","Crocosphaera","Cyanobacteriaceae",21.76914877,35.04808138,29.19234884,"marine",6.98,-49.33,"plankton"
-"417","watsonii","Crocosphaera","Cyanobacteriaceae",21.86180818,35.06023994,28.57219994,"marine",21.43,-157.79,"plankton"
-"418","watsonii","Crocosphaera","Cyanobacteriaceae",21.87244859,35.05428144,28.7343785,"marine",-11.7,-32.01,"plankton"
-"423","","Ochromonas","Chromulinaceae",10.65170428,37.08753767,23.76239416,"freshwater",52.2,5,"plankton"
-"424","ericina","Chryosochromulina","Prymnesiaceae",5.480370937,24.99024176,19.11257279,"marine",-41.2,174.12,"plankton"
-"425","hirta","Chryosochromulina","Prymnesiaceae",6.162005664,24.97960045,19.35706278,"marine",-41.13,173.99,"plankton"
-"426","acantha","Chryosochromulina","Prymnesiaceae",11.24808802,29.97900057,24.37793178,"marine",-36.25,174.75,"plankton"
-"427","simplex","Chryosochromulina","Prymnesiaceae",10.09243593,29.99376647,23.0221637,"marine",-36.25,174.75,"plankton"
-"428","raciborskii","Cylindrospermopsis","Nostocaceae",17.24831175,39.3212189,28.86482399,"freshwater",-18.75,146.58,"plankton"
-"429","raciborskii","Cylindrospermopsis","Nostocaceae",17.79058924,37.57719113,30.34413901,"freshwater",-18.75,146.58,"plankton"
-"433","raciborskii","Cylindrospermopsis","Nostocaceae",16.23017543,38.7524981,30.90090685,"freshwater",-19.27,146.82,"plankton"
-"435","pyrenoidosa","Chlorella","Chlorellaceae",5.786621486,30.84077852,21.70638447,"freshwater",68.42,18.83,"plankton"
-"443","ehrenbergii","Closterium","Closteriaceae",2.700594129,29.89677709,11.13053794,"freshwater",56,9,"plankton"
-"444","ehrenbergii","Closterium","Closteriaceae",1.098100737,34.14758287,14.55261233,"freshwater",43,144,"plankton"
-"445","ehrenbergii","Closterium","Closteriaceae",1.543149319,31.10191665,12.27856168,"freshwater",43,144,"plankton"
-"449","ehrenbergii","Closterium","Closteriaceae",2.798000972,31.0788286,11.86185278,"freshwater",36,137,"plankton"
-"456","obliquus","Acutodesmus","Scenedesmaceae",15.35259947,38.21605406,31.39834556,"freshwater",34,-5.9,"plankton"
-"457","oceanica","Nannochloris","Chlorellaceae",10.41531231,35.18606825,26.35216499,"marine",60.17,5.54,"plankton"
-"459","farcimen","Pseudochattonella","",0.603576293,20.05872464,13.19643048,"estuarine",57.85,9.07,"plankton"
-"460","crenatum","Cosmarium","Desmidiaceae",-0.220527812,35.79641622,17.6976148,"freshwater",79.95,50.08,"plankton"
-"461","punctulatum","Cosmarium","Desmidiaceae",0.813451141,35.77714239,19.61027122,"freshwater",71.1,25.82,"plankton"
-"462","regnesii","Cosmarium","Desmidiaceae",2.016255648,36.56289909,21.09420775,"freshwater",42.9,140.75,"plankton"
-"463","meneghinii","Cosmarium","Desmidiaceae",1.591366075,36.03184877,19.86241205,"freshwater",50.08,14.42,"plankton"
-"464","punctulatum","Cosmarium","Desmidiaceae",0.551775805,36.04033148,20.21678193,"freshwater",-0.67,-78.43,"plankton"
-"465","beatum","Cosmarium","Desmidiaceae",3.150827674,36.65634907,25.56950245,"freshwater",-0.15,36.26,"plankton"
-"466","semen","Gonyostomum","Vacuolariaceae",6.728114645,31.36597852,13.18505759,"freshwater",55.57,13.43,"plankton"
-"468","raciborskii","Cylindrospermopsis","Nostocaceae",15.33052597,39.86013738,29.8670958,"freshwater",39.26,-86.4,"plankton"
-"469","raciborskii","Cylindrospermopsis","Nostocaceae",14.86706915,39.91879373,32.58795809,"freshwater",28.79,-81.69,"plankton"
-"470","raciborskii","Cylindrospermopsis","Nostocaceae",15.18984332,39.78612761,31.46891148,"freshwater",28.79,-81.69,"plankton"
-"471","aeruginosa","Microcystis","Microcystaceae",13.97407022,34.23971769,28.3044127,"freshwater",42.4,-85.41,"plankton"
-"472","aeruginosa","Microcystis","Microcystaceae",13.98560115,34.27090857,28.76069129,"freshwater",42.4,-85.41,"plankton"
-"474","aeruginosa","Microcystis","Microcystaceae",16.35143132,33.86670697,28.02456555,"freshwater",44.43,-86.15,"plankton"
-"110","Elgaria_multicarinata","Elgaria","Anguidae",12.4,43.6,34.6,"terrestrial",33.7,-117.8,"lizards"
-"2","Laudakia_stellio","Laukadia","Agamidae",12.6,45,37.6,"terrestrial",30.8,34.8,"lizards"
-"310","Laudakia_stellio","Laudakia","Agamidae",11.9,44.7,36.7,"terrestrial",33.4,35.86,"lizards"
-"410","Trapelus_savignyi","Trapelus","Agamidae",12,47.2,36.4,"terrestrial",31.1,34.8,"lizards"
-"5","Anolis_carolinensis","Anolis","Polychrotidae",4.7,41.7,32.1,"terrestrial",31,-89.9,"lizards"
-"6","Anolis_tropidolepis","Anolis","Polychrotidae",9.5,33.1,27,"terrestrial",10.3,-84.8,"lizards"
-"7","Anolis_intermedius","Anolis","Polychrotidae",11.1,38.5,30.1,"terrestrial",10.3,-84.8,"lizards"
-"8","Anolis_humilis","Anolis","Polychrotidae",12.4,35.6,27.5,"terrestrial",10.4,-83.8,"lizards"
-"93","Anolis_cupreus","Anolis","Polychrotidae",11.8,38.4,30.8,"terrestrial",10.4,-85.1,"lizards"
-"10","Anolis_lemurinus","Anolis","Polychrotidae",12.9,37.3,33.5,"terrestrial",10.4,-83.8,"lizards"
-"11","Anolis_lionotus","Anolis","Polychrotidae",14.7,36.7,28.4,"terrestrial",10.4,-83.8,"lizards"
-"121","Anolis_limifrons","Anolis","Polychrotidae",12.3,36.8,27.9,"terrestrial",10.4,-83.8,"lizards"
-"13","Anolis_gundlachi","Anolis","Polychrotidae",6.3,35.4,28.1,"terrestrial",18.2,-64.8,"lizards"
-"14","Anolis_cristatellus","Anolis","Polychrotidae",8.9,37.1,29.1,"terrestrial",18.5,-66.2,"lizards"
-"151","Anolis_cooki","Anolis","Polychrotidae",9.3,38.8,28.9,"terrestrial",18.1,-67.2,"lizards"
-"162","Gambelia_wislizennii","Gambelia","Iguania",12.6,43.6,34.2,"terrestrial",39.4,-118.1,"lizards"
-"17","Dipsosaurus_dorsalis","Dipsosaurus","Iguania",14,47.5,40.3,"terrestrial",33.8,-115.5,"lizards"
-"18","Uma_inornata","Uma","Iguania",NA,45,39.4,"terrestrial",33.8,-116.6,"lizards"
-"191","Uta_stansburiana","Uta","Iguania",7.8,43.7,36.7,"terrestrial",39.5,-107.8,"lizards"
-"20","Sceloporus_undulatus_(Colorado_pop)","Sceloporus","Iguania",6.5,43.3,38.2,"terrestrial",37.2,-105.9,"lizards"
-"212","Sceloporus_undulatus_(South_Carolina)","Sceloporus","Iguania",11.4,40.4,35.5,"terrestrial",34.43,-82.85,"lizards"
-"22","Sceloporus_occidentalis","Sceloporus","Iguania",4.6,44.1,34.3,"terrestrial",45.8,-121.5,"lizards"
-"23","Sceloporus_occidentalis","Sceloporus","Iguania",4.8,44.1,34.8,"terrestrial",34.03,-117.82,"lizards"
-"242","Sceloporus_malachiticus","Sceloporus","Iguania",9.7,42.8,36.3,"terrestrial",10.3,-84.8,"lizards"
-"251","Sceloporus_graciosus","Sceloporus","Iguania",4.7,44.7,32.6,"terrestrial",33.9,-116.4,"lizards"
-"26","Sceloporus_merriami_(from_Boquillas)","Sceloporus","Iguania",14.1,41.5,32.8,"terrestrial",29.2,-103,"lizards"
-"271","Sceloporus_merriami_(from_Grapevine_Hills)","Sceloporus","Iguania",14.1,41.5,35,"terrestrial",29.3,-103.15,"lizards"
-"281","Sceloporus_variabilis","Sceloporus","Iguania",10.2,43.1,37.5,"terrestrial",10.6,-85.7,"lizards"
-"29","Ameiva_festiva","Ameiva","Teiidae",15.5,43.7,38,"terrestrial",10.4,-83.8,"lizards"
-"30","Cnemidophorus_murinus","Cnemidophorus","Teiidae",NA,45.2,38.8,"terrestrial",12.3,-68.5,"lizards"
-"311","Aspidoscelis_tigris","Aspidoscelis","Teiidae",10.5,45.1,37.6,"terrestrial",43,-116.3,"lizards"
-"32","Psammodromus_algirus","Psammodromus","Lacertidae",7,43.5,36.1,"terrestrial",40.6,-5.9,"lizards"
-"334","Psammodromus_hispanicus","Psammodromus","Lacertidae",8.8,45.5,35.6,"terrestrial",40.4,-4.3,"lizards"
-"34","Gallotia_simonyi","Gallotia","Lacertidae",NA,46.5,37.6,"terrestrial",27.8,-17.9,"lizards"
-"35","Gallotia_stehlini","Gallotia","Lacertidae",2,40.2,38.1,"terrestrial",28.1,-15.4,"lizards"
-"365","Takydromus_septentrionalis","Takydromus","Lacertidae",4.9,42.3,31.5,"terrestrial",30.2,122.2,"lizards"
-"371","Takydromus_sexlineatus","Takydromus","Lacertidae",6.4,42.2,35.1,"terrestrial",24.8,113.6,"lizards"
-"382","Acanthodactylus_erythrurus","Acanthodactylus","Lacertidae",NA,46.3,39.8,"terrestrial",40.4,-6,"lizards"
-"392","Podarcis_hispanica_hispanica","Podarcis","Lacertidae",NA,44.5,36.5,"terrestrial",40.5,-6.1,"lizards"
-"40","Podarcis_bocagei","Podarcis","Lacertidae",NA,45.4,35.7,"terrestrial",40.5,-6.1,"lizards"
-"41","Podarcis_atrata","Podarcis","Lacertidae",NA,44.6,38.3,"terrestrial",39.9,0.7,"lizards"
-"421","Podarcis_muralis","Podarcis","Lacertidae",8.3,44.2,36.6,"terrestrial",40.7,-4.1,"lizards"
-"431","Podarcis_lilfordi","Podarcis","Lacertidae",NA,43.3,38.4,"terrestrial",39.9,4.3,"lizards"
-"441","Lacerta_monticola","Lacerta","Lacertidae",NA,43.6,35.9,"terrestrial",40.4,-4.7,"lizards"
-"451","Lacerta_agilis","Lacerta","Lacertidae",5.9,43.9,37.9,"terrestrial",51.8,5.9,"lizards"
-"46","Lacerta_schreiberi","Lacerta","Lacertidae",NA,43,38.9,"terrestrial",40.5,-6.1,"lizards"
-"473","Lacerta_vivipara","Zootoca","Lacertidae",NA,40.1,36.5,"terrestrial",51.4,4.4,"lizards"
-"48","Eumeces_brenchleyi","Pleistodon","Scincidae",3.3,43.6,34,"terrestrial",31.3,120.6,"lizards"
-"49","Eumeces_elegans","Pleistodon","Scincidae",9.3,41.9,34.5,"terrestrial",30.2,120.2,"lizards"
-"501","Egernia_whitii","Egernia","Scincidae",4,42.8,34.8,"terrestrial",-35.8,148.5,"lizards"
-"51","Pseudemoia_entrecasteauxii","Pseudemoia","Scincidae",2.5,42.8,32.7,"terrestrial",-36.4,148.4,"lizards"
-"521","Pseudemoia_entrecasteauxii","Pseudemoia","Scincidae",2.5,42.8,33.2,"terrestrial",-36.4,148.4,"lizards"
-"53","Hemiergis_decresiensis","Hemiergis","Scincidae",6.8,38.6,33.1,"terrestrial",-34.7,138.8,"lizards"
-"541","Hemiergis_peronii","Hemiergis","Scincidae",9.6,38.8,30.2,"terrestrial",-34.5,138.3,"lizards"
-"55","Eulamprus_tympanum","Eulamprus","Scincidae",2.9,39.8,34.3,"terrestrial",-36.4,148.4,"lizards"
-"561","Eulamprus_kosciuskoi","Eulamprus","Scincidae",2.5,40.2,34.6,"terrestrial",-36.4,148.4,"lizards"
-"57","Eulamprus_quoyi","Eulamprus","Scincidae",6,40.8,31.1,"terrestrial",-30.5,151.7,"lizards"
-"581","Ctenotus_regius","Ctenotus","Scincidae",8.7,45.1,36.9,"terrestrial",-34.2,140,"lizards"
-"59","Ctenotus_taeniolatus","Ctenotus","Scincidae",11.4,44.7,37.3,"terrestrial",-30.5,151.7,"lizards"
-"60","Ctenotus_uber","Ctenotus","Scincidae",9.1,45.5,36.7,"terrestrial",-34.6,139.6,"lizards"
-"611","Platysaurus_intermedius","Platysaurus","Cordylidae",8.9,44.8,33,"terrestrial",-24.6,31.2,"lizards"
-"621","Lepidophyma_flavimaculatum","Lepidophyma","Xantusidae",11.3,38.1,32.9,"terrestrial",10.4,-83.8,"lizards"
-"631","Xantusia_riversiana","Xantusia","Xantusidae",6.6,39,29,"terrestrial",32.9,-118.5,"lizards"
-"641","Xantusia_vigilis","Xantusia","Xantusidae",6.9,41.6,31.7,"terrestrial",33.9,-116.4,"lizards"
-"651","Sphaerodactylus_townsendi","Sphaerodactylus","Gekkonidae",11.4,41.7,29,"terrestrial",18.3,-65.7,"lizards"
-"661","Sphaerodactylus_nicholsi","Sphaerodactylus","Gekkonidae",12.6,40.5,31.1,"terrestrial",18,-66.9,"lizards"
-"67","Sphaerodactylus_klauberi","Sphaerodactylus","Gekkonidae",10.4,36.3,31.2,"terrestrial",18.1,-66,"lizards"
-"68","Sphaerodactylus_gaigeae","Sphaerodactylus","Gekkonidae",12.5,38.2,32.5,"terrestrial",18.1,-65.9,"lizards"
-"691","Sphaerodactylus_macrolepis","Sphaerodactylus","Gekkonidae",11.8,39.5,29.5,"terrestrial",18,-66.9,"lizards"
-"701","Sphaerodactylus_roosevelti","Sphaerodactylus","Gekkonidae",11.4,39.5,28.7,"terrestrial",18,-66.9,"lizards"
-"111","morhua","Gadus",NA,NA,21,14,"aquatic",NA,NA,"fish"
-"210","heteroclitus","Fundulus",NA,NA,34.37,30.45,"aquatic",NA,NA,"fish"
-"313","melanurus","Dascyllus",NA,NA,34.1,30,"aquatic",NA,NA,"fish"
-"412","leptacantha","Zoramia",NA,NA,34.2,32.8,"aquatic",NA,NA,"fish"
-"510","calcarifer","Lates",NA,NA,40,38,"aquatic",NA,NA,"fish"
-"610","oxygeneios","Polyprion",NA,NA,25.1,20.7,"aquatic",NA,NA,"fish"
-"77","mykiss","Oncorhynchus",NA,NA,26.4,18.9,"aquatic",NA,NA,"fish"
-"81","kisutch","Oncorhynchus",NA,NA,16.3,7.4,"aquatic",NA,NA,"fish"
-"94","gorbuscha","Oncorhynchus",NA,NA,31.6,20.3,"aquatic",NA,NA,"fish"
-"101","nerka Chilko","Oncorhynchus",NA,NA,26.25,23.1,"aquatic",NA,NA,"fish"
-"112","nerka Gates","Oncorhynchus",NA,NA,25.08,17.27,"aquatic",NA,NA,"fish"
-"123","nerka Nechako","Oncorhynchus",NA,NA,24.08,16.33,"aquatic",NA,NA,"fish"
-"131","nerka Stuart","Oncorhynchus",NA,NA,24.87,20.15,"aquatic",NA,NA,"fish"
-"141","nerka Weaver","Oncorhynchus",NA,NA,20.15,15.56,"aquatic",NA,NA,"fish"
-"113",NA,"Anoplolepis",NA,4.3,46.5,22,"terrestrial",NA,NA,"ants"
-"215",NA,"Aphaenogaster",NA,3,45.5,33.5,"terrestrial",NA,NA,"ants"
-"315",NA,"Brachymyrmex",NA,3.7,42.9,33,"terrestrial",NA,NA,"ants"
-"419",NA,"Camponotus",NA,1.6,47.5,34.1,"terrestrial",NA,NA,"ants"
-"511",NA,"Crematogaster",NA,1.4,50.8,25.5,"terrestrial",NA,NA,"ants"
-"612",NA,"Dorymyrmex",NA,7.7,48.3,31.5,"terrestrial",NA,NA,"ants"
-"710",NA,"Formica",NA,4.8,46.8,32.8,"terrestrial",NA,NA,"ants"
-"82",NA,"Iridomyrmex",NA,4.2,49.8,36,"terrestrial",NA,NA,"ants"
-"95",NA,"Linepithema",NA,0.4,43.7,23.7,"terrestrial",NA,NA,"ants"
-"102",NA,"Messor",NA,4.4,45.6,25.7,"terrestrial",NA,NA,"ants"
-"115",NA,"Monomorium",NA,4.8,47.4,29.4,"terrestrial",NA,NA,"ants"
-"1210",NA,"Myrmecia",NA,3.7,48.5,27,"terrestrial",NA,NA,"ants"
-"132",NA,"Myrmecocystus",NA,10.3,47.8,35,"terrestrial",NA,NA,"ants"
-"142",NA,"Nylanderia",NA,4.6,43.1,23.7,"terrestrial",NA,NA,"ants"
-"154",NA,"Ochetellus",NA,11.2,44.7,32,"terrestrial",NA,NA,"ants"
-"165",NA,"Pheidole",NA,2.6,44,26,"terrestrial",NA,NA,"ants"
-"171",NA,"Plagiolepis",NA,6.3,42.9,22,"terrestrial",NA,NA,"ants"
-"182",NA,"Pogonomyrmex",NA,4.5,54.4,40.4,"terrestrial",NA,NA,"ants"
-"192",NA,"Prenolepis",NA,1,38.9,17.4,"terrestrial",NA,NA,"ants"
-"202",NA,"Solenopsis",NA,3.6,44.9,31.5,"terrestrial",NA,NA,"ants"
-"217",NA,"Tapinoma",NA,5.4,44.4,28.7,"terrestrial",NA,NA,"ants"
-"221",NA,"Tetramorium",NA,1.4,45.9,28.8,"terrestrial",NA,NA,"ants"
-"96","rubigularis","Carlia ",NA,15.58,NA,26.3,"terrestrial",-16.6,145.1,"lizards"
-"104","rubigularis","Carlia ",NA,13.6,43.29,31.26,"terrestrial",-16.6,145.1,"lizards"
-"118","rubigularis","Carlia ",NA,14.03,42.94,26.7,"terrestrial",-17.3,145.5,"lizards"
-"1211","rubigularis","Carlia ",NA,11.73,43.31,28.5,"terrestrial",-17.2,145.5,"lizards"
-"134","rubigularis","Carlia ",NA,15.7,NA,NA,"terrestrial",-17.4,145.5,"lizards"
-"143","rubigularis","Carlia ",NA,10.76,43.44,29.19,"terrestrial",-19,146.2,"lizards"
-"156","queenslandiae","Gnypetoscincus",NA,14.27,36.85,29.75,"terrestrial",-16.6,145.1,"lizards"
-"166","queenslandiae","Gnypetoscincus",NA,12.23,36.89,27.82,"terrestrial",-17.7,145.5,"lizards"
-"172","queenslandiae","Gnypetoscincus",NA,11.29,36.32,24.7,"terrestrial",-17.2,145.5,"lizards"
-"183","coggeri","Lampropholis",NA,14.4,NA,24.9,"terrestrial",-16.6,145.1,"lizards"
-"193","coggeri","Lampropholis",NA,14.62,41.78,29.28,"terrestrial",-17.7,145.5,"lizards"
-"203","coggeri","Lampropholis",NA,13.48,42.57,28.8,"terrestrial",-17.2,145.5,"lizards"
-"2110","coggeri","Lampropholis",NA,12.57,42.05,28.2,"terrestrial",-17.4,145.5,"lizards"
-"228","robertsi","Lampropholis",NA,12.97,43.05,31.9,"terrestrial",-17.2,145.5,"lizards"
-"232","robertsi","Lampropholis",NA,9.96,43.42,31.43,"terrestrial",-17.2,145.5,"lizards"
-"246","robertsi","Lampropholis",NA,10.1,NA,36.1,"terrestrial",-17.4,145.5,"lizards"
-"252","basiliscus","Saproscincus",NA,14.3,39,29.5,"terrestrial",-17.7,145.5,"lizards"
-"261","basiliscus","Saproscincus",NA,11.77,38.04,27.88,"terrestrial",-17.2,145.5,"lizards"
-"273","basiliscus","Saproscincus",NA,9.4,NA,NA,"terrestrial",-17.4,145.5,"lizards"
-"282","basiliscus","Saproscincus",NA,13.48,37.96,32.25,"terrestrial",-19,146.2,"lizards"
-"291","czechurae","Saproscincus",NA,11.77,37.75,29.88,"terrestrial",-17.2,145.5,"lizards"
-"301","czechurae","Saproscincus",NA,9.33,36.97,31,"terrestrial",-17.2,145.5,"lizards"
-"317","tetradactylus","Saproscincus",NA,16.7,35.52,30.35,"terrestrial",-17.7,145.5,"lizards"
-"321","tetradactylus","Saproscincus",NA,13.3,NA,NA,"terrestrial",-19,146.2,"lizards"
-"591","alpinus","Salvelinus",NA,2.6,20.8,16.9,"aquatic",64,NA,"fish"
-"601","alpinus","Salvelinus",NA,1.2,21.5,15.7,"aquatic",63,NA,"fish"
-"614","alpinus","Salvelinus",NA,3.3,21.2,17.1,"aquatic",66,NA,"fish"
-"622","alpinus","Salvelinus",NA,2.8,21.9,15.5,"aquatic",68,NA,"fish"
-"632","alpinus","Salvelinus",NA,2.1,21.2,15.3,"aquatic",63,NA,"fish"
-"642","alpinus","Salvelinus",NA,3.4,23.3,16.4,"aquatic",58,NA,"fish"
-"652","alpinus","Salvelinus",NA,4.7,21.5,15,"aquatic",70,NA,"fish"
-"662","alpinus","Salvelinus",NA,5.3,21.2,14.4,"aquatic",59,NA,"fish"
-"671","trutta","Salmo",NA,4.6,20.3,12.2,"aquatic",57,NA,"fish"
-"681","trutta","Salmo",NA,6.1,21.2,14.4,"aquatic",58,NA,"fish"
-"692","trutta","Salmo",NA,5.3,21.9,12.7,"aquatic",61,NA,"fish"
-"702","trutta","Salmo",NA,5.2,24.4,15.5,"aquatic",60,NA,"fish"
-"712","trutta","Salmo",NA,3.6,19.4,13.4,"aquatic",56.19,-3.11,"fish"
-"721","salar L. ","Salmo",NA,8,25,19.6,"aquatic",70,-23,"fish"
-"731","salar L. ","Salmo",NA,6.9,24.5,18.4,"aquatic",62,-7,"fish"
-"741","salar L. ","Salmo",NA,6.4,23.3,16.3,"aquatic",60,-5,"fish"
-"751","salar L. ","Salmo",NA,7.9,24.5,17.9,"aquatic",60,-5,"fish"
-"761","salar L. ","Salmo",NA,6.7,25.4,19.1,"aquatic",59,-6,"fish"
-"120","Tidestromia oblongifolia",NA,NA,4.97949764235213,58.7469634821951,45.6540350400077,"terrestrial",NA,NA,"photosynthesis"
-"230","Atriplex glabriuscula",NA,NA,4.49475147836067,48.062181453971,29.4657570277848,"terrestrial",NA,NA,"photosynthesis"
-"422","Tidestromia oblongifolia",NA,NA,11.0955349812235,43.6021689399934,29.6751068490547,"terrestrial",NA,NA,"photosynthesis"
-"513","Tidestromia oblongifolia",NA,NA,7.92529266681246,56.4846466136139,43.4200987160921,"terrestrial",NA,NA,"photosynthesis"
-"615","Atriplex lentiformis",NA,NA,2.35186770737596,52.3018374983739,40.1283088466241,"terrestrial",NA,NA,"photosynthesis"
-"97","Larrea divaricata",NA,NA,4.86648930389079,55.6419678421021,37.3066547061744,"terrestrial",NA,NA,"photosynthesis"
-"1212","Nerium oleander (45°C)",NA,NA,6.02011252998481,55.4837907922202,36.5539800409121,"terrestrial",NA,NA,"photosynthesis"
-"144","Vicia faba (15°C)",NA,NA,-1.31648268496985,40.0102723317138,26.8079190086743,"terrestrial",NA,NA,"photosynthesis"
-"158","Chenopodium album (25°C)",NA,NA,3.58935887496208,44.8637146424495,27.6191982540168,"terrestrial",NA,NA,"photosynthesis"
-"168","Lycopersicon esculetum (25°C)",NA,NA,2.25587279687316,41.3776664996585,31.9645502961848,"terrestrial",NA,NA,"photosynthesis"
-"173","Glycine max (25°C)",NA,NA,2.6860814863509,40.956818750477,31.8925607882991,"terrestrial",NA,NA,"photosynthesis"
-"185","Abutilon theophrasti (25°C)",NA,NA,6.14405966377649,44.4412273112125,32.3296299421695,"terrestrial",NA,NA,"photosynthesis"
-"194","Embothrium coccineum",NA,NA,-0.68095223134976,42.6197445831119,30.4342935513618,"terrestrial",NA,NA,"photosynthesis"
-"2111","Muhlenbergia glomerata (14°C)",NA,NA,-1.29533766972941,38.6208945445606,28.04702122787,"terrestrial",NA,NA,"photosynthesis"
-"2210","Muhlenbergia glomerata (26°C)",NA,NA,-5.26940293825538,40.9206661723815,31.591754158834,"terrestrial",NA,NA,"photosynthesis"
-"233","Larrea divaricata (20°C)",NA,NA,6.66319411815156,53.2343570667658,34.1281506238672,"terrestrial",NA,NA,"photosynthesis"
-"247","Larrea divaricata (35°C)",NA,NA,0.116939568127197,53.6321897026846,40.2068681850018,"terrestrial",NA,NA,"photosynthesis"
-"253","Larrea divaricata (45°C)",NA,NA,2.9273829503428,55.7713528418903,43.4106959135333,"terrestrial",NA,NA,"photosynthesis"
-"263","Ipomoea batatas",NA,NA,7.0489809487895,46.2791558545992,32.3588259792828,"terrestrial",NA,NA,"photosynthesis"
-"274","Muhlenbergia richardsonis",NA,NA,3.75054994260382,45.2254199959026,33.1472616854315,"terrestrial",NA,NA,"photosynthesis"
-"302","Atriplex rosea (15°C)",NA,NA,0.585986944903787,36.4103346812191,27.2450450568939,"terrestrial",NA,NA,"photosynthesis"
-"318","Atriplex patula (36°C)",NA,NA,-1.22027400701975,38.4588238967028,26.5142839107108,"terrestrial",NA,NA,"photosynthesis"
-"322","Atriplex rosea (30°C)",NA,NA,-6.63418063864373,39.4878817507408,32.3122888012898,"terrestrial",NA,NA,"photosynthesis"
-"335","Flaveria trinervia",NA,NA,-5.09181534659897,49.033749335081,35.3123217569549,"terrestrial",NA,NA,"photosynthesis"
-"366","Spartina townsendii",NA,NA,1.35784085057664,40.510180206922,28.8558162708297,"terrestrial",NA,NA,"photosynthesis"
-"372","Agropyron smithii",NA,NA,-13.0539510928488,54.2428874910191,34.3428846648026,"terrestrial",NA,NA,"photosynthesis"
-"395","Lycopersicon esculentum",NA,NA,-15.1968361327131,38.7175381626048,30.2737160892552,"terrestrial",NA,NA,"photosynthesis"
-"136","fragariae","Sitobion",NA,5.9,27.74,22.82,"terrestrial",-42,147,"insects"
-"234","lactucae","Hyperomyzus",NA,4.1,26.1,23,"terrestrial",-35.3,149.08,"insects"
-"319","miscanthi","Sitobion",NA,7.26,29,24,"terrestrial",-33,152,"insects"
-"430","austrinus","Dactylopius",NA,15.42,35.94,31.2,"terrestrial",-31.08,150.93,"insects"
-"514","lanigerum","Eriosoma",NA,3.55,34.075,26.725,"terrestrial",-30.51,151.66,"insects"
-"616","darlingensis","Pterohelaeus",NA,14.24,34.54,29.42,"terrestrial",-27.47,151.48,"insects"
-"713","rhodesianus","Callosobruchus",NA,17.8333,35.8,29.0333,"terrestrial",-26.5,31.5,"insects"
-"85","alternatus","Pterohalaeus",NA,19.25,30.55,27.2,"terrestrial",-26,150,"insects"
-"99","sacchari","Saccharicoccus",NA,18.02,34.78,30.68,"terrestrial",-21.09,149.09,"insects"
-"105","sesamiae","Cotesia",NA,6.5,36.65,30.05,"terrestrial",-3,40,"insects"
-"1110","shadabi","Clavigralla",NA,19.3,33.0677,28.8,"terrestrial",6.45,2.35,"insects"
-"1213","lariophaga","Uscana",NA,17.76,41.04,36.3,"terrestrial",13.48,2.17,"insects"
-"1310","capitata","Ceratitis",NA,13.28,31.78,27.98,"terrestrial",20.88,-156.52,"insects"
-"147","dorsalis","Bactrocera",NA,11.75,36.2,32.6,"terrestrial",23.12,113.25,"insects"
-"1510","flavipes","Cotesia",NA,10.75,34.625,29.275,"terrestrial",25,68,"insects"
-"1610","argentifolia","Bemisia",NA,7.275,36.475,29.625,"terrestrial",25.47,-80.48,"insects"
-"174","lineolata","Diatraea",NA,6.1,31.4,25.3,"terrestrial",26,-98.8,"insects"
-"186","rufiabdominalis","Rhopalosiphum",NA,5.28,33.52,27.48,"terrestrial",26.14,-81.8,"insects"
-"195","citri","Diaphorina",NA,13.14,31.96,27.84,"terrestrial",26.2,-80.1,"insects"
-"205","plutellae","Cotesia",NA,10.875,36.175,30.075,"terrestrial",30.25,120.2,"insects"
-"2112","perseae","Scirtothrips",NA,12.5,28.15,21.35,"terrestrial",33.4,-117.2,"insects"
-"2211","citricola","Aphis",NA,8.625,30.225,25.8,"terrestrial",34.98,138.4,"insects"
-"235","citricidus","Toxoptera",NA,9.48,30.92,26.4,"terrestrial",34.98,138.4,"insects"
-"248","tabaci","Thrips",NA,10.075,30.025,25.525,"terrestrial",35.36,132.75,"insects"
-"255","gossypii","Aphis",NA,8.95,35.95,28.3,"terrestrial",36.07,114.22,"insects"
-"264","kimi","Paronychiurus",NA,9.64,29.54,25.42,"terrestrial",37,127.5,"insects"
-"275","pygmaeus","Macrolophus",NA,8.36,32.28,27.08,"terrestrial",38,23,"insects"
-"283","brassicae","Brevicoryne",NA,4.8,27.86,22.08,"terrestrial",38.93,-92.3,"insects"
-"292","pseudobrassicae","Hyadaphis",NA,8.2,32.1,25.78,"terrestrial",38.93,-92.3,"insects"
-"303","persicae","Myzus",NA,6.3,28.82,23.88,"terrestrial",38.93,-92.3,"insects"
-"3110","raptorellus","Muscidifurax",NA,13.125,36.15,30.525,"terrestrial",40.82,-96.67,"insects"
-"323","raptor","Muscidifurax",NA,11.5,36.84,30.52,"terrestrial",45,-93.17,"insects"
-"337","punctillum","Stethorus",NA,16.84,33.46,30.1,"terrestrial",46.98,-71.48,"insects"
-"341","calcitrans","Stomoxys",NA,13.48,36.44,30.22,"terrestrial",49.68,-112.8,"insects"
-"351","zaraptor","Muscidifurax",NA,14.1,37.14,30.9,"terrestrial",49.9,-112.9,"insects"
-"367","pisum","Acyrthosiphon",NA,-1.175,32.875,24.775,"terrestrial",51.53,0,"insects"
-"373","acerinum","Drepanosiphum",NA,3.06,26.04,21,"terrestrial",52.4,1.18,"insects"
-"383","platanoids","Drepanosiphum",NA,-5.1,25,19.9,"terrestrial",52.4,1.18,"insects"
-"396","farris","Acarus",NA,5.119817569,30.15362685,23.92669384,"terrestrial",NA,NA,"insects"
-"401","semiflavus","Aphelinus",NA,10.74718265,26.62901143,21.79061315,"terrestrial",NA,NA,"insects"
-"4110","fusca","Busseola",NA,6.881490137,34.20643592,26.41323684,"terrestrial",NA,NA,"insects"
-"4210","fusca","Busseola",NA,9.512788109,35.77090531,29.79260181,"terrestrial",NA,NA,"insects"
-"432","fusca","Busseola",NA,9.512788109,35.77090531,29.79260181,"terrestrial",NA,NA,"insects"
-"442","castorum","Cactoblastis",NA,15.50270245,35.44529429,29.56874459,"terrestrial",NA,NA,"insects"
-"453","oryzae","Calandra",NA,14.52365033,34.7280596,28.63837831,"terrestrial",NA,NA,"insects"
-"4610","plutellae","Cotesia",NA,3.996038494,35.02675574,29.07560198,"terrestrial",NA,NA,"insects"
-"476","ferrugineus","Cryptolestes",NA,19.94931614,42.20368684,34.16594275,"terrestrial",NA,NA,"insects"
-"481","bimaculata","Ebcarsia",NA,14.75706218,36.33592392,30.02586105,"terrestrial",NA,NA,"insects"
-"491","furuhashii","Eretmocerus",NA,18.93187556,38.24578255,29.55481879,"terrestrial",NA,NA,"insects"
-"502","triguttatus","Gonatocerus",NA,13.43677376,35.9511783,28.59340564,"terrestrial",NA,NA,"insects"
-"515","notata","Hyperaspis",NA,14.12653299,33.9877374,28.05569419,"terrestrial",NA,NA,"insects"
-"522","hampei","Hypothenemus",NA,17.59833372,33.71751943,26.26304271,"terrestrial",NA,NA,"insects"
-"531","entomophila","Liposcelis",NA,17.60626211,37.69094496,29.87075204,"terrestrial",NA,NA,"insects"
-"542","tricolor","Liposcelis",NA,15.90234933,35.51115877,30.80291721,"terrestrial",NA,NA,"insects"
-"551","euphorbiae","Macrosiphum",NA,1.360826734,29.96319759,20.3636748,"terrestrial",NA,NA,"insects"
-"562","persicae","Myzus",NA,1.847101867,29.9935998,22.7906663,"terrestrial",NA,NA,"insects"
-"571","persicae","Myzus",NA,2.472535471,32.21122978,25.30492287,"terrestrial",NA,NA,"insects"
-"582","corylifoliella","Phyllonorycter",NA,9.743735848,34.56007762,27.49410729,"terrestrial",NA,NA,"insects"
-"592","dominica","Rhizopertha",NA,17.73621333,38.74461102,33.97536697,"terrestrial",NA,NA,"insects"
-"602","calamistis","Sesamia",NA,12.62375593,34.2251859,28.15511602,"terrestrial",NA,NA,"insects"
-"617","nonagrioides","Sesamia",NA,11.89004368,34.03783973,27.93796736,"terrestrial",NA,NA,"insects"
-"623","nonagrioides","Sesamia",NA,14.23114114,38.79359315,29.10405459,"terrestrial",NA,NA,"insects"
-"633","mwanzai","Trichogramma",NA,9.437121845,35.980442,28.20634739,"terrestrial",NA,NA,"insects"
-"643","pretoisum","Trichogramma",NA,12.72339221,35.37879684,29.21949623,"terrestrial",NA,NA,"insects"
-"653","utilis","Trioxys",NA,10.199303,26.69189779,22.65260232,"terrestrial",NA,NA,"insects"
-"663","nigriabdominalis","Tetraneura",NA,9.85993273,35.01320971,28.82135331,"terrestrial",NA,NA,"insects"
+species,genus,family,CTmin,CTmax,Topt,habitat,lat,lon,taxa,source
+antarctica,Koliella,Koliellaceae,2.684283869,20.00002464,12.60374739,marine,-74.83,164.5,plankton,"Thomas et al. 2012, 2016"
+,Klebsormidium,Klebsormidiaceae,1.472359922,31.54463071,13.61144785,marine,-66.28,110.48,plankton,"Thomas et al. 2012, 2016"
+antarctica,Phaeocystis,Phaeocystaceae,-1.986312195,7.892356092,3.462879644,marine,-64.78,-64.06,plankton,"Thomas et al. 2012, 2016"
+turgiduloides,Pseudo-nitzschia,Bacillariaceae,-1.364725126,9.066391361,4.248702399,marine,-58,62,plankton,"Thomas et al. 2012, 2016"
+huxleyi,Emiliania,No�laerhabdaceae,10.01125299,30.00053413,22.66390315,marine,-46.98,168.12,plankton,"Thomas et al. 2012, 2016"
+salina,Dunaliella,Dunaliellaceae,5.241743956,35.25563772,24.04136555,saline lake,-41.73,174.17,plankton,"Thomas et al. 2012, 2016"
+japonica,Fibrocapsa,Chattonellaceae,5.772252331,34.85717079,22.65169693,marine,-41.27,174.85,plankton,"Thomas et al. 2012, 2016"
+oceanica,Gephyrocapsa,No�laerhabdaceae,5.236139316,30.13725665,22.29491187,marine,-36.3,174.81,plankton,"Thomas et al. 2012, 2016"
+leptoporus,Calcidiscus,Calcidiscaceae,6.533056387,24.93226755,15.46532963,marine,-34.28,17.18,plankton,"Thomas et al. 2012, 2016"
+huxleyi,Emiliania,No�laerhabdaceae,8.571599607,31.35519631,23.58273862,marine,-29.82,31.02,plankton,"Thomas et al. 2012, 2016"
+aeruginosa,Microcystis,Microcystaceae,11.76295177,39.17449357,32.16545468,freshwater,-25.75,27.86,plankton,"Thomas et al. 2012, 2016"
+leptoporus,Calcidiscus,Calcidiscaceae,6.785844489,24.98802763,18.50424672,marine,-23,14,plankton,"Thomas et al. 2012, 2016"
+,Isochrysis,Isochrysidaceae,8.645771111,37.26951256,22.29850642,marine,-18.51,121.8,plankton,"Thomas et al. 2012, 2016"
+erythraeum,Trichodesmium,Phormidiaceae,15.90112402,34.96834839,28.55694943,marine,-16.37,145.57,plankton,"Thomas et al. 2012, 2016"
+closterium,Cylindrotheca,Bacillariaceae,15.96478792,37.65384225,23.21859481,estuarine,-12.48,130.8,plankton,"Thomas et al. 2012, 2016"
+tuberosa,Pernambugia,,11.50484845,32.53279821,23.83795659,marine,-11.54,-28.58,plankton,"Thomas et al. 2012, 2016"
+raciborskii,Cylindrospermopsis,Nostocaceae,10.6341162,40.776421,29.34894022,freshwater,-8.1,-36.22,plankton,"Thomas et al. 2012, 2016"
+globosa,Phaeocystis,Phaeocystaceae,9.576999527,36.52076039,25.46180958,marine,-1.38,-89.65,plankton,"Thomas et al. 2012, 2016"
+tropicum,Skeletonema,Skeletonemaceae,11.8695229,36.23314924,27.14348294,marine,5,-52,plankton,"Thomas et al. 2012, 2016"
+mobiliensis,Odontella,Triceratiaceae,12.49339993,34.84882435,26.85191783,marine,6,-54,plankton,"Thomas et al. 2012, 2016"
+didymus,Chaetoceros,Chaetocerotaceae,10.9799901,35.37964312,21.20477853,marine,6,-54,plankton,"Thomas et al. 2012, 2016"
+setigera,Rhizosolenia,Rhizosoleniaceae,10.83853101,34.5080558,24.02837696,marine,6,-54,plankton,"Thomas et al. 2012, 2016"
+tropicum,Skeletonema,Skeletonemaceae,10.2646778,36.25740448,25.75524262,marine,6,-54,plankton,"Thomas et al. 2012, 2016"
+nitzschioides,Thalassionema,Thalassionemataceae,8.119941723,34.07539318,27.01490387,marine,6,-54,plankton,"Thomas et al. 2012, 2016"
+granifera,Leonella,,14.49021928,32.02381222,26.55024552,marine,8.71,-52.5,plankton,"Thomas et al. 2012, 2016"
+,Gymnodinium,Gymnodiniaceae,15.36930765,32.33305025,25.98823527,marine,9.81,-89.24,plankton,"Thomas et al. 2012, 2016"
+watsonii,Crocosphaera,Cyanobacteriaceae,24.49213158,31.09526754,28.83732041,marine,12.31,-56.04,plankton,"Thomas et al. 2012, 2016"
+,Gymnodinium,Gymnodiniaceae,14.96421695,33.02447641,24.99489219,marine,14.67,-96.98,plankton,"Thomas et al. 2012, 2016"
+quadricaudatus,Desmodesmus,Scenedesmaceae,21.61533024,41.10258533,30.84753728,freshwater,14.87,74.42,plankton,"Thomas et al. 2012, 2016"
+raciborskii,Cylindrospermopsis,Nostocaceae,11.68972714,39.33161518,30.13323467,freshwater,22.73,-99.8,plankton,"Thomas et al. 2012, 2016"
+radians,Trichodesmium,Phormidiaceae,23.0811759,35.5251165,26.28269007,marine,22.75,-158,plankton,"Thomas et al. 2012, 2016"
+watsonii,Crocosphaera,Cyanobacteriaceae,24.4530928,31.12679576,28.69128562,marine,22.76,-158.01,plankton,"Thomas et al. 2012, 2016"
+watsonii,Crocosphaera,Cyanobacteriaceae,24.92357843,31.05446665,28.75878899,marine,22.76,-158.01,plankton,"Thomas et al. 2012, 2016"
+costatum,Skeletonema,Skeletonemaceae,8.393079864,34.20859649,26.93807172,marine,24.49,118.11,plankton,"Thomas et al. 2012, 2016"
+tamesis,Helicotheca,Lithodesmiaceae,9.227247622,32.70153297,24.34244147,marine,24.49,118.11,plankton,"Thomas et al. 2012, 2016"
+catenatum,Gymnodinium,Gymnodiniaceae,7.103237861,32.73772404,24.18859962,estuarine,26.65,-111.8,plankton,"Thomas et al. 2012, 2016"
+brevis,Karenia,Kareniaceae,12.9856863,29.56679097,20.63421151,marine,27.01,-82.42,plankton,"Thomas et al. 2012, 2016"
+rotula,Thalassiosira,Thalassiosiraceae,1.098857339,33.66302139,22.05376417,marine,27.5,-115,plankton,"Thomas et al. 2012, 2016"
+,Synechococcus,Synechococcaceae,12.02171824,34.44632579,26.77017664,marine,28.5,-67.39,plankton,"Thomas et al. 2012, 2016"
+,Amphiprora,Amphipleuraceae,9.639337432,33.99368941,28.20807009,marine,28.9,50.75,plankton,"Thomas et al. 2012, 2016"
+lorenzianus,Chaetoceros,Chaetocerotaceae,11.18138737,36.53421208,24.99943272,marine,28.9,50.75,plankton,"Thomas et al. 2012, 2016"
+danicus,Leptocylindrus,Leptocylindraceae,13.18597877,33.90884138,27.61186782,marine,28.9,50.75,plankton,"Thomas et al. 2012, 2016"
+marinus,Prochlorococcus,Synechococcaceae,12.07591082,28.04087176,23.26107388,marine,28.98,-64.35,plankton,"Thomas et al. 2012, 2016"
+brevis,Karenia,Kareniaceae,11.16694211,31.41491012,23.74853107,marine,29.71,-84.98,plankton,"Thomas et al. 2012, 2016"
+parvum,Prymnesium,Prymnesiaceae,11.42486634,32.74919932,19.30027049,freshwater,30.25,-97.69,plankton,"Thomas et al. 2012, 2016"
+sorokiniana,Chlorella,Chlorellaceae,12.05808999,43.80433774,36.35558437,freshwater,30.26,-97.74,plankton,"Thomas et al. 2012, 2016"
+marina,Chattonella,Chattonellaceae,10.03534329,34.97887969,23.66323851,marine,31.39,130.66,plankton,"Thomas et al. 2012, 2016"
+,,,10.39038196,37.33053523,27.30088507,marine,32.3,-64.7,plankton,"Thomas et al. 2012, 2016"
+sanguinea,Akashiwo,,9.5610927,30.09304507,23.38200038,marine,32.87,-117.26,plankton,"Thomas et al. 2012, 2016"
+polykrikoides,Cochlodinium,Gymnodiniaceae,9.799805023,34.95526699,28.18608002,marine,32.93,128.26,plankton,"Thomas et al. 2012, 2016"
+japonica,Fibrocapsa,Chattonellaceae,9.882964367,31.84022098,22.74809998,marine,34.3,134.25,plankton,"Thomas et al. 2012, 2016"
+marina,Chattonella,Chattonellaceae,10.47473325,30.97743803,26.03512105,marine,34.5,134.58,plankton,"Thomas et al. 2012, 2016"
+erythraeum,Trichodesmium,Phormidiaceae,19.26654392,35.36356281,27.33105828,marine,35,-76,plankton,"Thomas et al. 2012, 2016"
+furca,Biceratium,Ceratiaceae,10.37163152,31.96907795,24.64981831,marine,35.15,139.35,plankton,"Thomas et al. 2012, 2016"
+fusus,Neoceratium,Ceratiaceae,9.501299194,31.94442617,25.4947875,marine,35.15,139.35,plankton,"Thomas et al. 2012, 2016"
+pseudocurvisetus,Chaetoceros,Chaetocerotaceae,15.0342219,34.94705306,24.41590163,marine,35.15,139.35,plankton,"Thomas et al. 2012, 2016"
+costatum,Skeletonema,Skeletonemaceae,2.265132082,34.89272574,23.06399847,marine,35.5,140,plankton,"Thomas et al. 2012, 2016"
+crassisquama,Mallomonas,Mallomonadaceae,5.567754056,24.68895308,16.09751372,freshwater,35.8,128.62,plankton,"Thomas et al. 2012, 2016"
+tonsurata,Mallomonas,Mallomonadaceae,9.96219173,24.88215543,20.04570792,freshwater,35.8,128.62,plankton,"Thomas et al. 2012, 2016"
+areolata,Mallomonas,Mallomonadaceae,5.684399398,26.12820622,19.94967256,freshwater,35.95,128.33,plankton,"Thomas et al. 2012, 2016"
+acaroides,Mallomonas,Mallomonadaceae,9.043199808,24.03419285,19.85289603,freshwater,35.97,128.63,plankton,"Thomas et al. 2012, 2016"
+caudata,Mallomonas,Mallomonadaceae,6.947786541,24.02801127,17.15768801,freshwater,36,129.47,plankton,"Thomas et al. 2012, 2016"
+hantzschii,Stephanodiscus,Stephanodiscaceae,5.089541783,34.94713034,23.85388053,freshwater,36,140,plankton,"Thomas et al. 2012, 2016"
+,Peridinium,Peridiniaceae,7.068112304,29.47066159,17.9411089,marine,36.61,-121.89,plankton,"Thomas et al. 2012, 2016"
+gracile,Prorocentrum,Prorocentraceae,7.906985802,24.85102906,16.95163289,marine,36.61,-121.89,plankton,"Thomas et al. 2012, 2016"
+micans,Prorocentrum,Prorocentraceae,4.584456988,30.05193519,23.55714388,marine,36.61,-121.89,plankton,"Thomas et al. 2012, 2016"
+uncatenum,Gyrodinium,Gymnodiniaceae,7.729698665,35.79983445,27.59066745,estuarine,38.22,-76.85,plankton,"Thomas et al. 2012, 2016"
+guillardii,Conticribra,Thalassiosiraceae,1.754799963,29.89306286,16.66148716,marine,39.6,-70.1,plankton,"Thomas et al. 2012, 2016"
+closterium,Cylindrotheca,Bacillariaceae,7.766342016,34.75007045,22.24638066,marine,40.44,-73.98,plankton,"Thomas et al. 2012, 2016"
+atomus,Picochlorum,,5.810558927,31.7200832,22.34979059,estuarine,40.68,-73.13,plankton,"Thomas et al. 2012, 2016"
+tricornutum,Phaeodactylum,Phaeodactylaceae,0.519693072,29.80705856,13.46490003,estuarine,40.68,-73.13,plankton,"Thomas et al. 2012, 2016"
+,Stichococcus,Prasiolaceae,5.582757264,33.19353761,21.44435136,estuarine,40.68,-73.13,plankton,"Thomas et al. 2012, 2016"
+globator,Volvox,Volvocaceae,5.836263344,29.93842082,21.83513438,freshwater,41.53,-70.67,plankton,"Thomas et al. 2012, 2016"
+subterranea,Monodopsis,Monodopsidaceae,10.26094574,31.53377924,26.04211355,freshwater,41.56,-72.93,plankton,"Thomas et al. 2012, 2016"
+confervacea,Detonula,Skeletonemaceae,0.786062158,18.07830998,7.186515206,estuarine,41.57,-71.34,plankton,"Thomas et al. 2012, 2016"
+nordenskioeldii,Thalassiosira,Thalassiosiraceae,-4.835759195,15.68643112,9.720040388,estuarine,41.57,-71.34,plankton,"Thomas et al. 2012, 2016"
+rotula,Thalassiosira,Thalassiosiraceae,-0.20827323,29.92245844,19.52169736,estuarine,41.57,-71.34,plankton,"Thomas et al. 2012, 2016"
+tamarense,Alexandrium,Gonyaulacaceae,4.017339028,25.99998551,17.75243334,estuarine,41.79,-69.95,plankton,"Thomas et al. 2012, 2016"
+setigera,Rhizosolenia,Rhizosoleniaceae,1.081330133,20.1313379,10.27695763,marine,41.9,-70.32,plankton,"Thomas et al. 2012, 2016"
+catenatum,Gymnodinium,Gymnodiniaceae,7.457265026,29.27870408,24.11874221,estuarine,42.43,-8.95,plankton,"Thomas et al. 2012, 2016"
+aeruginosa,Microcystis,Microcystaceae,8.382671676,36.16257458,28.24534023,freshwater,43.11,-89.42,plankton,"Thomas et al. 2012, 2016"
+minimum,Prorocentrum,Prorocentraceae,7.949887184,32.23509483,23.33986138,marine,43.32,5.32,plankton,"Thomas et al. 2012, 2016"
+fundyense,Alexandrium,Gonyaulacaceae,2.881949739,23.92547272,16.96930785,marine,43.56,-69.45,plankton,"Thomas et al. 2012, 2016"
+reinhardtii,Chlamydomonas,Chlamydomonadaceae,5.214384105,37.59045118,27.59323415,freshwater,44.47,-78.72,plankton,"Thomas et al. 2012, 2016"
+fundyense,Alexandrium,Gonyaulacaceae,1.998380173,24.14261948,15.75863192,marine,44.7,-66.51,plankton,"Thomas et al. 2012, 2016"
+granii,Pseudo-nitzschia,Bacillariaceae,3.752539098,23.51204112,13.7308047,marine,45,-145,plankton,"Thomas et al. 2012, 2016"
+costatum,Skeletonema,Skeletonemaceae,0.14749603,27.939463,17.89035061,marine,48.54,-123.01,plankton,"Thomas et al. 2012, 2016"
+raciborskii,Cylindrospermopsis,Nostocaceae,13.24013825,42.56459936,29.7498108,freshwater,48.94,2.31,plankton,"Thomas et al. 2012, 2016"
+sphagnicola,Synura,Mallomonadaceae,3.261082862,24.51864448,16.11983788,freshwater,49.69,-93.75,plankton,"Thomas et al. 2012, 2016"
+,Tribonema,Tribonemataceae,-0.899571139,30.18888138,20.27655472,freshwater,51.75,-1.36,plankton,"Thomas et al. 2012, 2016"
+avicula,Staurastrum,Desmidiaceae,5.218019321,34.69277591,26.79752662,freshwater,52.14,5.06,plankton,"Thomas et al. 2012, 2016"
+chaetoceras,Staurastrum,Desmidiaceae,7.936347491,34.10130426,26.7374244,freshwater,52.38,5.09,plankton,"Thomas et al. 2012, 2016"
+raciborskii,Cylindrospermopsis,Nostocaceae,10.23536612,36.46968314,27.40272812,freshwater,52.92,12.94,plankton,"Thomas et al. 2012, 2016"
+limnetica,Synechocystis,Merismopediaceae,3.132594003,20.00384943,12.51491798,freshwater,53.62,108.38,plankton,"Thomas et al. 2012, 2016"
+japonica,Fibrocapsa,Chattonellaceae,8.939543951,32.18142293,22.88156927,marine,54.12,8.86,plankton,"Thomas et al. 2012, 2016"
+flos-aquae,Anabaena,Nostocaceae,5.013410933,29.21188556,16.87033047,freshwater,54.35,-2.94,plankton,"Thomas et al. 2012, 2016"
+agardhii,Planktothrix,Phormidiaceae,0.556111297,35.0076817,27.88145803,freshwater,54.4,-6.6,plankton,"Thomas et al. 2012, 2016"
+furcoides,Ceratium,Ceratiaceae,8.355020325,29.98320961,22.80918763,freshwater,54.57,-3,plankton,"Thomas et al. 2012, 2016"
+marssonii,Cryptomonas,Cryptomonadaceae,-0.513746513,30.21123246,16.22341175,freshwater,54.57,-3,plankton,"Thomas et al. 2012, 2016"
+divergens,Dinobryon,Dinobryaceae,-0.80299123,29.84726862,16.70896857,freshwater,54.57,-3,plankton,"Thomas et al. 2012, 2016"
+bourrellyi,Tychonema,Phormidiaceae,2.289404375,29.69746785,21.68485029,freshwater,54.57,-3,plankton,"Thomas et al. 2012, 2016"
+flos-aquae,Aphanizomenon,Nostocaceae,4.048280427,34.87463032,24.30971442,freshwater,54.62,-6.41,plankton,"Thomas et al. 2012, 2016"
+italica,Melosira,Melosiraceae,-0.243259329,27.18733828,17.84518979,freshwater,54.62,-6.41,plankton,"Thomas et al. 2012, 2016"
+redekei,Limnothrix,Pseudoanabaenaceae,0.709800367,34.86040437,26.78881044,freshwater,54.62,-6.41,plankton,"Thomas et al. 2012, 2016"
+astraea,Stephanodiscus,Stephanodiscaceae,0.515692734,25.05401194,14.25061568,freshwater,54.62,-6.41,plankton,"Thomas et al. 2012, 2016"
+osterfeldii,Alexandrium,Gonyaulacaceae,9.089443345,26.27443164,20.33422812,estuarine,56.57,9.07,plankton,"Thomas et al. 2012, 2016"
+corollarium,Gymnodinium,Gymnodiniaceae,-2.518190927,10.73392719,2.849833517,marine,58.88,20.32,plankton,"Thomas et al. 2012, 2016"
+rotundata,Heterocapsa,Heterocapsaceae,1.880551068,29.37886755,17.31784002,estuarine,59.45,10.52,plankton,"Thomas et al. 2012, 2016"
+luteus,Olisthodiscus,Chattonellaceae,2.545730008,23.65628033,14.42134085,estuarine,59.45,10.52,plankton,"Thomas et al. 2012, 2016"
+pyriformis,Pseudopedinella,Pedinellaceae,2.317436705,26.18813413,12.38210733,estuarine,59.45,10.52,plankton,"Thomas et al. 2012, 2016"
+disomata,Pyramimonas,Pyramimonadaceae,8.000334816,28.00041452,17.2638359,estuarine,59.45,10.52,plankton,"Thomas et al. 2012, 2016"
+furca,Biceratium,Ceratiaceae,5.716244997,26.96458077,20.74705841,estuarine,59.67,10.61,plankton,"Thomas et al. 2012, 2016"
+fusus,Neoceratium,Ceratiaceae,5.09592885,29.48355644,16.12133425,estuarine,59.67,10.61,plankton,"Thomas et al. 2012, 2016"
+lineatum,Neoceratium,Ceratiaceae,1.317552291,28.96357107,21.50728615,estuarine,59.67,10.61,plankton,"Thomas et al. 2012, 2016"
+huxleyi,Emiliania,No�laerhabdaceae,5.854763159,27.07652179,21.71487,marine,66,2,plankton,"Thomas et al. 2012, 2016"
+,Micromonas,Mamiellaceae,-2.088129293,14.93260634,6.607881357,marine,76.28,-74.75,plankton,"Thomas et al. 2012, 2016"
+marinus,Prochlorococcus,Synechococcaceae,12.58941241,30.0751522,25.44666293,marine,37.51,-68.24,plankton,"Thomas et al. 2012, 2016"
+marinus,Prochlorococcus,Synechococcaceae,13.7219789,33.21498628,27.19960463,marine,0,-140,plankton,"Thomas et al. 2012, 2016"
+monilatum,Alexandrium,Gonyaulacaceae,15.54183347,33.80914638,28.23945961,marine,30.23,-88.8,plankton,"Thomas et al. 2012, 2016"
+incerta,Aphanocapsa,Merismopediaceae,6.125260473,38.07255277,28.04230397,freshwater,23.13,-82.38,plankton,"Thomas et al. 2012, 2016"
+,Chlorella,Chlorellaceae,13.54419782,38.94215014,26.28930456,freshwater,NA,NA,plankton,"Thomas et al. 2012, 2016"
+quadricaudatus,Desmodesmus,Scenedesmaceae,13.82373048,38.31717991,22.52268378,freshwater,NA,NA,plankton,"Thomas et al. 2012, 2016"
+bipes,Peridinium,Peridiniaceae,3.590516514,29.00915944,20.82686329,freshwater,NA,NA,plankton,"Thomas et al. 2012, 2016"
+affinis,Chaetoceros,Chaetocerotaceae,8.16353406,30.0396719,23.78186879,marine,NA,NA,plankton,"Thomas et al. 2012, 2016"
+calcitrans,Chaetoceros,Chaetocerotaceae,14.99436091,33.39611833,22.89805344,marine,NA,NA,plankton,"Thomas et al. 2012, 2016"
+gracilis,Chaetoceros,Chaetocerotaceae,13.30120501,40.12809636,31.09360978,marine,NA,NA,plankton,"Thomas et al. 2012, 2016"
+huxleyi,Emiliania,No�laerhabdaceae,10.06781519,28.86294015,22.25782296,marine,NA,NA,plankton,"Thomas et al. 2012, 2016"
+huxleyi,Emiliania,No�laerhabdaceae,0.770448351,25.56548392,21.71492775,marine,NA,NA,plankton,"Thomas et al. 2012, 2016"
+lutheri,Diacronema,Pavlovaceae,13.00149696,28.90349329,21.03434081,marine,NA,NA,plankton,"Thomas et al. 2012, 2016"
+carterae,Pleurochrysis,Pleurochrysidaceae,8.017423401,27.55085374,20.14783121,marine,NA,NA,plankton,"Thomas et al. 2012, 2016"
+fusiformis,Arthrospira,Phormidiaceae,18.97362147,41.64179904,32.98627254,unknown,NA,NA,plankton,"Thomas et al. 2012, 2016"
+platensis,Spirulina,Pseudoanabaenaceae,18.73108173,40.51535065,31.41391647,unknown,NA,NA,plankton,"Thomas et al. 2012, 2016"
+tropicum,Skeletonema,Skeletonemaceae,9.703554566,35.10403836,24.35209536,marine,33.93,130.83,plankton,"Thomas et al. 2012, 2016"
+tropicum,Skeletonema,Skeletonemaceae,9.238343046,35.04625745,26.07774814,marine,33.93,130.83,plankton,"Thomas et al. 2012, 2016"
+tropicum,Skeletonema,Skeletonemaceae,9.593319764,35.06387902,25.88285886,marine,33.93,130.83,plankton,"Thomas et al. 2012, 2016"
+tropicum,Skeletonema,Skeletonemaceae,8.77401985,35.06117848,26.76665394,marine,33.93,130.83,plankton,"Thomas et al. 2012, 2016"
+tropicum,Skeletonema,Skeletonemaceae,9.880862819,35.03436314,26.09600946,marine,33.93,130.83,plankton,"Thomas et al. 2012, 2016"
+menzelii,Skeletonema,Skeletonemaceae,6.933197671,39.65904654,25.75313498,marine,33.93,130.83,plankton,"Thomas et al. 2012, 2016"
+menzelii,Skeletonema,Skeletonemaceae,7.306575472,39.57217622,23.53551391,marine,33.93,130.83,plankton,"Thomas et al. 2012, 2016"
+ardens,Skeletonema,Skeletonemaceae,9.830397047,35.05078026,26.62628439,marine,33.93,130.83,plankton,"Thomas et al. 2012, 2016"
+aeruginosa,Microcystis,Microcystaceae,17.54001749,39.18162858,30.33694093,freshwater,52.26,-105.53,plankton,"Thomas et al. 2012, 2016"
+simplicissimum,Phormidium,Phormidiaceae,18.94304511,38.80532356,27.88304412,freshwater,-27.4,26.51,plankton,"Thomas et al. 2012, 2016"
+viridis,Microcystis,Microcystaceae,10.14639017,34.88442096,24.62622484,freshwater,36.04,140.39,plankton,"Thomas et al. 2012, 2016"
+aeruginosa,Microcystis,Microcystaceae,15.00004867,39.94726743,27.91098288,freshwater,36.04,140.39,plankton,"Thomas et al. 2012, 2016"
+aeruginosa,Microcystis,Microcystaceae,14.89898033,44.84284526,32.70485731,freshwater,36.04,140.39,plankton,"Thomas et al. 2012, 2016"
+aeruginosa,Microcystis,Microcystaceae,15.68476819,44.73074069,34.42622015,freshwater,36.04,140.39,plankton,"Thomas et al. 2012, 2016"
+ukrainica,Anabaena,Nostocaceae,6.16945328,36.44738803,28.68729366,freshwater,35.21,136.28,plankton,"Thomas et al. 2012, 2016"
+bidens,Fragilaria,Fragilariaceae,6.216882572,34.39730746,20.99721895,freshwater,42.65,2.53,plankton,"Thomas et al. 2012, 2016"
+acerosum,Closterium,Closteriaceae,4.774334783,30.61759388,16.34802955,freshwater,36.49,-119.7,plankton,"Thomas et al. 2012, 2016"
+trabecula,Pleurotaenium,Desmidiaceae,2.24697927,35.14291281,23.89082655,freshwater,65,26,plankton,"Thomas et al. 2012, 2016"
+swartzii,Desmidium,Desmidiaceae,3.601797302,36.62369741,23.38303294,freshwater,53.27,-9.05,plankton,"Thomas et al. 2012, 2016"
+monotaenium,Gonatozygon,Gonatozygaceae,7.920748901,35.0333076,26.44778576,freshwater,46,-94,plankton,"Thomas et al. 2012, 2016"
+anglica,Roya,Mesotaeniaceae,4.275453174,29.92647959,20.94200375,freshwater,35.6,-79.45,plankton,"Thomas et al. 2012, 2016"
+aureus,Volvox,Volvocaceae,9.465717358,31.91214889,21.63448202,freshwater,39.17,-86.53,plankton,"Thomas et al. 2012, 2016"
+kramstae,Mesotaenium,Mesotaeniaceae,3.813092196,34.66592395,22.23065034,freshwater,30.27,-97.74,plankton,"Thomas et al. 2012, 2016"
+morum,Pandorina,Volvocaceae,4.563037516,34.98397701,15.63536019,freshwater,52.5,-1.5,plankton,"Thomas et al. 2012, 2016"
+californica,Pleodorina,Volvocaceae,10.79594955,34.78935101,23.67408481,freshwater,36.17,-86.78,plankton,"Thomas et al. 2012, 2016"
+boryanum,Pediastrum,Hydrodictyaceae,3.465989471,30.04443247,19.4762965,freshwater,54.1,-2.17,plankton,"Thomas et al. 2012, 2016"
+botrytis,Cosmarium,Desmidiaceae,3.009012568,35.56997459,20.57797147,freshwater,49.37,16.95,plankton,"Thomas et al. 2012, 2016"
+subcaudata,Chlamydomonas,Chlamydomonadaceae,-4.417510517,19.63453623,11.23295873,freshwater,-77.5,162.5,plankton,"Thomas et al. 2012, 2016"
+alpina,Chlamydomonas,Chlamydomonadaceae,-0.213724594,19.70706202,13.71196382,freshwater,-77.5,162.5,plankton,"Thomas et al. 2012, 2016"
+rotula,Thalassiosira,Thalassiosiraceae,3.98387636,30.00138563,21.34035494,marine,40.75,14.33,plankton,"Thomas et al. 2012, 2016"
+rotula,Thalassiosira,Thalassiosiraceae,0.885142355,30.03861102,18.92418951,marine,40.49,14.14,plankton,"Thomas et al. 2012, 2016"
+weissflogii,Conticribra,Thalassiosiraceae,5.233393498,26.07248184,19.68540345,marine,39.5,-9.33,plankton,"Thomas et al. 2012, 2016"
+sanguinea,Akashiwo,,11.72785771,34.89110837,22.25441025,marine,36.96,-122.02,plankton,"Thomas et al. 2012, 2016"
+,Proboscia,Rhizosoleniaceae,-3.563524133,7.810882396,3.788610388,marine,-57.85,139.85,plankton,"Thomas et al. 2012, 2016"
+erythraeum,Trichodesmium,Phormidiaceae,16.23724354,34.92924022,27.54945393,marine,-15.05,155.03,plankton,"Thomas et al. 2012, 2016"
+erythraeum,Trichodesmium,Phormidiaceae,16.42160565,34.95297068,27.86970425,marine,7.53,-49.25,plankton,"Thomas et al. 2012, 2016"
+watsonii,Crocosphaera,Cyanobacteriaceae,21.76914877,35.04808138,29.19234884,marine,6.98,-49.33,plankton,"Thomas et al. 2012, 2016"
+watsonii,Crocosphaera,Cyanobacteriaceae,21.86180818,35.06023994,28.57219994,marine,21.43,-157.79,plankton,"Thomas et al. 2012, 2016"
+watsonii,Crocosphaera,Cyanobacteriaceae,21.87244859,35.05428144,28.7343785,marine,-11.7,-32.01,plankton,"Thomas et al. 2012, 2016"
+,Ochromonas,Chromulinaceae,10.65170428,37.08753767,23.76239416,freshwater,52.2,5,plankton,"Thomas et al. 2012, 2016"
+ericina,Chryosochromulina,Prymnesiaceae,5.480370937,24.99024176,19.11257279,marine,-41.2,174.12,plankton,"Thomas et al. 2012, 2016"
+hirta,Chryosochromulina,Prymnesiaceae,6.162005664,24.97960045,19.35706278,marine,-41.13,173.99,plankton,"Thomas et al. 2012, 2016"
+acantha,Chryosochromulina,Prymnesiaceae,11.24808802,29.97900057,24.37793178,marine,-36.25,174.75,plankton,"Thomas et al. 2012, 2016"
+simplex,Chryosochromulina,Prymnesiaceae,10.09243593,29.99376647,23.0221637,marine,-36.25,174.75,plankton,"Thomas et al. 2012, 2016"
+raciborskii,Cylindrospermopsis,Nostocaceae,17.24831175,39.3212189,28.86482399,freshwater,-18.75,146.58,plankton,"Thomas et al. 2012, 2016"
+raciborskii,Cylindrospermopsis,Nostocaceae,17.79058924,37.57719113,30.34413901,freshwater,-18.75,146.58,plankton,"Thomas et al. 2012, 2016"
+raciborskii,Cylindrospermopsis,Nostocaceae,16.23017543,38.7524981,30.90090685,freshwater,-19.27,146.82,plankton,"Thomas et al. 2012, 2016"
+pyrenoidosa,Chlorella,Chlorellaceae,5.786621486,30.84077852,21.70638447,freshwater,68.42,18.83,plankton,"Thomas et al. 2012, 2016"
+ehrenbergii,Closterium,Closteriaceae,2.700594129,29.89677709,11.13053794,freshwater,56,9,plankton,"Thomas et al. 2012, 2016"
+ehrenbergii,Closterium,Closteriaceae,1.098100737,34.14758287,14.55261233,freshwater,43,144,plankton,"Thomas et al. 2012, 2016"
+ehrenbergii,Closterium,Closteriaceae,1.543149319,31.10191665,12.27856168,freshwater,43,144,plankton,"Thomas et al. 2012, 2016"
+ehrenbergii,Closterium,Closteriaceae,2.798000972,31.0788286,11.86185278,freshwater,36,137,plankton,"Thomas et al. 2012, 2016"
+obliquus,Acutodesmus,Scenedesmaceae,15.35259947,38.21605406,31.39834556,freshwater,34,-5.9,plankton,"Thomas et al. 2012, 2016"
+oceanica,Nannochloris,Chlorellaceae,10.41531231,35.18606825,26.35216499,marine,60.17,5.54,plankton,"Thomas et al. 2012, 2016"
+farcimen,Pseudochattonella,,0.603576293,20.05872464,13.19643048,estuarine,57.85,9.07,plankton,"Thomas et al. 2012, 2016"
+crenatum,Cosmarium,Desmidiaceae,-0.220527812,35.79641622,17.6976148,freshwater,79.95,50.08,plankton,"Thomas et al. 2012, 2016"
+punctulatum,Cosmarium,Desmidiaceae,0.813451141,35.77714239,19.61027122,freshwater,71.1,25.82,plankton,"Thomas et al. 2012, 2016"
+regnesii,Cosmarium,Desmidiaceae,2.016255648,36.56289909,21.09420775,freshwater,42.9,140.75,plankton,"Thomas et al. 2012, 2016"
+meneghinii,Cosmarium,Desmidiaceae,1.591366075,36.03184877,19.86241205,freshwater,50.08,14.42,plankton,"Thomas et al. 2012, 2016"
+punctulatum,Cosmarium,Desmidiaceae,0.551775805,36.04033148,20.21678193,freshwater,-0.67,-78.43,plankton,"Thomas et al. 2012, 2016"
+beatum,Cosmarium,Desmidiaceae,3.150827674,36.65634907,25.56950245,freshwater,-0.15,36.26,plankton,"Thomas et al. 2012, 2016"
+semen,Gonyostomum,Vacuolariaceae,6.728114645,31.36597852,13.18505759,freshwater,55.57,13.43,plankton,"Thomas et al. 2012, 2016"
+raciborskii,Cylindrospermopsis,Nostocaceae,15.33052597,39.86013738,29.8670958,freshwater,39.26,-86.4,plankton,"Thomas et al. 2012, 2016"
+raciborskii,Cylindrospermopsis,Nostocaceae,14.86706915,39.91879373,32.58795809,freshwater,28.79,-81.69,plankton,"Thomas et al. 2012, 2016"
+raciborskii,Cylindrospermopsis,Nostocaceae,15.18984332,39.78612761,31.46891148,freshwater,28.79,-81.69,plankton,"Thomas et al. 2012, 2016"
+aeruginosa,Microcystis,Microcystaceae,13.97407022,34.23971769,28.3044127,freshwater,42.4,-85.41,plankton,"Thomas et al. 2012, 2016"
+aeruginosa,Microcystis,Microcystaceae,13.98560115,34.27090857,28.76069129,freshwater,42.4,-85.41,plankton,"Thomas et al. 2012, 2016"
+aeruginosa,Microcystis,Microcystaceae,16.35143132,33.86670697,28.02456555,freshwater,44.43,-86.15,plankton,"Thomas et al. 2012, 2016"
+Elgaria_multicarinata,Elgaria,Anguidae,12.4,43.6,34.6,terrestrial,33.7,-117.8,lizards,Huey et al. 2009
+Laudakia_stellio,Laukadia,Agamidae,12.6,45,37.6,terrestrial,30.8,34.8,lizards,Huey et al. 2009
+Laudakia_stellio,Laudakia,Agamidae,11.9,44.7,36.7,terrestrial,33.4,35.86,lizards,Huey et al. 2009
+Trapelus_savignyi,Trapelus,Agamidae,12,47.2,36.4,terrestrial,31.1,34.8,lizards,Huey et al. 2009
+Anolis_carolinensis,Anolis,Polychrotidae,4.7,41.7,32.1,terrestrial,31,-89.9,lizards,Huey et al. 2009
+Anolis_tropidolepis,Anolis,Polychrotidae,9.5,33.1,27,terrestrial,10.3,-84.8,lizards,Huey et al. 2009
+Anolis_intermedius,Anolis,Polychrotidae,11.1,38.5,30.1,terrestrial,10.3,-84.8,lizards,Huey et al. 2009
+Anolis_humilis,Anolis,Polychrotidae,12.4,35.6,27.5,terrestrial,10.4,-83.8,lizards,Huey et al. 2009
+Anolis_cupreus,Anolis,Polychrotidae,11.8,38.4,30.8,terrestrial,10.4,-85.1,lizards,Huey et al. 2009
+Anolis_lemurinus,Anolis,Polychrotidae,12.9,37.3,33.5,terrestrial,10.4,-83.8,lizards,Huey et al. 2009
+Anolis_lionotus,Anolis,Polychrotidae,14.7,36.7,28.4,terrestrial,10.4,-83.8,lizards,Huey et al. 2009
+Anolis_limifrons,Anolis,Polychrotidae,12.3,36.8,27.9,terrestrial,10.4,-83.8,lizards,Huey et al. 2009
+Anolis_gundlachi,Anolis,Polychrotidae,6.3,35.4,28.1,terrestrial,18.2,-64.8,lizards,Huey et al. 2009
+Anolis_cristatellus,Anolis,Polychrotidae,8.9,37.1,29.1,terrestrial,18.5,-66.2,lizards,Huey et al. 2009
+Anolis_cooki,Anolis,Polychrotidae,9.3,38.8,28.9,terrestrial,18.1,-67.2,lizards,Huey et al. 2009
+Gambelia_wislizennii,Gambelia,Iguania,12.6,43.6,34.2,terrestrial,39.4,-118.1,lizards,Huey et al. 2009
+Dipsosaurus_dorsalis,Dipsosaurus,Iguania,14,47.5,40.3,terrestrial,33.8,-115.5,lizards,Huey et al. 2009
+Uma_inornata,Uma,Iguania,NA,45,39.4,terrestrial,33.8,-116.6,lizards,Huey et al. 2009
+Uta_stansburiana,Uta,Iguania,7.8,43.7,36.7,terrestrial,39.5,-107.8,lizards,Huey et al. 2009
+Sceloporus_undulatus_(Colorado_pop),Sceloporus,Iguania,6.5,43.3,38.2,terrestrial,37.2,-105.9,lizards,Huey et al. 2009
+Sceloporus_undulatus_(South_Carolina),Sceloporus,Iguania,11.4,40.4,35.5,terrestrial,34.43,-82.85,lizards,Huey et al. 2009
+Sceloporus_occidentalis,Sceloporus,Iguania,4.6,44.1,34.3,terrestrial,45.8,-121.5,lizards,Huey et al. 2009
+Sceloporus_occidentalis,Sceloporus,Iguania,4.8,44.1,34.8,terrestrial,34.03,-117.82,lizards,Huey et al. 2009
+Sceloporus_malachiticus,Sceloporus,Iguania,9.7,42.8,36.3,terrestrial,10.3,-84.8,lizards,Huey et al. 2009
+Sceloporus_graciosus,Sceloporus,Iguania,4.7,44.7,32.6,terrestrial,33.9,-116.4,lizards,Huey et al. 2009
+Sceloporus_merriami_(from_Boquillas),Sceloporus,Iguania,14.1,41.5,32.8,terrestrial,29.2,-103,lizards,Huey et al. 2009
+Sceloporus_merriami_(from_Grapevine_Hills),Sceloporus,Iguania,14.1,41.5,35,terrestrial,29.3,-103.15,lizards,Huey et al. 2009
+Sceloporus_variabilis,Sceloporus,Iguania,10.2,43.1,37.5,terrestrial,10.6,-85.7,lizards,Huey et al. 2009
+Ameiva_festiva,Ameiva,Teiidae,15.5,43.7,38,terrestrial,10.4,-83.8,lizards,Huey et al. 2009
+Cnemidophorus_murinus,Cnemidophorus,Teiidae,NA,45.2,38.8,terrestrial,12.3,-68.5,lizards,Huey et al. 2009
+Aspidoscelis_tigris,Aspidoscelis,Teiidae,10.5,45.1,37.6,terrestrial,43,-116.3,lizards,Huey et al. 2009
+Psammodromus_algirus,Psammodromus,Lacertidae,7,43.5,36.1,terrestrial,40.6,-5.9,lizards,Huey et al. 2009
+Psammodromus_hispanicus,Psammodromus,Lacertidae,8.8,45.5,35.6,terrestrial,40.4,-4.3,lizards,Huey et al. 2009
+Gallotia_simonyi,Gallotia,Lacertidae,NA,46.5,37.6,terrestrial,27.8,-17.9,lizards,Huey et al. 2009
+Gallotia_stehlini,Gallotia,Lacertidae,2,40.2,38.1,terrestrial,28.1,-15.4,lizards,Huey et al. 2009
+Takydromus_septentrionalis,Takydromus,Lacertidae,4.9,42.3,31.5,terrestrial,30.2,122.2,lizards,Huey et al. 2009
+Takydromus_sexlineatus,Takydromus,Lacertidae,6.4,42.2,35.1,terrestrial,24.8,113.6,lizards,Huey et al. 2009
+Acanthodactylus_erythrurus,Acanthodactylus,Lacertidae,NA,46.3,39.8,terrestrial,40.4,-6,lizards,Huey et al. 2009
+Podarcis_hispanica_hispanica,Podarcis,Lacertidae,NA,44.5,36.5,terrestrial,40.5,-6.1,lizards,Huey et al. 2009
+Podarcis_bocagei,Podarcis,Lacertidae,NA,45.4,35.7,terrestrial,40.5,-6.1,lizards,Huey et al. 2009
+Podarcis_atrata,Podarcis,Lacertidae,NA,44.6,38.3,terrestrial,39.9,0.7,lizards,Huey et al. 2009
+Podarcis_muralis,Podarcis,Lacertidae,8.3,44.2,36.6,terrestrial,40.7,-4.1,lizards,Huey et al. 2009
+Podarcis_lilfordi,Podarcis,Lacertidae,NA,43.3,38.4,terrestrial,39.9,4.3,lizards,Huey et al. 2009
+Lacerta_monticola,Lacerta,Lacertidae,NA,43.6,35.9,terrestrial,40.4,-4.7,lizards,Huey et al. 2009
+Lacerta_agilis,Lacerta,Lacertidae,5.9,43.9,37.9,terrestrial,51.8,5.9,lizards,Huey et al. 2009
+Lacerta_schreiberi,Lacerta,Lacertidae,NA,43,38.9,terrestrial,40.5,-6.1,lizards,Huey et al. 2009
+Lacerta_vivipara,Zootoca,Lacertidae,NA,40.1,36.5,terrestrial,51.4,4.4,lizards,Huey et al. 2009
+Eumeces_brenchleyi,Pleistodon,Scincidae,3.3,43.6,34,terrestrial,31.3,120.6,lizards,Huey et al. 2009
+Eumeces_elegans,Pleistodon,Scincidae,9.3,41.9,34.5,terrestrial,30.2,120.2,lizards,Huey et al. 2009
+Egernia_whitii,Egernia,Scincidae,4,42.8,34.8,terrestrial,-35.8,148.5,lizards,Huey et al. 2009
+Pseudemoia_entrecasteauxii,Pseudemoia,Scincidae,2.5,42.8,32.7,terrestrial,-36.4,148.4,lizards,Huey et al. 2009
+Pseudemoia_entrecasteauxii,Pseudemoia,Scincidae,2.5,42.8,33.2,terrestrial,-36.4,148.4,lizards,Huey et al. 2009
+Hemiergis_decresiensis,Hemiergis,Scincidae,6.8,38.6,33.1,terrestrial,-34.7,138.8,lizards,Huey et al. 2009
+Hemiergis_peronii,Hemiergis,Scincidae,9.6,38.8,30.2,terrestrial,-34.5,138.3,lizards,Huey et al. 2009
+Eulamprus_tympanum,Eulamprus,Scincidae,2.9,39.8,34.3,terrestrial,-36.4,148.4,lizards,Huey et al. 2009
+Eulamprus_kosciuskoi,Eulamprus,Scincidae,2.5,40.2,34.6,terrestrial,-36.4,148.4,lizards,Huey et al. 2009
+Eulamprus_quoyi,Eulamprus,Scincidae,6,40.8,31.1,terrestrial,-30.5,151.7,lizards,Huey et al. 2009
+Ctenotus_regius,Ctenotus,Scincidae,8.7,45.1,36.9,terrestrial,-34.2,140,lizards,Huey et al. 2009
+Ctenotus_taeniolatus,Ctenotus,Scincidae,11.4,44.7,37.3,terrestrial,-30.5,151.7,lizards,Huey et al. 2009
+Ctenotus_uber,Ctenotus,Scincidae,9.1,45.5,36.7,terrestrial,-34.6,139.6,lizards,Huey et al. 2009
+Platysaurus_intermedius,Platysaurus,Cordylidae,8.9,44.8,33,terrestrial,-24.6,31.2,lizards,Huey et al. 2009
+Lepidophyma_flavimaculatum,Lepidophyma,Xantusidae,11.3,38.1,32.9,terrestrial,10.4,-83.8,lizards,Huey et al. 2009
+Xantusia_riversiana,Xantusia,Xantusidae,6.6,39,29,terrestrial,32.9,-118.5,lizards,Huey et al. 2009
+Xantusia_vigilis,Xantusia,Xantusidae,6.9,41.6,31.7,terrestrial,33.9,-116.4,lizards,Huey et al. 2009
+Sphaerodactylus_townsendi,Sphaerodactylus,Gekkonidae,11.4,41.7,29,terrestrial,18.3,-65.7,lizards,Huey et al. 2009
+Sphaerodactylus_nicholsi,Sphaerodactylus,Gekkonidae,12.6,40.5,31.1,terrestrial,18,-66.9,lizards,Huey et al. 2009
+Sphaerodactylus_klauberi,Sphaerodactylus,Gekkonidae,10.4,36.3,31.2,terrestrial,18.1,-66,lizards,Huey et al. 2009
+Sphaerodactylus_gaigeae,Sphaerodactylus,Gekkonidae,12.5,38.2,32.5,terrestrial,18.1,-65.9,lizards,Huey et al. 2009
+Sphaerodactylus_macrolepis,Sphaerodactylus,Gekkonidae,11.8,39.5,29.5,terrestrial,18,-66.9,lizards,Huey et al. 2009
+Sphaerodactylus_roosevelti,Sphaerodactylus,Gekkonidae,11.4,39.5,28.7,terrestrial,18,-66.9,lizards,Huey et al. 2009
+morhua,Gadus,NA,NA,21,14,aquatic,NA,NA,fish,Payne and Smith 2017
+heteroclitus,Fundulus,NA,NA,34.37,30.45,aquatic,NA,NA,fish,Payne and Smith 2017
+melanurus,Dascyllus,NA,NA,34.1,30,aquatic,NA,NA,fish,Payne and Smith 2017
+leptacantha,Zoramia,NA,NA,34.2,32.8,aquatic,NA,NA,fish,Payne and Smith 2017
+calcarifer,Lates,NA,NA,40,38,aquatic,NA,NA,fish,Payne and Smith 2017
+oxygeneios,Polyprion,NA,NA,25.1,20.7,aquatic,NA,NA,fish,Payne and Smith 2017
+mykiss,Oncorhynchus,NA,NA,26.4,18.9,aquatic,NA,NA,fish,Payne and Smith 2017
+kisutch,Oncorhynchus,NA,NA,16.3,7.4,aquatic,NA,NA,fish,Payne and Smith 2017
+gorbuscha,Oncorhynchus,NA,NA,31.6,20.3,aquatic,NA,NA,fish,Payne and Smith 2017
+nerka Chilko,Oncorhynchus,NA,NA,26.25,23.1,aquatic,NA,NA,fish,Payne and Smith 2017
+nerka Gates,Oncorhynchus,NA,NA,25.08,17.27,aquatic,NA,NA,fish,Payne and Smith 2017
+nerka Nechako,Oncorhynchus,NA,NA,24.08,16.33,aquatic,NA,NA,fish,Payne and Smith 2017
+nerka Stuart,Oncorhynchus,NA,NA,24.87,20.15,aquatic,NA,NA,fish,Payne and Smith 2017
+nerka Weaver,Oncorhynchus,NA,NA,20.15,15.56,aquatic,NA,NA,fish,Payne and Smith 2017
+NA,Anoplolepis,NA,4.3,46.5,22,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Aphaenogaster,NA,3,45.5,33.5,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Brachymyrmex,NA,3.7,42.9,33,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Camponotus,NA,1.6,47.5,34.1,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Crematogaster,NA,1.4,50.8,25.5,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Dorymyrmex,NA,7.7,48.3,31.5,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Formica,NA,4.8,46.8,32.8,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Iridomyrmex,NA,4.2,49.8,36,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Linepithema,NA,0.4,43.7,23.7,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Messor,NA,4.4,45.6,25.7,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Monomorium,NA,4.8,47.4,29.4,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Myrmecia,NA,3.7,48.5,27,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Myrmecocystus,NA,10.3,47.8,35,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Nylanderia,NA,4.6,43.1,23.7,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Ochetellus,NA,11.2,44.7,32,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Pheidole,NA,2.6,44,26,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Plagiolepis,NA,6.3,42.9,22,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Pogonomyrmex,NA,4.5,54.4,40.4,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Prenolepis,NA,1,38.9,17.4,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Solenopsis,NA,3.6,44.9,31.5,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Tapinoma,NA,5.4,44.4,28.7,terrestrial,NA,NA,ants,Guo et al. 2020
+NA,Tetramorium,NA,1.4,45.9,28.8,terrestrial,NA,NA,ants,Guo et al. 2020
+rubigularis,Carlia ,NA,15.58,NA,26.3,terrestrial,-16.6,145.1,lizards,Munoz et al. 2016
+rubigularis,Carlia ,NA,13.6,43.29,31.26,terrestrial,-16.6,145.1,lizards,Munoz et al. 2016
+rubigularis,Carlia ,NA,14.03,42.94,26.7,terrestrial,-17.3,145.5,lizards,Munoz et al. 2016
+rubigularis,Carlia ,NA,11.73,43.31,28.5,terrestrial,-17.2,145.5,lizards,Munoz et al. 2016
+rubigularis,Carlia ,NA,15.7,NA,NA,terrestrial,-17.4,145.5,lizards,Munoz et al. 2016
+rubigularis,Carlia ,NA,10.76,43.44,29.19,terrestrial,-19,146.2,lizards,Munoz et al. 2016
+queenslandiae,Gnypetoscincus,NA,14.27,36.85,29.75,terrestrial,-16.6,145.1,lizards,Munoz et al. 2016
+queenslandiae,Gnypetoscincus,NA,12.23,36.89,27.82,terrestrial,-17.7,145.5,lizards,Munoz et al. 2016
+queenslandiae,Gnypetoscincus,NA,11.29,36.32,24.7,terrestrial,-17.2,145.5,lizards,Munoz et al. 2016
+coggeri,Lampropholis,NA,14.4,NA,24.9,terrestrial,-16.6,145.1,lizards,Munoz et al. 2016
+coggeri,Lampropholis,NA,14.62,41.78,29.28,terrestrial,-17.7,145.5,lizards,Munoz et al. 2016
+coggeri,Lampropholis,NA,13.48,42.57,28.8,terrestrial,-17.2,145.5,lizards,Munoz et al. 2016
+coggeri,Lampropholis,NA,12.57,42.05,28.2,terrestrial,-17.4,145.5,lizards,Munoz et al. 2016
+robertsi,Lampropholis,NA,12.97,43.05,31.9,terrestrial,-17.2,145.5,lizards,Munoz et al. 2016
+robertsi,Lampropholis,NA,9.96,43.42,31.43,terrestrial,-17.2,145.5,lizards,Munoz et al. 2016
+robertsi,Lampropholis,NA,10.1,NA,36.1,terrestrial,-17.4,145.5,lizards,Munoz et al. 2016
+basiliscus,Saproscincus,NA,14.3,39,29.5,terrestrial,-17.7,145.5,lizards,Munoz et al. 2016
+basiliscus,Saproscincus,NA,11.77,38.04,27.88,terrestrial,-17.2,145.5,lizards,Munoz et al. 2016
+basiliscus,Saproscincus,NA,9.4,NA,NA,terrestrial,-17.4,145.5,lizards,Munoz et al. 2016
+basiliscus,Saproscincus,NA,13.48,37.96,32.25,terrestrial,-19,146.2,lizards,Munoz et al. 2016
+czechurae,Saproscincus,NA,11.77,37.75,29.88,terrestrial,-17.2,145.5,lizards,Munoz et al. 2016
+czechurae,Saproscincus,NA,9.33,36.97,31,terrestrial,-17.2,145.5,lizards,Munoz et al. 2016
+tetradactylus,Saproscincus,NA,16.7,35.52,30.35,terrestrial,-17.7,145.5,lizards,Munoz et al. 2016
+tetradactylus,Saproscincus,NA,13.3,NA,NA,terrestrial,-19,146.2,lizards,Munoz et al. 2016
+alpinus,Salvelinus,NA,2.6,20.8,16.9,aquatic,64,NA,fish,Larsson et al. 2005
+alpinus,Salvelinus,NA,1.2,21.5,15.7,aquatic,63,NA,fish,Larsson et al. 2005
+alpinus,Salvelinus,NA,3.3,21.2,17.1,aquatic,66,NA,fish,Larsson et al. 2005
+alpinus,Salvelinus,NA,2.8,21.9,15.5,aquatic,68,NA,fish,Larsson et al. 2005
+alpinus,Salvelinus,NA,2.1,21.2,15.3,aquatic,63,NA,fish,Larsson et al. 2005
+alpinus,Salvelinus,NA,3.4,23.3,16.4,aquatic,58,NA,fish,Larsson et al. 2005
+alpinus,Salvelinus,NA,4.7,21.5,15,aquatic,70,NA,fish,Larsson et al. 2005
+alpinus,Salvelinus,NA,5.3,21.2,14.4,aquatic,59,NA,fish,Larsson et al. 2005
+trutta,Salmo,NA,4.6,20.3,12.2,aquatic,57,NA,fish,Forseth et al. 2009
+trutta,Salmo,NA,6.1,21.2,14.4,aquatic,58,NA,fish,Forseth et al. 2009
+trutta,Salmo,NA,5.3,21.9,12.7,aquatic,61,NA,fish,Forseth et al. 2009
+trutta,Salmo,NA,5.2,24.4,15.5,aquatic,60,NA,fish,Forseth et al. 2009
+trutta,Salmo,NA,3.6,19.4,13.4,aquatic,56.19,-3.11,fish,Elliott et al. 1995
+salar L. ,Salmo,NA,8,25,19.6,aquatic,70,-23,fish,Jonsson et al. 2001
+salar L. ,Salmo,NA,6.9,24.5,18.4,aquatic,62,-7,fish,Jonsson et al. 2001
+salar L. ,Salmo,NA,6.4,23.3,16.3,aquatic,60,-5,fish,Jonsson et al. 2001
+salar L. ,Salmo,NA,7.9,24.5,17.9,aquatic,60,-5,fish,Jonsson et al. 2001
+salar L. ,Salmo,NA,6.7,25.4,19.1,aquatic,59,-6,fish,Jonsson et al. 2001
+Tidestromia oblongifolia,NA,NA,4.979497642,58.74696348,45.65403504,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Atriplex glabriuscula,NA,NA,4.494751478,48.06218145,29.46575703,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Tidestromia oblongifolia,NA,NA,11.09553498,43.60216894,29.67510685,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Tidestromia oblongifolia,NA,NA,7.925292667,56.48464661,43.42009872,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Atriplex lentiformis,NA,NA,2.351867707,52.3018375,40.12830885,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Larrea divaricata,NA,NA,4.866489304,55.64196784,37.30665471,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Nerium oleander (45°C),NA,NA,6.02011253,55.48379079,36.55398004,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Vicia faba (15°C),NA,NA,-1.316482685,40.01027233,26.80791901,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Chenopodium album (25°C),NA,NA,3.589358875,44.86371464,27.61919825,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Lycopersicon esculetum (25°C),NA,NA,2.255872797,41.3776665,31.9645503,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Glycine max (25°C),NA,NA,2.686081486,40.95681875,31.89256079,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Abutilon theophrasti (25°C),NA,NA,6.144059664,44.44122731,32.32962994,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Embothrium coccineum,NA,NA,-0.680952231,42.61974458,30.43429355,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Muhlenbergia glomerata (14°C),NA,NA,-1.29533767,38.62089454,28.04702123,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Muhlenbergia glomerata (26°C),NA,NA,-5.269402938,40.92066617,31.59175416,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Larrea divaricata (20°C),NA,NA,6.663194118,53.23435707,34.12815062,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Larrea divaricata (35°C),NA,NA,0.116939568,53.6321897,40.20686819,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Larrea divaricata (45°C),NA,NA,2.92738295,55.77135284,43.41069591,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Ipomoea batatas,NA,NA,7.048980949,46.27915585,32.35882598,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Muhlenbergia richardsonis,NA,NA,3.750549943,45.22542,33.14726169,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Atriplex rosea (15°C),NA,NA,0.585986945,36.41033468,27.24504506,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Atriplex patula (36°C),NA,NA,-1.220274007,38.4588239,26.51428391,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Atriplex rosea (30°C),NA,NA,-6.634180639,39.48788175,32.3122888,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Flaveria trinervia,NA,NA,-5.091815347,49.03374934,35.31232176,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Spartina townsendii,NA,NA,1.357840851,40.51018021,28.85581627,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Agropyron smithii,NA,NA,-13.05395109,54.24288749,34.34288466,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+Lycopersicon esculentum,NA,NA,-15.19683613,38.71753816,30.27371609,terrestrial,NA,NA,photosynthesis,Rezende and Bozinovic 2019
+fragariae,Sitobion,NA,5.9,27.74,22.82,terrestrial,-42,147,insects,Deutsch et al. 2008
+lactucae,Hyperomyzus,NA,4.1,26.1,23,terrestrial,-35.3,149.08,insects,Deutsch et al. 2008
+miscanthi,Sitobion,NA,7.26,29,24,terrestrial,-33,152,insects,Deutsch et al. 2008
+austrinus,Dactylopius,NA,15.42,35.94,31.2,terrestrial,-31.08,150.93,insects,Deutsch et al. 2008
+lanigerum,Eriosoma,NA,3.55,34.075,26.725,terrestrial,-30.51,151.66,insects,Deutsch et al. 2008
+darlingensis,Pterohelaeus,NA,14.24,34.54,29.42,terrestrial,-27.47,151.48,insects,Deutsch et al. 2008
+rhodesianus,Callosobruchus,NA,17.8333,35.8,29.0333,terrestrial,-26.5,31.5,insects,Deutsch et al. 2008
+alternatus,Pterohalaeus,NA,19.25,30.55,27.2,terrestrial,-26,150,insects,Deutsch et al. 2008
+sacchari,Saccharicoccus,NA,18.02,34.78,30.68,terrestrial,-21.09,149.09,insects,Deutsch et al. 2008
+sesamiae,Cotesia,NA,6.5,36.65,30.05,terrestrial,-3,40,insects,Deutsch et al. 2008
+shadabi,Clavigralla,NA,19.3,33.0677,28.8,terrestrial,6.45,2.35,insects,Deutsch et al. 2008
+lariophaga,Uscana,NA,17.76,41.04,36.3,terrestrial,13.48,2.17,insects,Deutsch et al. 2008
+capitata,Ceratitis,NA,13.28,31.78,27.98,terrestrial,20.88,-156.52,insects,Deutsch et al. 2008
+dorsalis,Bactrocera,NA,11.75,36.2,32.6,terrestrial,23.12,113.25,insects,Deutsch et al. 2008
+flavipes,Cotesia,NA,10.75,34.625,29.275,terrestrial,25,68,insects,Deutsch et al. 2008
+argentifolia,Bemisia,NA,7.275,36.475,29.625,terrestrial,25.47,-80.48,insects,Deutsch et al. 2008
+lineolata,Diatraea,NA,6.1,31.4,25.3,terrestrial,26,-98.8,insects,Deutsch et al. 2008
+rufiabdominalis,Rhopalosiphum,NA,5.28,33.52,27.48,terrestrial,26.14,-81.8,insects,Deutsch et al. 2008
+citri,Diaphorina,NA,13.14,31.96,27.84,terrestrial,26.2,-80.1,insects,Deutsch et al. 2008
+plutellae,Cotesia,NA,10.875,36.175,30.075,terrestrial,30.25,120.2,insects,Deutsch et al. 2008
+perseae,Scirtothrips,NA,12.5,28.15,21.35,terrestrial,33.4,-117.2,insects,Deutsch et al. 2008
+citricola,Aphis,NA,8.625,30.225,25.8,terrestrial,34.98,138.4,insects,Deutsch et al. 2008
+citricidus,Toxoptera,NA,9.48,30.92,26.4,terrestrial,34.98,138.4,insects,Deutsch et al. 2008
+tabaci,Thrips,NA,10.075,30.025,25.525,terrestrial,35.36,132.75,insects,Deutsch et al. 2008
+gossypii,Aphis,NA,8.95,35.95,28.3,terrestrial,36.07,114.22,insects,Deutsch et al. 2008
+kimi,Paronychiurus,NA,9.64,29.54,25.42,terrestrial,37,127.5,insects,Deutsch et al. 2008
+pygmaeus,Macrolophus,NA,8.36,32.28,27.08,terrestrial,38,23,insects,Deutsch et al. 2008
+brassicae,Brevicoryne,NA,4.8,27.86,22.08,terrestrial,38.93,-92.3,insects,Deutsch et al. 2008
+pseudobrassicae,Hyadaphis,NA,8.2,32.1,25.78,terrestrial,38.93,-92.3,insects,Deutsch et al. 2008
+persicae,Myzus,NA,6.3,28.82,23.88,terrestrial,38.93,-92.3,insects,Deutsch et al. 2008
+raptorellus,Muscidifurax,NA,13.125,36.15,30.525,terrestrial,40.82,-96.67,insects,Deutsch et al. 2008
+raptor,Muscidifurax,NA,11.5,36.84,30.52,terrestrial,45,-93.17,insects,Deutsch et al. 2008
+punctillum,Stethorus,NA,16.84,33.46,30.1,terrestrial,46.98,-71.48,insects,Deutsch et al. 2008
+calcitrans,Stomoxys,NA,13.48,36.44,30.22,terrestrial,49.68,-112.8,insects,Deutsch et al. 2008
+zaraptor,Muscidifurax,NA,14.1,37.14,30.9,terrestrial,49.9,-112.9,insects,Deutsch et al. 2008
+pisum,Acyrthosiphon,NA,-1.175,32.875,24.775,terrestrial,51.53,0,insects,Deutsch et al. 2008
+acerinum,Drepanosiphum,NA,3.06,26.04,21,terrestrial,52.4,1.18,insects,Deutsch et al. 2008
+platanoids,Drepanosiphum,NA,-5.1,25,19.9,terrestrial,52.4,1.18,insects,Deutsch et al. 2008
+farris,Acarus,NA,5.119817569,30.15362685,23.92669384,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+semiflavus,Aphelinus,NA,10.74718265,26.62901143,21.79061315,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+fusca,Busseola,NA,6.881490137,34.20643592,26.41323684,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+fusca,Busseola,NA,9.512788109,35.77090531,29.79260181,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+fusca,Busseola,NA,9.512788109,35.77090531,29.79260181,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+castorum,Cactoblastis,NA,15.50270245,35.44529429,29.56874459,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+oryzae,Calandra,NA,14.52365033,34.7280596,28.63837831,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+plutellae,Cotesia,NA,3.996038494,35.02675574,29.07560198,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+ferrugineus,Cryptolestes,NA,19.94931614,42.20368684,34.16594275,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+bimaculata,Ebcarsia,NA,14.75706218,36.33592392,30.02586105,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+furuhashii,Eretmocerus,NA,18.93187556,38.24578255,29.55481879,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+triguttatus,Gonatocerus,NA,13.43677376,35.9511783,28.59340564,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+notata,Hyperaspis,NA,14.12653299,33.9877374,28.05569419,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+hampei,Hypothenemus,NA,17.59833372,33.71751943,26.26304271,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+entomophila,Liposcelis,NA,17.60626211,37.69094496,29.87075204,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+tricolor,Liposcelis,NA,15.90234933,35.51115877,30.80291721,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+euphorbiae,Macrosiphum,NA,1.360826734,29.96319759,20.3636748,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+persicae,Myzus,NA,1.847101867,29.9935998,22.7906663,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+persicae,Myzus,NA,2.472535471,32.21122978,25.30492287,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+corylifoliella,Phyllonorycter,NA,9.743735848,34.56007762,27.49410729,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+dominica,Rhizopertha,NA,17.73621333,38.74461102,33.97536697,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+calamistis,Sesamia,NA,12.62375593,34.2251859,28.15511602,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+nonagrioides,Sesamia,NA,11.89004368,34.03783973,27.93796736,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+nonagrioides,Sesamia,NA,14.23114114,38.79359315,29.10405459,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+mwanzai,Trichogramma,NA,9.437121845,35.980442,28.20634739,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+pretoisum,Trichogramma,NA,12.72339221,35.37879684,29.21949623,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+utilis,Trioxys,NA,10.199303,26.69189779,22.65260232,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019
+nigriabdominalis,Tetraneura,NA,9.85993273,35.01320971,28.82135331,terrestrial,NA,NA,insects,Rezende and Bozinovic 2019

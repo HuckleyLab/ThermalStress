@@ -1,0 +1,23 @@
+Field,Unit,Description
+species,NA,species
+genus,NA,genus
+family,NA,family
+CTmin,degrees C,critical thermal minima
+CTmax,degrees C,critical thermal maxima
+Topt,degrees C,thermal optima
+habitat,NA,"terrestrial, aquatic, and some greater specificity (e.g., marine, freshwater) for plankton"
+lat,degrees,latitude in decimal degrees with northern values being positive
+lon,degrees,longitude in decimal degrees with eastern values being positive
+taxa,NA,taxonomic group. 
+source,NA,Source publication for TPC data. See listed publications for the sources of individual studies. 
+,,"Deutsch et al. 2008: Deutsch, C. A., J. J. Tewksbury, R. B. Huey, K. S. Sheldon, C. K. Ghalambor, D. C. Haak, and P. R. Martin. 2008. Impacts of climate warming on terrestrial ectotherms across latitude. Proceedings of the National Academy of Sciences 105:6668–6672."
+,,"Elliott et al. 1995: Elliott, J. M., and M. A. Hurley. 1995. The functional relationship between body size and growth rate in fish. Functional Ecology 625–627."
+,,"Forseth et al. 2009: Forseth, T., S. Larsson, A. J. Jensen, B. Jonsson, I. Näslund, and I. Berglund. 2009. Thermal growth performance of juvenile brown trout Salmo trutta: no support for thermal adaptation hypotheses. Journal of Fish Biology 74:133–149."
+,,"Guo et al. 2020: Guo, F., B. Guénard, E. P. Economo, C. A. Deutsch, and T. C. Bonebrake, T. C. 2020. Activity niches outperform thermal physiological limits in predicting global ant distributions. Journal of Biogeography 47:829-842."
+,,"Huey et al. 2009: Huey, R. B., C. A. Deutsch, J. J. Tewksbury, L. J. Vitt, P. E. Hertz, H. J. Álvarez Pérez, and T. Garland. 2009. Why tropical forest lizards are vulnerable to climate warming. Proceedings of the Royal Society B 276:1939–1948."
+,,"Jonsson et al. 2001: Jonsson, B., T. Forseth, A. J. Jensen, and T. F. Næsje. 2001. Thermal performance of juvenile Atlantic Salmon, Salmo salar L. Functional Ecology 15:701–711."
+,,"Larsson et al. 2005: Larsson, S., T. Forseth, I. Berglund, A. J. Jensen, I. Näslund, J. M. Elliott, and B. Jonsson. 2005. Thermal adaptation of Arctic charr: experimental studies of growth in eleven charr populations from Sweden, Norway and Britain. Freshwater Biology 50:353–368."
+,,"Munoz et al. 2016: Muñoz, M. M., G. M. Langham, M. C. Brandley, D. F. Rosauer, S. E. Williams, and C. Moritz. 2016. Basking behavior predicts the evolution of heat tolerance in Australian rainforest lizards. Evolution 70:2537–2549."
+,,"Payne and Smith 2017: Payne, N. L., and J. A. Smith. 2017. An alternative explanation for global trends in thermal tolerance. Ecology letters 20:70–77."
+,,"Rezende and Bozinovic 2019: Rezende, E. L., and F. Bozinovic. 2019. Thermal performance across levels of biological organization. Philosophical Transactions of the Royal Society B 374:20180549."
+,,"Thomas et al. 2012, 2016: https://mridulkthomas.weebly.com/data--code.html, derived from Thomas, M. K., C. T. Kremer, C. A. Klausmeier, and E. Litchman. 2012. A global pattern of thermal adaptation in marine phytoplankton. Science 338:1085–1088. Thomas, M. K., C. T. Kremer, and E. Litchman. 2016. Environment and evolutionary history determine the global biogeography of phytoplankton temperature traits. Global Ecology and Biogeography 25:75–86."
