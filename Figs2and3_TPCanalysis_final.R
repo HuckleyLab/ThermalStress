@@ -12,6 +12,8 @@ library(ggnewscale)
 
 #load data
 #setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
+#tpc=read.csv("tpcs_wSource_2021.csv")
+
 setwd("./data/")
 tpc=read.csv("tpcs.csv")
 #drop data without all metrics
@@ -19,7 +21,7 @@ tpc= subset(tpc, !is.na(tpc$CTmin) & !is.na(tpc$Topt) & !is.na(tpc$CTmax) )
 #change photosynthesis to plants
 tpc$taxa[tpc$taxa=="photosynthesis"]="plants"
 
-taxas= c("insects","lizards","plankton","fish","plants","ants")
+taxas= c("plants","plantgerm","ants", "lizards", "fish","insects", "plankton")
 
 #setwd for figures
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/figures/")
@@ -43,6 +45,9 @@ tpc$CTmax.Topt.breadth= tpc$CTmax - tpc$Topt
 #k=8.617* 10^-5 #eV K^-1
 #function using temp in C
 thermo.temp= function(t, E=0.757, k=8.617* 10^-5) exp(-E/(k*(t+273.15))) 
+
+##TRY DROPPING ASSYM PLANT GERM
+#tpc= tpc[-which(tpc$taxa=="plantgerm" & abs(tpc$asym)<0.1),]
 
 #================
 #Plots
@@ -85,10 +90,15 @@ temps=-5:60
 out=t(apply(tpc[,c("Topt","CTmin","CTmax")], MARGIN=1, FUN=tpc.mat))
 colnames(out)= temps
 tpc.pred= cbind(tpc, out)
+
 #to long format
 tpc.l<- tpc.pred %>%
   gather("temperature", "performance", 15:ncol(tpc.pred))
 tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
+
+#make taxa ordered factor
+tpc$taxa= factor(tpc$taxa, levels=c("plants","plantgerm","ants", "lizards", "fish","insects", "plankton"), ordered=TRUE)
+tpc.l$taxa= factor(tpc.l$taxa, levels=c("plants","plantgerm","ants", "lizards", "fish","insects", "plankton"), ordered=TRUE)
 
 #plot
 fig1a= ggplot(tpc.l)+aes(x=temperature, y = performance, color=asym, group=X)+facet_grid(taxa~.)+geom_line()+
@@ -164,7 +174,7 @@ tpc$asym.null= (2*tpc$Topt-tpc$CTmax.mean - tpc$CTmin.mean)/(tpc$CTmax.mean-tpc$
 combined <- fig1a +fig1b +fig1c +fig1d + plot_annotation(tag_levels = 'A') +plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom") 
 #+fig1e
 
-pdf("Fig1.pdf", height = 8, width = 12)
+pdf("Fig1_2021.pdf", height = 8, width = 12)
 combined
 dev.off()
 
@@ -421,10 +431,10 @@ dev.off()
 
 #------
 #plot write out loadings
-pc.out=rbind(pc.load[,,1],pc.load[,,2],pc.load[,,3],pc.load[,,4],pc.load[,,5],pc.load[,,6])
+pc.out=rbind(pc.load[,,1],pc.load[,,2],pc.load[,,3],pc.load[,,4],pc.load[,,5],pc.load[,,6],pc.load[,,7])
 pc.out=as.data.frame(round(pc.out,2))
 colnames(pc.out)=c("PC1","PC2","PC3")
-pc.out$var=rep(c("Topt","CTmax","range"),6)
+pc.out$var=rep(c("Topt","CTmax","range"),7)
 pc.out$var= ordered(pc.out$var, levels=c("Topt","CTmax","range") )
 pc.out$taxa=rep(taxas, each=3)
 

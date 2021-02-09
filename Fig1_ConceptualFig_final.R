@@ -10,10 +10,66 @@ library(patchwork)
 library(latex2exp)
 library(ggnewscale)
 
+### TSM defs
+#Sinclair et al. 2016, CTmax- maximum Tb (or Topt?)
+
+#Deutsch et al. 2008, WT= CTmax-Thab, TSM= Topt - Thab
+#Although these heuristic indicators are defined by using annual mean temperature (Thab)
+
+#Kingsolver et al 2013, 
+#How close maximum summer temperatures are to the critical thermal maximum of a species – the thermal buffer
+#TSM= Topt-Thab
+#monthly mean surface air temperatures
+#B = CTmax−max(Ta), where max(Ta) is the hottest mean monthly temperature in a given year
+
+#Sunday et al 2014, CTmax > Te,max
+#Maximum air temperatures [highest monthly mean of daily maximum air temperature (Ta,max)] w
+
+#Pincebourde and Casas, WT= CTmax-Te
+#99th percentile of air temperature distribution
+
+#Pinsky et al 2019, TSM= CTmax-Te
+#TSM: acute upper thermal limit of a species and the extreme hot hourly body temperature
+
+#ADD: 
+#mean annual
+#hourly
+
+#max of monthly temperatures
+#max monthly mean of daily air temperatures
+
+#ANALYSIS:
+#CPD based on hourly temps
+#Compare to: hourly, monthly, annual, highest monthly mean of daily maximum air temperature
+
+#Find new dataset?
+#Currently use: NCEP Reanalysis 1 project provided by the NOAA/OAR/ESRL PSD, Boulder, Colorado, USA (www.esrl.noaa.gov/psd/data/gridded/data.ncep.reanalysis.html). Data are derived from a forecast model incorporating empirical data assimilation and are available as a 2.5° latitude x 2.5° longitude global grid. 
+#CPD: currently use Tdaily max
+#Use ERA5?
+
+
+####
+#performance detriment functions
+#set 0 min
+
+#quadratic
+quad=function(x, Topt, CTmax) max( 1-((x-Topt)/(Topt-CTmax))^2, 0)
+#linear
+lin=function(x, Topt, CTmax)  max( 1-((x-Topt)/(CTmax-Topt)), 0)
+
+#gaussian
+#2 sigma: 95%, 3 sigma 99.7%, Deutsch uses 4
+gaus=function(x, Topt, CTmax, a=1) {
+  b=Topt
+  c= (CTmax-Topt)/3 #for 95%
+  max( a*exp(-(x-b)^2/(2*c^2)), 0)
+} 
+  
+####
+
 #Need to run Fig4_TSManalysis_final.R first to load envi data
 
 #load data
-#setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
 setwd("./data/")
 tpc=read.csv("tpcs.csv")
 #drop data without all metrics
@@ -74,7 +130,7 @@ tpc.mat= function(tpc.dat){
   sigma= (Topt-CTmin)/4
   F[T<=Topt & !is.na(T)]= exp(-((T[T<=Topt & !is.na(T)]-Topt)/(2*sigma))^2) 
   F[T>Topt & !is.na(T)]= 1- ((T[T>Topt & !is.na(T)]-Topt)/(Topt-CTmax))^2
-  #set negeative to zero
+  #set negative to zero
   F[F<0]<-0
   
   return(F)
@@ -97,10 +153,12 @@ tpc0.2= as.data.frame(rbind( c(20, -5, 35),c(25, 0, 40), c(30, 5, 45)) )
 tpc0.2$scen="shift in TPC (CTmin, Topt, CTmax shift)"
 tpc0= rbind(tpc0, tpc0.2)
 
-out=t(apply(tpc0[,1:3], MARGIN=1, FUN=tpc.mat))
 colnames(tpc0)[1:3]=c("Topt","CTmin","CTmax")
 tpc0$asym= (2*tpc0$Topt-tpc0$CTmax - tpc0$CTmin)/(tpc0$CTmax-tpc0$CTmin )  
 tpc0$curve= c(0.0, 0.25, 0.5, 35, 40, 45)
+
+#estimate performances
+out=t(apply(tpc0[,1:3], MARGIN=1, FUN=tpc.mat))
 
 colnames(out)= temps
 tpc.pred= cbind(tpc0, out)
@@ -109,6 +167,20 @@ tpc.pred= cbind(tpc0, out)
 tpc.l<- tpc.pred %>%
   gather("temperature", "performance", 7:ncol(tpc.pred))
 tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
+tpc.l$tpc="quadratic"
+
+#add linear and gaussian
+tpc.l.lin=tpc.l[which(tpc.l$Topt==25 & tpc.l$CTmax==40 & tpc.l$scen=="shift in asymmetry (Topt shift)" & tpc.l$temperature>24),]
+tpc.l.lin$performance= lin(tpc.l.lin$temperature, 25, 40)
+tpc.l.lin$tpc="linear"
+
+tpc.l.gaus=tpc.l[which(tpc.l$Topt==25 & tpc.l$CTmax==40 & tpc.l$scen=="shift in asymmetry (Topt shift)"& tpc.l$temperature>24),]
+tpc.l.gaus$performance= gaus(tpc.l.lin$temperature, 25, 40)
+tpc.l.gaus$tpc="gaussian"
+
+tpc.l= rbind(tpc.l, tpc.l.lin, tpc.l.gaus)
+tpc.l$curve2= paste(tpc.l$curve, tpc.l$tpc,sep="_")
+#-------
 
 #make data frame  
 tpc.lab= as.data.frame(matrix(NA, 6, 3))
@@ -121,7 +193,7 @@ tpc.lab$scen= "shift in asymmetry (Topt shift)"
 #plot
 tpc.l$asym= factor(tpc.l$asym)
 fig0a= ggplot(tpc.l)+aes(x=temperature, y = performance)+ facet_wrap(~scen)+
-  geom_line(aes(color=asym, group=curve))+
+  geom_line(aes(color=asym, group=curve2))+
   theme_bw(base_size=14)+theme(legend.position="none")+scale_color_viridis(discrete=TRUE, name="asymmetry")+
   xlim(-2,45)+ylim(-0.01,1)+
   ylab("relative performance")+xlab("body temperature (°C)")
@@ -157,6 +229,8 @@ asyms= seq(0, 0.5, 0.05)
 #make vectors to store data
 tsm=matrix(NA, nrow=length(asyms), ncol=2 )
 pd=matrix(NA, nrow=length(asyms), ncol=2 )
+pd.lin=matrix(NA, nrow=length(asyms), ncol=2 )
+pd.gaus=matrix(NA, nrow=length(asyms), ncol=2 )
 
 #make tpc parameters
 tpc.p=array(NA, dim=c(length(asyms),3,2))
@@ -202,14 +276,21 @@ tsm[k,2]= tpc.p[k,3,2]-max(tmax.k)
 
 #perform det
 inds= which(tmax.k > tpc.p[k,2,1])
-pd[k,1]= sum(1- tpc.plot(tmax.k[inds], tpc.p[k,1,1], tpc.p[k,2,1], tpc.p[k,3,1]))  
+
+#pd1= apply(tmax.k[inds], FUN="quad", Topt=tpc.p[k,2,1], CTmax=tpc.p[k,3,1])
+pd[k,1]= sum(1- quad(tmax.k[inds], tpc.p[k,2,1], tpc.p[k,3,1]))/length(tmax.k)
+pd.lin[k,1]= sum(1- lin(tmax.k[inds], tpc.p[k,2,1], tpc.p[k,3,1]))/length(tmax.k)
+pd.gaus[k,1]= sum(1- gaus(tmax.k[inds], tpc.p[k,2,1], tpc.p[k,3,1]))/length(tmax.k)
+
 inds= which(tmax.k > tpc.p[k,2,2])
-pd[k,2]= sum(1- tpc.plot(tmax.k[inds], tpc.p[k,1,2], tpc.p[k,2,2], tpc.p[k,3,2]))  
+pd[k,2]= sum(1- quad(tmax.k[inds], tpc.p[k,2,2], tpc.p[k,3,2]))/length(tmax.k)
+pd.lin[k,2]= sum(1- lin(tmax.k[inds], tpc.p[k,2,2], tpc.p[k,3,2]))/length(tmax.k)
+pd.gaus[k,2]= sum(1- gaus(tmax.k[inds], tpc.p[k,2,2], tpc.p[k,3,2]))/length(tmax.k)
 
 }# loop asymmetry
 
-#normalize pd
-pd=pd/max(pd)
+##normalize pd
+#pd=pd/max(pd)
 
 #est asym of shift in TPC
 ctmin= tpc.p[,1,2]
@@ -219,21 +300,37 @@ asym.shift= (2*topt-ctmax - ctmin)/(ctmax-ctmin )
 
 #plot
 tpc1= as.data.frame(cbind(tpc.p[,2,1], tsm[,1], 1:length(asyms),asyms ))
+tpc1$tpc= NA
 tpc1$scen="shift in asymmetry (Topt shift)"
 tpc1$var="TSM"
 names(tpc1)[4]="asym"
 
 tpc2= as.data.frame(cbind(tpc.p[,2,2], tsm[,2], 1:length(asyms),asym.shift ))
+tpc2$tpc= NA
 tpc2$scen="shift in TPC (CTmin, Topt, CTmax shift)"
 tpc2$var="TSM"
 names(tpc2)[4]="asym"
 
 tpc3= as.data.frame(cbind(tpc.p[,2,1], pd[,1], 1:length(asyms),asyms ))
+tpc3$tpc= "quadratic"
+tpc3l= as.data.frame(cbind(tpc.p[,2,1], pd.lin[,1], 1:length(asyms),asyms ))
+tpc3l$tpc= "linear"
+tpc3g= as.data.frame(cbind(tpc.p[,2,1], pd.gaus[,1], 1:length(asyms),asyms ))
+tpc3g$tpc= "gaussian"
+tpc3= rbind(tpc3, tpc3l, tpc3g)
+  
 tpc3$scen="shift in asymmetry (Topt shift)"
 tpc3$var="CPD"
 names(tpc3)[4]="asym"
 
 tpc4= as.data.frame(cbind(tpc.p[,2,2], pd[,2], 1:length(asyms),asym.shift ))
+tpc4$tpc= "quadratic"
+tpc4l= as.data.frame(cbind(tpc.p[,2,2], pd.lin[,2], 1:length(asyms),asym.shift ))
+tpc4l$tpc= "linear"
+tpc4g= as.data.frame(cbind(tpc.p[,2,2], pd.gaus[,2], 1:length(asyms),asym.shift ))
+tpc4g$tpc= "gaussian"
+tpc4= rbind(tpc4, tpc4l, tpc4g)
+
 tpc4$scen="shift in TPC (CTmin, Topt, CTmax shift)"
 tpc4$var="CPD"
 names(tpc4)[4]="asym"
@@ -244,7 +341,7 @@ tpc.pl= rbind(tpc1, tpc2, tpc3, tpc4)
 names(tpc.pl)[1:3]=c("Topt","metric","k")
 
 #plot
-fig0b= ggplot(tpc.pl)+aes(x=Topt, y = metric, color=asym)+geom_point()+
+fig0b= ggplot(tpc.pl)+aes(x=Topt, y = metric, color=asym, shape=tpc)+geom_point()+
   facet_grid(var~scen, scales="free_y", switch="y")+
   theme_bw(base_size=14)+scale_color_viridis(name="asymmetry") + 
   theme(legend.position="bottom", legend.key.width=unit(2,"cm"))+geom_line()
@@ -255,4 +352,203 @@ combined <- fig0a +fig0b + plot_annotation(tag_levels = 'A') +plot_layout(nrow=2
 pdf("Fig0.pdf", height = 8, width = 10)
 combined
 dev.off()
+
+#=================
+#EXAMINE TIMESCALE
+library("accelerometry")
+
+#Aggregate data to different resolutions as in NCC
+#5,10,30,60
+#TSM and CPD across resolutions
+
+#Timescale: hourly estimates? Plot similar to Buckley NCC and also calculate CPD for various locations.
+#For CPD: keep Topt and CTmax constant
+
+#load climate data
+#Los Alamos surface temp, 5 minute interval
+#ftp://ftp.ncdc.noaa.gov/pub/data/uscrn/products/subhourly01/2019/
+#data from 2013-2019 available, use 2019
+
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/USCRN/")
+
+# 4    LST_DATE                       YYYYMMDD
+# 5    LST_TIME                       HHmm
+# 9    AIR_TEMPERATURE                Celsius
+# 13   SURFACE_TEMPERATURE            Celsius
+# 14   ST_TYPE                        X
+# 15   ST_FLAG                        X
+
+clim= read.table("CRNS0101-05-2019-NM_Los_Alamos_13_W.txt", na.strings = "-9999.0")
+clim= read.table("CRNS0101-05-2019-NM_Las_Cruces_20_N.txt", na.strings = "-9999.0")
+
+clim=clim[,c(4,5,9,13)]
+names(clim)<- c("date","time","Tair","Tsurf")
+
+#------------
+#FUNCTIONS
+#estimate Tcrit
+tcrit= function(m,t){
+  ctmax= 41.92 -1.65*log10(m)
+  z= 2.85-0.45*log10(m)
+  tc= ctmax-z*log10(t)
+  return(tc)
+}
+
+#number heat stress events
+#y= TSM, x=time
+#find high resolution weather data
+#use rolling average to calculate TSM for each time period
+
+#Adapted from: https://github.com/HuckleyLab/BodySizeThermalStress/blob/master/Fig1.R
+
+#Average temperature to different time periods then estimate maximum 
+#n is with of period for rolling average
+temp=clim$Tsurf
+
+rollmax= function(n) {
+  max(movingaves(temp, n), na.rm=TRUE)
+}
+
+ns=1:2016
+#ns= c(1:12,(2:12)*12, seq(13,168,12)*12,168*12)
+hrs=ns
+
+rt= sapply(ns, FUN=rollmax)
+
+#--------------
+#Average data
+clim$year= as.numeric(substr(clim$date, 1,4))
+clim$month= as.numeric(substr(clim$date, 5,6))
+clim$day= as.numeric(substr(clim$date, 7,8))
+clim$hour= floor(clim$time/100)
+
+hm= function(x){
+  x= x/100
+  hr= floor(x)
+  return(hr+ (x-hr)*100/60)
+}
+
+clim$hm= sapply(clim$time, FUN="hm")
+
+#hourly bin
+clim$hr.bin[clim$hour %in% 0:5]=1
+clim$hr.bin[clim$hour %in% 6:11]=2
+clim$hr.bin[clim$hour %in% 12:17]=3
+clim$hr.bin[clim$hour %in% 18:23]=4
+clim$hr.bin= paste(clim$day,clim$hr.bin)
+
+#weekly and 2 week
+clim$wk.bin[clim$day %in% 1:7]=1
+clim$wk.bin[clim$day %in% 8:14]=2
+clim$wk.bin[clim$day %in% 15:21]=3
+clim$wk.bin[clim$day %in% 21:31]=4
+clim$wk2.bin=1
+clim$wk2.bin[clim$wk.bin %in% 3:4]=2
+
+clim$wk.bin= paste(clim$month,clim$wk.bin)
+clim$wk2.bin= paste(clim$month,clim$wk2.bin)
+
+#hourly, 6 hourly, daily, weekly, monthly, quarterly, annually
+
+temps= clim$Tsurf
+CTmax=40
+Topt=25
+
+#hour
+date.hr= paste(clim$date, clim$hour,sep="_")
+clim.hr= tapply(temps, INDEX=date.hr, FUN="mean", na.rm=TRUE)
+clim.hr.max= tapply(temps, INDEX=date.hr, FUN="max", na.rm=TRUE)
+
+clim.6hr= tapply(temps, INDEX=clim$hr.bin, FUN="mean", na.rm=TRUE)
+clim.6hr.max= tapply(temps, INDEX=clim$hr.bin, FUN="max", na.rm=TRUE)
+
+#day  
+clim.day= tapply(temps, INDEX=clim$date, FUN="mean", na.rm=TRUE)
+clim.day.max= tapply(temps, INDEX=clim$date, FUN="max", na.rm=TRUE)
+
+#weekly
+clim.week= tapply(temps, INDEX=clim$wk.bin, FUN="mean", na.rm=TRUE)
+clim.week.max= tapply(temps, INDEX=clim$wk.bin, FUN="max", na.rm=TRUE)
+
+#14 day
+clim.2week= tapply(temps, INDEX=clim$wk2.bin, FUN="mean", na.rm=TRUE)
+clim.2week.max= tapply(temps, INDEX=clim$wk2.bin, FUN="max", na.rm=TRUE)
+
+#month
+clim.month= tapply(temps, INDEX=clim$month, FUN="mean", na.rm=TRUE)
+clim.month.max= tapply(temps, INDEX=clim$month, FUN="max", na.rm=TRUE)
+
+#make data array
+tr= array(data=NA, dim= c(7,4,2) ) #dims are time, metric, mean and max
+
+#estimate metrics
+for(agg.k in 1:2){
+
+for(time.k in 1:7){
+  
+  if(agg.k==1){ #mean
+    if(time.k==1)temps= clim$Tsurf
+    if(time.k==2)temps= clim.hr
+    if(time.k==3)temps= clim.6hr
+    if(time.k==4)temps= clim.day
+    if(time.k==5)temps= clim.week
+    if(time.k==6)temps= clim.2week
+    if(time.k==7)temps= clim.month
+  }
+  
+  if(agg.k==2){ #max
+    if(time.k==1)temps= clim$Tsurf
+    if(time.k==2)temps= clim.hr.max
+    if(time.k==3)temps= clim.6hr.max
+    if(time.k==4)temps= clim.day.max
+    if(time.k==5)temps= clim.week.max
+    if(time.k==6)temps= clim.2week.max
+    if(time.k==7)temps= clim.month.max
+  }
+
+  #TSM
+   tr[time.k, 1, agg.k]= CTmax - max(temps, na.rm=TRUE)
+   #CPDs
+   inds= which(temps > Topt)
+   
+   pd1= apply(as.data.frame(temps[inds]), FUN="quad", MARGIN=1, Topt=Topt, CTmax=CTmax)
+   tr[time.k, 2, agg.k]= sum(1- pd1)/length(temps)
+   pd1= apply(as.data.frame(temps[inds]), FUN="lin", MARGIN=1, Topt=Topt, CTmax=CTmax)
+   tr[time.k, 3, agg.k]= sum(1- pd1)/length(temps)
+   pd1= apply(as.data.frame(temps[inds]), FUN="gaus", MARGIN=1, Topt=Topt, CTmax=CTmax)
+   tr[time.k, 4, agg.k]= sum(1- pd1)/length(temps)
+   
+  } #end loop time
+} #end loop agg
+
+#flatten array
+tr.mean=as.data.frame(tr[,,1])
+colnames(tr.mean)=c("tsm","cpd.q","cpd.l","cpd.g")
+tr.mean$agg= "mean"
+tr.mean$time= c("5min","hr","6hr", "day","week","2week","month") 
+tr.mean$hours= 1:7   #c(0.083, 1, 24, 24*30) 
+
+tr.max=as.data.frame(tr[,,2])
+colnames(tr.max)=c("tsm","cpd.q","cpd.l","cpd.g")
+tr.max$agg= "max"
+tr.max$time= c("5min","hr","6hr", "day","week","2week","month")
+tr.max$hours= 1:7   #c(0.083, 1, 24, 24*30) 
+
+tr.l= rbind(tr.mean,tr.max)
+
+#to long format
+tr.l<- tr.l %>%
+  gather("metric", "value", 1:4)
+#separate TSM
+tr.l$met="CPD"
+tr.l$met[tr.l$metric=="tsm"]="TSM"
+
+#-------
+#Fig. Plot metrics as a function of exposure time
+
+ggplot(tr.l)+aes(x=hours, y=value, color=metric)+geom_line()+
+  facet_grid(met~agg, scales="free_y", switch="y")+ 
+  theme_bw(base_size=14)#+scale_color_viridis(name="times scale") + 
+  #theme(legend.position="bottom", legend.key.width=unit(2,"cm"))
+
 

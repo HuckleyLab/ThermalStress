@@ -183,6 +183,29 @@ tpc2$source= ins$Source
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
+#--------------------
+#plant germination data
+
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/SentinellaPlants")
+germ= read.csv('germ_lat_processed.csv')
+
+germ$Topt= (germ$Topt.l+germ$Topt.u)/2
+germ1= germ[which(!is.na(germ$Tmin)& !is.na(germ$Tmax) & !is.na(germ$Topt)),]
+
+germ1$family=NA
+
+#add data
+tpc2= germ1[,c("Species.Location","Genus","family","Tmin","Tmax","Topt")] 
+
+tpc2$habitat="terrestrial"
+tpc2$lat=germ1$Lat
+tpc2$lon= germ1$Lon
+tpc2$taxa= "plantgerm"
+tpc2$source= NA
+
+#bind
+tpc= rbind(tpc, setNames(tpc2, names(tpc)))
+
 #--------
 #drop sea urchin data
 tpc= subset(tpc, tpc$taxa!="Sea urchins" & tpc$taxa!="Isopod" & tpc$taxa!="Bonefish")
@@ -193,7 +216,7 @@ tpc[which(tpc$taxa=="Australian lizards"),"taxa"]<-"lizards"
 
 #Write out
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
-write.csv(tpc, "tpcs_wSource.csv")
+write.csv(tpc, "tpcs_wSource_2021.csv")
 
 #===============================
 #Datasets not included
@@ -316,8 +339,7 @@ write.csv(dat.sub, "Delletal2013_forfitting.csv")
 # if(ind==1) plot(1:60, phage.growth(1:60, phage[ind, "a"], phage[ind, "b"], phage[ind, "m"]), type="l")
 #   points(1:60, phage.growth(1:60, phage[ind, "a"], phage[ind, "b"], phage[ind, "m"]), type="l")
 # }
-# #FITS ARE SYMETRIC
-
+# #FITS ARE SYMMETRIC
 
 
 

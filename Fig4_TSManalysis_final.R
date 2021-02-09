@@ -14,8 +14,9 @@ library(zoo)
 library(cowplot)
 library(plyr)
 library(patchwork)
+library(viridis)
 
-#convert longituide
+#convert longitude
 convert.lon= function(r0) ifelse(r0 > 180, -360 + r0, r0)
 
 #----------------------
