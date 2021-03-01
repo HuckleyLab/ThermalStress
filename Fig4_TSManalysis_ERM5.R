@@ -15,71 +15,131 @@ library(cowplot)
 library(plyr)
 library(patchwork)
 library(viridis)
+library(reshape2)
 
 #convert longitude
 convert.lon= function(r0) ifelse(r0 > 180, -360 + r0, r0)
 
 #----------------------
-#LOAD DATA
+#LOAD ERM5
+library(KrigR)
+library(raster)
+library(ncdf4)
 
-#SEE PREVIOUS VERSIONS FOR OTHER DATA SOURCES
+#(xmin, xmax, ymin, ymax)
+Extent <- extent(c(-150.5, -150, 20, 20.5)) 
 
-#Load combined NCEP data
-#FROM https://www.esrl.noaa.gov/psd/cgi-bin/db_search/DBSearch.pl?Dataset=NCEP+Reanalysis&Variable=Surface+lifted+index&group=0&submit=Search
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/NCEP/")
+#2m_temperature
+#sea_surface_temperature, K
+#skin_temperature
+#lake_total_layer_temperature
 
-ncep.nc= nc_open('air.sig995.2015.nc')
-#ncep.nc= nc_open('lftx.sfc.2015.nc')
-print(ncep.nc)
 
-#extract metrics
-ncep.temp=ncvar_get(ncep.nc,"air")
-dim(ncep.temp) #dimensions lon, lat, time
+State_Raw <- download_ERA(
+  Variable = "skin_temperature",
+  DataSet = "era5-land",
+  DateStart = "2015-01-01",
+  DateStop = "2015-12-31",
+  TResolution = "hour",
+  TStep = 1,
+  Extent = Extent,
+  Dir = "/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/ERA5/",
+  API_User = "78176",
+  API_Key = "062c3e77-bcc8-4c56-8e72-4872e7a92be6"
+)
+
+#sea_surface_temperature, K
+#skin_temperature
+#lake_total_layer_temperature
+plankdat <- download_ERA(
+  Variable = "skin_temperature",
+  DataSet = "era5-land",
+  DateStart = "2015-01-01",
+  DateStop = "2015-12-02",
+  TResolution = "hour",
+  TStep = 1,
+  Extent = Extent,
+  Dir = "/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/ERA5/",
+  API_User = "78176",
+  API_Key = "062c3e77-bcc8-4c56-8e72-4872e7a92be6"
+)
+
+plot(State_Raw)
+
+#https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels?tab=overview
+#North 80°, West -159°, South -78°, East 175°
+
+#-----
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/ERA5/")
+
+#July 2015 data, load others
+era.nc= nc_open('ERA5_July2015.nc')
+print(era.nc)
 
 #extract lon, lat, time
-ncep.lons= ncvar_get(ncep.nc,"lon") #get info about long
-dim(ncep.lons)
-ncep.lats= ncvar_get(ncep.nc,"lat") #get info about latitude
-dim(ncep.lats)
-ncep.times= ncvar_get(ncep.nc,"time") #julian date, calendar day, since 0000-01-01
-dim(ncep.times)
+era.lons= ncvar_get(era.nc,"longitude") #get info about long
+dim(era.lons)
+era.lats= ncvar_get(era.nc,"latitude") #get info about latitude
+dim(era.lats)
+era.times= ncvar_get(era.nc,"time") #julian date, calendar day, since 0000-01-01
+dim(era.times)
+#units: hours since 1900-01-01 00:00:00.0
 #change to dates
-ncep.dates= as.POSIXct(ncep.times*3600,origin='1800-01-01 00:00') 
-year= as.numeric(format(ncep.dates, "%Y"))
-doy= as.numeric(format(ncep.dates, "%j"))
-hours= as.numeric(format(ncep.dates, "%H"))
+era.dates= as.POSIXct(era.times*3600,origin='1900-01-01 00:00') 
+year= as.numeric(format(era.dates, "%Y"))
+doy= as.numeric(format(era.dates, "%j"))
+hours= as.numeric(format(era.dates, "%H"))
+#need to add a few hours?
 
-#-----------------
-#load and combine data across years
-years= 2000:2018
+#extract metrics
+era.sst=ncvar_get(era.nc,"sst")
+dim(era.sst) #dimensions lon, lat, time
 
-#make array to store data
-ncep.temp.yrs= array(NA, dim=c(length(years),length(ncep.lons),length(ncep.lats),length(ncep.times)  ))
+era.skt=ncvar_get(era.nc,"skt")
+dim(era.skt) #dimensions lon, lat, time
 
-for(year.k in 1:length(years)){
-  
-  file.name= paste('air.sig995.', years[year.k], '.nc', sep='')
-  ncep.nc= nc_open(file.name)
-  
-  #extract metrics
-  ncep.temp=ncvar_get(ncep.nc,"air") -273.15
-  dim(ncep.temp) 
-  ncep.temp.yrs[year.k,,,]= ncep.temp[,,1:1460] 
-}
+era.t2m=ncvar_get(era.nc,"t2m")
+dim(era.t2m) #dimensions lon, lat, time
 
-#---
-#to raster
+#-----
+#compare skin and sst
+sst.k= as.numeric(era.sst[lon.ind,lat.ind,]) -273.15
+plot(tmax.k, sst.k)
 
-ncep.lons.neg= convert.lon(ncep.lons)
+sst.k= as.numeric(era.sst[5,5,])
 
-ncep.r <- raster(t(ncep.temp[,,1]), xmn=min(ncep.lons), xmx=max(ncep.lons), ymn=min(ncep.lats), ymx=max(ncep.lats), crs=CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs+ towgs84=0,0,0"))
+plot(era.t[100,100,]-273.15, era.t2m[100,100,]-273.15)
+abline(a=0, b=1)
 
-#plot
-ncep.r <- flip(ncep.r, direction='y')
-ncep.r <- rotate(ncep.r)
-plot(ncep.r)
-#add country outline
-map('world', fill = FALSE, col = "grey", add=TRUE)
+plot(1:700, era.t[100,100,1:700]-273.15, type="l")
+points(1:700, era.sst[100,100,1:700]-273.15, type="l", col="red")
+
+#----
+#subset
+#extent
+plot(tol.h$lon, tol.h$lat)
+abline(v=-45)
+abline(h=55)
+abline(h= -5)
+
+tol1= tol.h[which(tol.h$lon< -45),]
+tol1= tol1[which(tol1$lat<55 & tol1$lat> -5),]
+tol1= tol1[which(tol1$lat>55 | tol1$lat< -5),] 
+
+tol1= tol.h[which(tol.h$lon> -45),]
+tol1= tol1[which(tol1$lon< 100),]
+
+tol1= tol.h[which(tol.h$lon> 100),]
+
+plot(tol1$lon, tol1$lat)
+range(tol1$lon)
+range(tol1$lat)
+
+#1st subset: -158.1 to -49.25; -1.4, 52,26
+# + 2 points: lat: -64.78 lon:-64.06 and lat:76.28 lon:-74.75
+#2nd subset: -36.25 to 74.45; -58, 80
+#3rd subset: 108 to 174.9; -77.5 to 55.65
+
 #=====================================
 #Functions
 #Convert to thermodynamic scale
@@ -156,7 +216,13 @@ tol.h$Topt.aveasym= (asym*(tol.h$CTmax - tol.h$CTmin) +tol.h$CTmax +tol.h$CTmin)
 #===================================================
 #THERMAL STRESS ESTIMATES
 
-ts= array(NA, dim= c(length(years), nrow(tol.h), 365,13) )
+inds= which(tol.h$taxa=="plankton")
+spec.k=135
+
+era.t= era.skt
+#---------------
+
+ts= array(0, dim= c(length(years), nrow(tol.h), 7) )
 #counts of Topt exceedences
 ts.exceed= array(NA, dim= c(length(years), nrow(tol.h), 2) )
 
@@ -164,40 +230,31 @@ ts.exceed= array(NA, dim= c(length(years), nrow(tol.h), 2) )
 for(spec.k in 1:nrow(tol.h)){
   
   #find closest grid cell
-  lon.ind= which.min(abs(ncep.lons.neg - tol.h[spec.k, "lon" ]))
-  lat.ind= which.min(abs(ncep.lats - tol.h[spec.k, "lat" ]))
+  lon.ind= which.min(abs(era.lons - tol.h[spec.k, "lon" ]))
+  lat.ind= which.min(abs(era.lats - tol.h[spec.k, "lat" ]))
+  
+  tmax.k= era.t[lon.ind,lat.ind,]-273.15
   
   #loop years
-  for(year.k in 1:length(years)){
+  #for(year.k in 1:length(years)){
+  year.k=1 
+  
+    #thermal safety margins
+    #hourly, change to days?
+    ts[year.k,spec.k,1]= tol.h[spec.k,'CTmax']-max(tmax.k)
+    #TSM days
     
-    #extract data
-    #daily min max
-    ncep.cell= cbind(year, doy, hours, ncep.temp.yrs[year.k,lon.ind,lat.ind,])
-    colnames(ncep.cell)[4]="temp"
-    ncep.cell= as.data.frame(ncep.cell)
-    #make day factor
-    ncep.cell$doy= as.factor(ncep.cell$doy)
+    #TSM monthly
+    ts[year.k,spec.k,2]=
     
-    # #daily min and max
-    # ncep.cmm= ncep.cell %>%
-    #   group_by(doy) %>%
-    #   summarise(min = min(temp), max= max(temp))
-    # ncep.cmm= as.matrix(ncep.cmm)
-    # tmax.k= as.numeric( ncep.cmm[,"max"] )
-    # tmin.k= as.numeric( ncep.cmm[,"min"] )
-    
-    tmax.k= tapply(ncep.cell$temp, ncep.cell$doy, max)
-    tmin.k= tapply(ncep.cell$temp, ncep.cell$doy, min)
-    
-    #daily safety margins
-    ts[year.k,spec.k,,1]= tol.h[spec.k,'CTmax']-tmax.k
-    #ts[year.k,spec.k,,2]= tol.h[spec.k,'Topt']-tmax.k 
+    #check data NAs
+    #ts[year.k,spec.k,2]= max(tmax.k, na.rm=TRUE)
     
     #find Topt exceedences
     inds.s= which(tmax.k > tol.h[spec.k,'Topt.noasym'])
     inds= which(tmax.k > tol.h[spec.k,'Topt'])
     
-      ts[year.k,spec.k,inds,2]= tmax.k[inds]- tol.h[spec.k,'Topt']  
+      #ts[year.k,spec.k,inds,2]= tmax.k[inds]- tol.h[spec.k,'Topt']  
       
       #find Topt exceedences
       inds.s= which(tmax.k > tol.h[spec.k,'Topt.noasym'])
@@ -208,58 +265,25 @@ for(spec.k in 1:nrow(tol.h)){
       ts.exceed[year.k,spec.k,2]= length(inds)
       
       #performance detriment
-      #Topt no asymetry
-      if(length(inds.s)>0) ts[year.k,spec.k,inds.s,3]= 1- tpc.plot(tmax.k[inds.s],tol.h[spec.k,'Topt.noasym'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax'])  
-      
+      if(length(inds.s)>0) {
+        
+        #Topt no asymetry
+        ts[year.k,spec.k,3]= sum(1- tpc.plot(tmax.k[inds.s],tol.h[spec.k,'Topt.noasym'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax']) )/length(tmax.k)
+         
       #shift Topt
       Topt.shift= tol.h[spec.k,'Topt']-tol.h[spec.k,'Topt.noasym']
-      if(length(inds)>0) ts[year.k,spec.k,inds,4]= 1- tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], (tol.h[spec.k,'CTmax']+Topt.shift) )  
-      
+      ts[year.k,spec.k,4]= sum(1- tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], (tol.h[spec.k,'CTmax']+Topt.shift) ) )/length(tmax.k) 
+        
       #shift slope
-      if(length(inds.s)>0) ts[year.k,spec.k,inds.s,5]= 1- tpc.plot(tmax.k[inds.s],tol.h[spec.k,'Topt.noasym'],tol.h[spec.k,'CTmin'], (tol.h[spec.k,'CTmax']-Topt.shift) )  
-      
+      ts[year.k,spec.k,5]=  sum(1- tpc.plot(tmax.k[inds.s],tol.h[spec.k,'Topt.noasym'],tol.h[spec.k,'CTmin'], (tol.h[spec.k,'CTmax']-Topt.shift) ) )/length(tmax.k) 
+        
       #Topt average asymetry
-      if(length(inds)>0) ts[year.k,spec.k,inds,6]= 1- tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt.aveasym'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax'])  
+      ts[year.k,spec.k,6]= sum(1- tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt.aveasym'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax']))/length(tmax.k)  
       
       #actual Topt
-      if(length(inds)>0) ts[year.k,spec.k,inds,7]= 1- tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax'])  
+      ts[year.k,spec.k,7]= sum(1- tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax']) )/length(tmax.k) 
       
-      #number of days with >= 50% loss of performance
-      #symetric
-      if(length(inds.s)>0) {
-      perf= tpc.plot(tmax.k[inds.s],tol.h[spec.k,'Topt.noasym'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax']) 
-      t50= rep(NA, length(inds.s))
-      t50[perf<0.5]<-1
-      ts[year.k,spec.k,inds.s,8]= t50
-     
-      #shift Topt
-      perf= tpc.plot(tmax.k[inds.s],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], (tol.h[spec.k,'CTmax']+Topt.shift) )
-      t50= rep(NA, length(inds.s))
-      t50[perf<0.5]<-1
-      ts[year.k,spec.k,inds.s,9]= t50}
-      
-      if(length(inds)>0) {
-      #shift slope
-      perf= tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt.noasym'],tol.h[spec.k,'CTmin'], (tol.h[spec.k,'CTmax']-Topt.shift) )  
-      t50= rep(NA, length(inds))
-      t50[perf<0.5]<-1
-      ts[year.k,spec.k,inds,10]= t50
-      
-      #Topt ave sym
-      perf= tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt.aveasym'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax']) 
-      t50= rep(NA, length(inds))
-      t50[perf<0.5]<-1
-      ts[year.k,spec.k,inds,11]= t50
-      
-      #Actual Topt
-      perf= tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax']) 
-      t50= rep(NA, length(inds))
-      t50[perf<0.5]<-1
-      ts[year.k,spec.k,inds,12]= t50}
-      
-      #-----
-      #performance
-      if(length(inds)>0) ts[year.k,spec.k,inds,13]= tpc.plot(tmax.k[inds],tol.h[spec.k,'Topt'],tol.h[spec.k,'CTmin'], tol.h[spec.k,'CTmax'])  
+      } #end check length
       
     # #thermodynamic scale
     # Topt.tt= thermo.temp(tol.h[spec.k,'topt'])
@@ -269,80 +293,40 @@ for(spec.k in 1:nrow(tol.h)){
     # 
     # if(length(inds>0)) ts[year.k,spec.k,inds,4]= tmax.k.tt[inds]- Topt.tt  
     
-  } # end year loop
+  #} # end year loop
   
 } # end loop species
 
 #------------
-#TSM
-tsm<-  array(NA, dim= c(length(years),nrow(tol.h),8) )
+# #TSM
+# tsm<-  array(NA, dim= c(length(years),nrow(tol.h),8) )
+# 
+# #reorder ts
+# ts2 <- aperm(ts, c(2,1,3,4))
+# 
+# #AGGREGATE ACROSS YEARS
+# tsm.yrs= apply(tsm, MARGIN=c(2,3), FUN=mean, na.rm=T)
 
-#reorder ts
-ts2 <- aperm(ts, c(2,1,3,4))
-
-#loop years
-for(year.k in 1:length(years)){
-  
-  #min TSM
-  tsm[year.k,,1]=t(apply(ts2[,year.k,,1], MARGIN=1, FUN='min', na.rm=TRUE))
-  
-  #performace detriment
-  #no asym
-  tsm[year.k,,3]= apply(ts2[,year.k,,3], MARGIN=1, FUN=sum, na.rm=T)
-  #shift Topt
-  tsm[year.k,,4]= apply(ts2[,year.k,,4], MARGIN=1, FUN=sum, na.rm=T)
-  #shift slope
-  tsm[year.k,,5]= apply(ts2[,year.k,,5], MARGIN=1, FUN=sum, na.rm=T)
-  #ave asym
-  tsm[year.k,,6]= apply(ts2[,year.k,,6], MARGIN=1, FUN=sum, na.rm=T)
-  #actual asym
-  tsm[year.k,,7]= apply(ts2[,year.k,,7], MARGIN=1, FUN=sum, na.rm=T)
-  
-  #perf
-  tsm[year.k,,8]= apply(ts2[,year.k,,13], MARGIN=1, FUN=sum, na.rm=T)
-  
-  #Replace -Inf with NA
-  tsm[year.k,which(is.infinite(tsm[,year.k,2])),2]=NA
-  tsm[year.k,which(is.infinite(tsm[,year.k,2])),6]=NA
-  
-} #end year loop
-
-#AGGREGATE ACROSS YEARS
-tsm.yrs= apply(tsm, MARGIN=c(2,3), FUN=mean, na.rm=T)
-
-#----
-#number of days with 50% loss of performance
-d1= apply(ts2[,,,8:12], MARGIN=c(1,2,4), FUN=sum, na.rm=TRUE)
-#average across years
-days_p50= apply(d1, MARGIN=c(1,3), FUN=mean, na.rm=TRUE)
+tsm.yrs= ts[1,,]
+colnames(tsm.yrs)=c('TSM',"tmax",'Perf.noAsym','Perf.dTopt','Perf.dSlope','Perf.aveAsym','Perf')
 
 #----------------------
 #PLOT
 #comparison plots
 tol2= cbind(tol.h, tsm.yrs)
-colnames(tol2)[c(15,17:21 )]=c('minTSM','Perf.noAsym','Perf.dTopt','Perf.dSlope','Perf.aveAsym','Perf')
+#colnames(tol2)[c(15,17:21 )]=c('minTSM','Perf.noAsym','Perf.dTopt','Perf.dSlope','Perf.aveAsym','Perf')
 #drop fish
 tol2=tol2[-which(tol2$taxa=="fish"),] 
 
 #drop unneeded columns
-tol2s= tol2[,c("taxa","asym","minTSM","Perf.noAsym",'Perf.dTopt','Perf.dSlope',"Perf.aveAsym","Perf")]
+tol2s= tol2[,c("taxa","asym","TSM","Perf.noAsym",'Perf.dTopt','Perf.dSlope',"Perf.aveAsym","Perf")]
 #change names
 #names(tol2s)[5:6]=c("without asymetry","fitted asymetry")
 
 #-----
 #compare to TSM
 
-#max performance by taxa
-max.perf= aggregate(tol2s$Perf, list(tol2s$taxa), FUN="max")
-colnames(max.perf)=c("taxa","Perf")
-
-#Scale
-match1= match(tol2$taxa, max.perf$taxa)
-
-tol2$PerfS= tol2$Perf/max.perf$Perf[match1]
-tol2$PerfS[tol2$PerfS>0.5]=0.5
-
-fig4a= ggplot(tol2, aes(x=PerfS,y=minTSM, color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
+fig4a= ggplot(tol2, aes(x=Perf,y=TSM, color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
   theme_bw()+scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom")+
   xlab("CPD (normalized)")+ylab("TSM (°C)")+
   ylim(-10,15)
@@ -350,16 +334,7 @@ fig4a= ggplot(tol2, aes(x=PerfS,y=minTSM, color=asym)) +geom_point()+facet_wrap(
 #-----
 #Compare performance estimates
 #to long format
-tol.l <- melt(tol2s, id=c("taxa","asym","minTSM","Perf"))
-
-#scale to max
-match1= match(tol.l$taxa, max.perf$taxa)
-tol.l$Perf= tol.l$Perf/max.perf$Perf[match1]
-tol.l$value= tol.l$value/max.perf$Perf[match1]
-
-#set max to 2.5
-tol.l$Perf[tol.l$Perf>2.5]=2.5
-tol.l$value[tol.l$value>2.5]=2.5
+tol.l <- melt(tol2s, id=c("taxa","asym","TSM","Perf"))
 
 #make labels
 tol.l$metric.lab<-NA
@@ -377,30 +352,6 @@ fig4b= ggplot(tol.l, aes(x=(Perf),y=(value), color=metric.lab)) +geom_point()+fa
   scale_color_viridis(discrete=TRUE)+geom_abline(slope=1, intercept=0)
 
 #-----
-#proportion days with 50% performance loss
-
-#comparison plots
-tol2d= cbind(tol.h, days_p50)
-colnames(tol2d)[(ncol(tol.h)+1):(ncol(tol.h)+5)]=c('Perf.noAsym','Perf.dTopt','Perf.dSlope','Perf.aveAsym','Perf')
-#drop fish
-tol2d=tol2d[-which(tol2d$taxa=="fish"),] 
-
-#drop unneeded columns
-tol2sd= tol2d[,c("taxa","asym","Perf.noAsym",'Perf.dTopt','Perf.dSlope',"Perf.aveAsym","Perf")]
-
-#to long format
-tol.l <- melt(tol2sd, id=c("taxa","asym", "Perf"))
-
-#scale to max
-match1= match(tol.l$taxa, max.perf$taxa)
-tol.l$Perf= tol.l$Perf/max.perf$Perf[match1]
-tol.l$value= tol.l$value/max.perf$Perf[match1]
-
-fig4c= ggplot(tol.l, aes(x=Perf,y=value, color=variable)) +geom_point()+facet_wrap(~taxa, nrow=1) +
-  theme_bw()+theme(legend.position = "bottom", legend.title = element_blank())+
-  ylab("estimated days with 50% performance loss")+xlab("days with 50% performance loss")+
-  scale_color_viridis(discrete=TRUE)+geom_abline(slope=1, intercept=0)
-#----
 #Plot
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/figures/")
 pdf("Figs4_TSM.pdf", height = 8, width = 8)
