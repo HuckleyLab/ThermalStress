@@ -159,7 +159,7 @@ tol.h$Topt.aveasym= (asym*(tol.h$CTmax - tol.h$CTmin) +tol.h$CTmax +tol.h$CTmin)
 
 years=2015:2019
 
-ts= array(0, dim= c(length(years), nrow(tol.h), 9) )
+ts= array(0, dim= c(length(years), nrow(tol.h), 8) )
 
 #counts of Topt exceedences
 ts.exceed= array(NA, dim= c(length(years), nrow(tol.h), 2) )
@@ -169,7 +169,7 @@ for(spec.k in 1:nrow(tol.h)){
   
   #find zone
   zone=2
-  if(tol.h[spec.k, "lon" ]<40) zone=1
+  if(tol.h[spec.k, "lon" ]< -40) zone=1
   if(tol.h[spec.k, "lon" ]>80) zone=3
   
   if(zone==1){
@@ -288,18 +288,13 @@ for(spec.k in 1:nrow(tol.h)){
 saveRDS(ts, file = "ts.rds")
 saveRDS(ts.exceed, file = "tsexceed.rds")
 
-#------------
-# #TSM
-# tsm<-  array(NA, dim= c(length(years),nrow(tol.h),8) )
-# 
-# #reorder ts
-# ts2 <- aperm(ts, c(2,1,3,4))
-# 
-# #AGGREGATE ACROSS YEARS
-# tsm.yrs= apply(tsm, MARGIN=c(2,3), FUN=mean, na.rm=T)
+#ts=readRDS("ts.rds")
 
-tsm.yrs= ts[1,,]
-colnames(tsm.yrs)=c('TSM',"tmax",'Perf.noAsym','Perf.dTopt','Perf.dSlope','Perf.aveAsym','Perf',"TSMday","TSMmonth")
+#------------
+# #AGGREGATE ACROSS YEARS
+tsm.yrs= apply(ts, MARGIN=c(2,3), FUN=mean, na.rm=T)
+
+colnames(tsm.yrs)=c('TSMhr',"TSMday",'Perf.noAsym','Perf.dTopt','Perf.dSlope','Perf.aveAsym','Perf',"TSMmonth")
 
 #----------------------
 #PLOT
@@ -309,7 +304,7 @@ tol2= cbind(tol.h, tsm.yrs)
 tol2=tol2[-which(tol2$taxa=="fish"),] 
 
 #drop unneeded columns
-tol2s= tol2[,c("taxa","asym","TSM","Perf.noAsym",'Perf.dTopt','Perf.dSlope',"Perf.aveAsym","Perf","TSMday","TSMmonth")]
+tol2s= tol2[,c("taxa","asym","TSMhr","Perf.noAsym",'Perf.dTopt','Perf.dSlope',"Perf.aveAsym","Perf","TSMday","TSMmonth")]
 #change names
 #names(tol2s)[5:6]=c("without asymetry","fitted asymetry")
 
