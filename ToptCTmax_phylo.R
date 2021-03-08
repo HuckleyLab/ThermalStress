@@ -94,4 +94,38 @@ fm <- pglm( newTopt ~ 1, liz.match, Vliz)
 fm1 <- pglmEstLambda( newTopt ~ Lat, liz.match, Vliz)
 fm2 <- pglmSpatialFit( newTopt ~ Lat, liz.match, Vliz, Dliz)
 
+#=====================
+#Phylogeny
+
+install.packages("brranching")
+
+#test on lizards
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
+liz= read.csv('Hueyetal2009.csv', na.strings ='-9999')
+tpc2= liz[,c("Species","Genus","Family","CTmin","CTmax","newTopt")]
+
+#taxa
+# "plankton" "lizards"  "fish" "insects" "plants" "ants"
+lizards= unique(tpc2$Species)
+
+tree = brranching::phylomatic(lizards)
+
+#=====================
+#phyr
+#https://besjournals.onlinelibrary.wiley.com/doi/10.1111/2041-210X.13471https://besjournals.onlinelibrary.wiley.com/doi/10.1111/2041-210X.13471
+
+pglmm(
+  
+  Y ~ trait * env +
+    (1 | sp__) +
+    (1 | site__) +
+    (trait | site) +
+    (env | sp__) +
+    (1 | sp__@site),
+  data = data,
+  cov_ranef = list(sp = phy.sp, site = V.space),
+  family = 'binomial',
+  bayes = FALSE,
+  REML = TRUE
+)
 

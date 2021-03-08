@@ -40,5 +40,5 @@ Plot_Raw(State_Raw, Dates = c("20-07-1995", "21-07-1995"))
 #2m_temperature
 #sea_surface_temperature, K
 #skin_temperature
-lake_total_layer_temperature
+#lake_total_layer_temperature
 
