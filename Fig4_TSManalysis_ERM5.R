@@ -1,4 +1,5 @@
 #Load packages
+library(plyr)
 library(dplyr)
 library(rerddap)
 library(ncdf4)
@@ -12,53 +13,76 @@ library(sf) #to import a spatial object and to work with geom_sf in ggplot2
 library(raster)
 library(zoo)
 library(cowplot)
-library(plyr)
 library(patchwork)
 library(viridis)
 library(reshape2)
+library(tidyr)
 
 #convert longitude
 convert.lon= function(r0) ifelse(r0 > 180, -360 + r0, r0)
 
 #----------------------
 #LOAD ERM5
-library(KrigR)
 library(raster)
 library(ncdf4)
 
+<<<<<<< HEAD
+=======
+#https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels?tab=overview
+#API_User = "78176",
+#API_Key = "062c3e77-bcc8-4c56-8e72-4872e7a92be6"
+
+>>>>>>> 8428e88728b5b6adc25c056e5bc83661f9a23549
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/ERA5/")
 
 #July 2015 data, load others
-era.nc= nc_open('ERA5_July2015.nc')
-print(era.nc)
+era.z1= nc_open('ERA5_Zone1.nc')
+era.z2= nc_open('ERA5_Zone2.nc')
+era.z3= nc_open('ERA5_Zone3.nc')
+
+print(era.z1)
 
 #extract lon, lat, time
-era.lons= ncvar_get(era.nc,"longitude") #get info about long
-dim(era.lons)
-era.lats= ncvar_get(era.nc,"latitude") #get info about latitude
-dim(era.lats)
-era.times= ncvar_get(era.nc,"time") #julian date, calendar day, since 0000-01-01
-dim(era.times)
+lons.z1= ncvar_get(era.z1,"longitude") #get info about long
+lats.z1= ncvar_get(era.z1,"latitude") #get info about latitude
+lons.z2= ncvar_get(era.z2,"longitude") #get info about long
+lats.z2= ncvar_get(era.z2,"latitude") #get info about latitude
+lons.z3= ncvar_get(era.z3,"longitude") #get info about long
+lats.z3= ncvar_get(era.z3,"latitude") #get info about latitude
+
+#extract lon, lat, time
+times= ncvar_get(era.z1,"time") #julian date, calendar day, since 0000-01-01
+#times.z2= ncvar_get(era.z3,"time")
+#times.z3= ncvar_get(era.z3,"time")
+#all same
+
 #units: hours since 1900-01-01 00:00:00.0
 #change to dates
+<<<<<<< HEAD
 era.dates= as.POSIXct(era.times*3600,origin='1900-01-01 00:00') 
 years= as.numeric(format(era.dates, "%Y"))
+=======
+era.dates= as.POSIXct(times*3600,origin='1900-01-01 00:00') 
+year= as.numeric(format(era.dates, "%Y"))
+>>>>>>> 8428e88728b5b6adc25c056e5bc83661f9a23549
 doy= as.numeric(format(era.dates, "%j"))
 hours= as.numeric(format(era.dates, "%H"))
 months= month(era.dates)
 #need to add a few hours?
 
-#extract metrics
-era.sst=ncvar_get(era.nc,"sst")
-dim(era.sst) #dimensions lon, lat, time
-
-era.skt=ncvar_get(era.nc,"skt")
+#extract skt
+skt.z1=ncvar_get(era.z1,"skt")
+skt.z2=ncvar_get(era.z2,"skt")
+skt.z3=ncvar_get(era.z3,"skt")
 dim(era.skt) #dimensions lon, lat, time
 
-era.t2m=ncvar_get(era.nc,"t2m")
-dim(era.t2m) #dimensions lon, lat, time
+#use raster
+skt.z1= brick('ERA5_Zone1.nc', var="skt")
+skt.z2= brick('ERA5_Zone2.nc', var="skt")
+skt.z3= brick('ERA5_Zone3.nc', var="skt")
 
 #-----
+<<<<<<< HEAD
 #compare skin and sst
 sst.k= as.numeric(era.sst[lon.ind,lat.ind,]) -273.15
 plot(tmax.k, sst.k)
@@ -68,11 +92,10 @@ sst.k= as.numeric(era.sst[5,5,])
 
 plot(era.t[100,100,]-273.15, era.t2m[100,100,]-273.15)
 abline(a=0, b=1)
+=======
+#figure out data subsets
+>>>>>>> 8428e88728b5b6adc25c056e5bc83661f9a23549
 
-plot(1:700, era.t[100,100,1:700]-273.15, type="l")
-points(1:700, era.sst[100,100,1:700]-273.15, type="l", col="red")
-
-#----
 #subset
 #extent
 plot(tol.h$lon, tol.h$lat)
@@ -150,6 +173,7 @@ tol.h= subset(tol.h, !is.na(tol.h$CTmin) & !is.na(tol.h$Topt) & !is.na(tol.h$CTm
 
 #add asym
 tol.h$asym= (2*tol.h$Topt-tol.h$CTmax - tol.h$CTmin)/(tol.h$CTmax-tol.h$CTmin )
+
 #===================================================
 #Estimate thermal stress with increasing information
 
@@ -174,31 +198,48 @@ tol.h$Topt.aveasym= (asym*(tol.h$CTmax - tol.h$CTmin) +tol.h$CTmax +tol.h$CTmin)
 #===================================================
 #THERMAL STRESS ESTIMATES
 
-inds= which(tol.h$taxa=="plankton")
-spec.k=135
+years=2015:2019
 
+<<<<<<< HEAD
 era.t= era.skt
 era.doy= doy
 era.month= months
 #---------------
 
 ts= array(0, dim= c(length(years), nrow(tol.h), 9) )
+=======
+ts= array(0, dim= c(length(years), nrow(tol.h), 8) )
+>>>>>>> 8428e88728b5b6adc25c056e5bc83661f9a23549
 #counts of Topt exceedences
 ts.exceed= array(NA, dim= c(length(years), nrow(tol.h), 2) )
 
 #calculate degree days above Topt
 for(spec.k in 1:nrow(tol.h)){
   
-  #find closest grid cell
-  lon.ind= which.min(abs(era.lons - tol.h[spec.k, "lon" ]))
-  lat.ind= which.min(abs(era.lats - tol.h[spec.k, "lat" ]))
+  #find zone
+  zone=2
+  if(tol.h[spec.k, "lon" ]<40) zone=1
+  if(tol.h[spec.k, "lon" ]>80) zone=3
   
-  tmax.k= era.t[lon.ind,lat.ind,]-273.15
+  if(zone==1){
+    #find closest grid cell
+    lon.ind= which.min(abs(lons.z1 - tol.h[spec.k, "lon" ]))
+    lat.ind= which.min(abs(lats.z1 - tol.h[spec.k, "lat" ]))
+    
+    tmax.k= skt.z1[lon.ind,lat.ind,]
+    tmax.k.yrs= as.vector(tmax.k[1,])-273.15
+  }
   
-  #loop years
-  #for(year.k in 1:length(years)){
-  year.k=1 
+  if(zone==2){
+    #find closest grid cell
+    lon.ind= which.min(abs(lons.z2 - tol.h[spec.k, "lon" ]))
+    lat.ind= which.min(abs(lats.z2 - tol.h[spec.k, "lat" ]))
+    
+    tmax.k= skt.z2[lon.ind,lat.ind,]
+    tmax.k.yrs= as.vector(tmax.k[1,])-273.15
+  }
   
+<<<<<<< HEAD
     #thermal safety margins
     #hourly, change to days?
     ts[year.k,spec.k,1]= tol.h[spec.k,'CTmax']-max(tmax.k)
@@ -207,8 +248,53 @@ for(spec.k in 1:nrow(tol.h)){
     #TSM monthly
     ts[year.k,spec.k,9]= tol.h[spec.k,'CTmax']-max(tapply(tmax.k, era.month, mean))
       
+=======
+  if(zone==3){
+    #find closest grid cell
+    lon.ind= which.min(abs(lons.z3 - tol.h[spec.k, "lon" ]))
+    lat.ind= which.min(abs(lats.z3 - tol.h[spec.k, "lat" ]))
+    
+    tmax.k= skt.z3[lon.ind,lat.ind,]
+    tmax.k.yrs= as.vector(tmax.k[1,])-273.15
+  }
+  
+  #bind times
+  tmat= as.data.frame(cbind(year,months, doy,hours,tmax.k.yrs))
+  #drop 2014 data
+  tmat= subset(tmat, tmat$year>2014)
+  
+  #max temp
+  #hourly data
+  tmax.hr <- tmat %>% group_by(year)  %>% summarise(tmax=max(tmax.k.yrs))
+  #daily data
+  tmat1 <- tmat %>% group_by(year,doy) %>% summarise(tmean=mean(tmax.k.yrs))
+  tmax.day<- tmat1 %>% group_by(year)  %>% summarise(tmax=max(tmean))
+  #monthly data, monthly mean of daily max
+  tmat1 <- tmat %>% group_by(year,doy,months) %>% summarise(tmean=max(tmax.k.yrs)) #daily max
+  tmat1 <- tmat1 %>% group_by(year,months)  %>% summarise(tmean=mean(tmean))
+  tmax.month<- tmat1 %>% group_by(year)  %>% summarise(tmax=max(tmean))
+  
+  
+  #thermal safety margins
+  #hourly
+  tsm= tol.h[spec.k,'CTmax']-tmax.hr[,"tmax"]
+  ts[,spec.k,1]= tsm[,1]
+  #TSM days
+  tsm= tol.h[spec.k,'CTmax']-tmax.day[,"tmax"]
+  ts[,spec.k,2]= tsm[,1] 
+  #TSM monthly
+  tsm= tol.h[spec.k,'CTmax']-tmax.month[,"tmax"] 
+  ts[,spec.k,8]= tsm[,1]
+    
+>>>>>>> 8428e88728b5b6adc25c056e5bc83661f9a23549
     #check data NAs
     ts[year.k,spec.k,2]= max(tmax.k, na.rm=TRUE)
+    
+  #loop years
+  for(year.k in length(years)){
+  
+    #extract yearly data
+    tmax.k= tmax.k.yrs[which(year==years[year.k])]
     
     #find Topt exceedences
     inds.s= which(tmax.k > tol.h[spec.k,'Topt.noasym'])
@@ -245,6 +331,8 @@ for(spec.k in 1:nrow(tol.h)){
       
       } #end check length
       
+  } #loop years
+      
     # #thermodynamic scale
     # Topt.tt= thermo.temp(tol.h[spec.k,'topt'])
     # tmax.k.tt= thermo.temp(tmax.k)
@@ -253,9 +341,12 @@ for(spec.k in 1:nrow(tol.h)){
     # 
     # if(length(inds>0)) ts[year.k,spec.k,inds,4]= tmax.k.tt[inds]- Topt.tt  
     
-  #} # end year loop
-  
 } # end loop species
+
+#save output
+# Save an object to a file
+saveRDS(ts, file = "ts.rds")
+saveRDS(ts.exceed, file = "tsexceed.rds")
 
 #------------
 # #TSM
