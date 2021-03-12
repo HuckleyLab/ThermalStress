@@ -23,7 +23,7 @@ library(ggnewscale)
 #B = CTmax−max(Ta), where max(Ta) is the hottest mean monthly temperature in a given year
 
 #Sunday et al 2014, CTmax > Te,max
-#Maximum air temperatures [highest monthly mean of daily maximum air temperature (Ta,max)] w
+#Maximum air temperatures [highest monthly mean of daily maximum air temperature (Ta,max)] 
 
 #Pincebourde and Casas, WT= CTmax-Te
 #99th percentile of air temperature distribution
@@ -47,7 +47,6 @@ library(ggnewscale)
 #CPD: currently use Tdaily max
 #Use ERA5?
 
-
 ####
 #performance detriment functions
 #set 0 min
@@ -66,7 +65,6 @@ gaus=function(x, Topt, CTmax, a=1) {
 } 
   
 ####
-
 #Need to run Fig4_TSManalysis_final.R first to load envi data
 
 #load data
@@ -532,6 +530,7 @@ tr.max=as.data.frame(tr[,,2])
 colnames(tr.max)=c("tsm","cpd.q","cpd.l","cpd.g")
 tr.max$agg= "max"
 tr.max$time= c("5min","hr","6hr", "day","week","2week","month")
+
 tr.max$hours= 1:7   #c(0.083, 1, 24, 24*30) 
 
 tr.l= rbind(tr.mean,tr.max)
@@ -543,12 +542,96 @@ tr.l<- tr.l %>%
 tr.l$met="CPD"
 tr.l$met[tr.l$metric=="tsm"]="TSM"
 
+tr.l$time= factor(tr.l$time, levels=c("5min","hr","6hr", "day","week","2week","month"))
+
 #-------
 #Fig. Plot metrics as a function of exposure time
 
-ggplot(tr.l)+aes(x=hours, y=value, color=metric)+geom_line()+
+ggplot(tr.l)+aes(x=time, y=value, color=metric, group=metric)+geom_line()+
   facet_grid(met~agg, scales="free_y", switch="y")+ 
-  theme_bw(base_size=14)#+scale_color_viridis(name="times scale") + 
+  theme_bw(base_size=14) + theme(axis.text.x = element_text(angle = 45, vjust = 0.95, hjust=1))
+#+scale_color_viridis(name="times scale") + 
   #theme(legend.position="bottom", legend.key.width=unit(2,"cm"))
 
+#================================
+tmax.k=clim.hr
+
+#calc tsm and pd
+for(k in 1:length(asyms)){
+  
+  #TSM 
+  tsm[k,1]= tpc.p[k,3,1]-max(clim.day)
+  tsm[k,2]= tpc.p[k,3,2]-max(clim.day)
+  
+  #perform det
+  inds= which(tmax.k > tpc.p[k,2,1])
+  
+  #pd1= apply(tmax.k[inds], FUN="quad", Topt=tpc.p[k,2,1], CTmax=tpc.p[k,3,1])
+  pd[k,1]= sum(1- quad(tmax.k[inds], tpc.p[k,2,1], tpc.p[k,3,1]))/length(tmax.k)
+  pd.lin[k,1]= sum(1- lin(tmax.k[inds], tpc.p[k,2,1], tpc.p[k,3,1]))/length(tmax.k)
+  pd.gaus[k,1]= sum(1- gaus(tmax.k[inds], tpc.p[k,2,1], tpc.p[k,3,1]))/length(tmax.k)
+  
+  inds= which(tmax.k > tpc.p[k,2,2])
+  pd[k,2]= sum(1- quad(tmax.k[inds], tpc.p[k,2,2], tpc.p[k,3,2]))/length(tmax.k)
+  pd.lin[k,2]= sum(1- lin(tmax.k[inds], tpc.p[k,2,2], tpc.p[k,3,2]))/length(tmax.k)
+  pd.gaus[k,2]= sum(1- gaus(tmax.k[inds], tpc.p[k,2,2], tpc.p[k,3,2]))/length(tmax.k)
+  
+}# loop asymmetry
+
+##normalize pd
+#pd=pd/max(pd)
+
+#est asym of shift in TPC
+ctmin= tpc.p[,1,2]
+topt= tpc.p[,2,2]
+ctmax= tpc.p[,3,2]
+asym.shift= (2*topt-ctmax - ctmin)/(ctmax-ctmin )
+
+#plot
+tpc1= as.data.frame(cbind(tpc.p[,2,1], tsm[,1], 1:length(asyms),asyms ))
+tpc1$tpc= NA
+tpc1$scen="shift in asymmetry (Topt shift)"
+tpc1$var="TSM"
+names(tpc1)[4]="asym"
+
+tpc2= as.data.frame(cbind(tpc.p[,2,2], tsm[,2], 1:length(asyms),asym.shift ))
+tpc2$tpc= NA
+tpc2$scen="shift in TPC (CTmin, Topt, CTmax shift)"
+tpc2$var="TSM"
+names(tpc2)[4]="asym"
+
+tpc3= as.data.frame(cbind(tpc.p[,2,1], pd[,1], 1:length(asyms),asyms ))
+tpc3$tpc= "quadratic"
+tpc3l= as.data.frame(cbind(tpc.p[,2,1], pd.lin[,1], 1:length(asyms),asyms ))
+tpc3l$tpc= "linear"
+tpc3g= as.data.frame(cbind(tpc.p[,2,1], pd.gaus[,1], 1:length(asyms),asyms ))
+tpc3g$tpc= "gaussian"
+tpc3= rbind(tpc3, tpc3l, tpc3g)
+
+tpc3$scen="shift in asymmetry (Topt shift)"
+tpc3$var="CPD"
+names(tpc3)[4]="asym"
+
+tpc4= as.data.frame(cbind(tpc.p[,2,2], pd[,2], 1:length(asyms),asym.shift ))
+tpc4$tpc= "quadratic"
+tpc4l= as.data.frame(cbind(tpc.p[,2,2], pd.lin[,2], 1:length(asyms),asym.shift ))
+tpc4l$tpc= "linear"
+tpc4g= as.data.frame(cbind(tpc.p[,2,2], pd.gaus[,2], 1:length(asyms),asym.shift ))
+tpc4g$tpc= "gaussian"
+tpc4= rbind(tpc4, tpc4l, tpc4g)
+
+tpc4$scen="shift in TPC (CTmin, Topt, CTmax shift)"
+tpc4$var="CPD"
+names(tpc4)[4]="asym"
+
+#tpc4$scen= factor(tpc4$scen, levels=c("TSM","performance detriment"), ordered=TRUE)
+
+tpc.pl= rbind(tpc1, tpc2, tpc3, tpc4)
+names(tpc.pl)[1:3]=c("Topt","metric","k")
+
+#plot
+fig0b= ggplot(tpc.pl)+aes(x=Topt, y = metric, color=asym, shape=tpc)+geom_point()+
+  facet_grid(var~scen, scales="free_y", switch="y")+
+  theme_bw(base_size=14)+scale_color_viridis(name="asymmetry") + 
+  theme(legend.position="bottom", legend.key.width=unit(2,"cm"))+geom_line()
 
