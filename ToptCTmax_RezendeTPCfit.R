@@ -176,7 +176,7 @@ fits$tmin<-fits$z.list-(fits$w.list/2)
 # fits$tmin[i]<-uniroot.all(nbcurve.tmax,c(0,fits$topt.list[i]))[1] 
 # }
 
-write.csv(fits,'RezFitFits.csv')
+write.csv(fits,'RezFitFits_Mar2021.csv')
 
 #==================
 #Add species list
@@ -192,31 +192,6 @@ rez.fit.fits= read.csv("RezFitFits.csv")
 rez.fit.fits$species= rez.fit[match(rez.fit.fits$curve.id.list, rez.fit$ID),"Species"]
 write.csv(rez.fit.fits,'RezFitFits.csv')
 
-#----------------
-# Compare fits
-
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Rezende")
-#photosynthesis
-#rez.photo= read.csv("RezPhotoFits.csv")
-
-
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
-tpc=read.csv("tpcs.csv")
-
-ps= tpc[tpc$taxa=="photosynthesis",]
-ps$species
-
-match(ps$species, rez.photo.fits$species)
-
-
-
-
-rez.fit.fits
-
-
-
-
-
 #==========================
 #Combine insect fitness data
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Rezende")
@@ -229,11 +204,11 @@ match1= match(rez$curve.id.list, rez.a3$ID)
 rez$reference= rez.a3$Reference[match1]
 
 #cut tpcs with >17 degrees between last temperature and CTmin or CTmax estimate
-rez= rez[-which((rez$tmax-rez$maxt.list)>8), ]
-rez= rez[-which((-rez$tmin+rez$mint.list)>12), ]
+rez= rez[-which((rez$tmax-rez$maxt.list)>7), ]
+rez= rez[-which((-rez$tmin+rez$mint.list)>7), ]
 
 #cut outliers
-rez=rez[-c(18,33),]
+#rez=rez[-c(18,33),]
 
 #read Deutsch et al.
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/DeutschData/")
@@ -265,7 +240,7 @@ ins.add= ins[,c("Lat","Long","Order","spgen","Location","Reference","Ctmin","Top
 ins.comb= rbind(ins.add, setNames(rez.add, names(ins.add)))
 
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/DeutschData/")
-write.csv(ins.comb, 'InsectFit_DeutschRezende.csv')
+write.csv(ins.comb, 'InsectFit_DeutschRezende_Mar2021.csv')
 
 #=======================
 #Add Rezende data 

@@ -140,18 +140,15 @@ setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTl
 rez.photo= read.csv("RezPhotoFits.csv")
 #check distance between estimates and measurements
 plot(rez.photo$tmax-rez.photo$maxt.list, rez.photo$tmax)
-abline(v=17)
+abline(v=10)
 plot(-rez.photo$tmin+rez.photo$mint.list, rez.photo$tmin)
-abline(v=17)
+abline(v=10)
 
 rez.photo$genus= NA
 rez.photo$family= NA
 
 #add data
 tpc2= rez.photo[,c("species","genus","family","tmin","tmax","topt.list")] 
-#cut tpcs with >17 degrees between last temperature and CTmin or CTmax estimate
-tpc2= tpc2[-which((rez.photo$tmax-rez.photo$maxt.list)>17), ]
-tpc2= tpc2[-which((-rez.photo$tmin+rez.photo$mint.list)>17), ]
 
 tpc2$habitat="terrestrial"
 tpc2$lat=NA
@@ -177,29 +174,6 @@ tpc2$lat=ins$Lat
 tpc2$lon= ins$Long
 tpc2$taxa= "insects"
 tpc2$source= ins$Source
-
-#bind
-tpc= rbind(tpc, setNames(tpc2, names(tpc)))
-
-#--------------------
-#plant germination data
-
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/SentinellaPlants")
-germ= read.csv('germ_lat_processed.csv')
-
-germ$Topt= (germ$Topt.l+germ$Topt.u)/2
-germ1= germ[which(!is.na(germ$Tmin)& !is.na(germ$Tmax) & !is.na(germ$Topt)),]
-
-germ1$family=NA
-
-#add data
-tpc2= germ1[,c("Species.Location","Genus","family","Tmin","Tmax","Topt")] 
-
-tpc2$habitat="terrestrial"
-tpc2$lat=germ1$Lat
-tpc2$lon= germ1$Lon
-tpc2$taxa= "plantgerm"
-tpc2$source= NA
 
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
@@ -340,7 +314,28 @@ write.csv(dat.sub, "Delletal2013_forfitting.csv")
 # #FITS ARE SYMMETRIC
 
 
+#--------------------
+#plant germination data
 
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/SentinellaPlants")
+germ= read.csv('germ_lat_processed.csv')
+
+germ$Topt= (germ$Topt.l+germ$Topt.u)/2
+germ1= germ[which(!is.na(germ$Tmin)& !is.na(germ$Tmax) & !is.na(germ$Topt)),]
+
+germ1$family=NA
+
+#add data
+tpc2= germ1[,c("Species.Location","Genus","family","Tmin","Tmax","Topt")] 
+
+tpc2$habitat="terrestrial"
+tpc2$lat=germ1$Lat
+tpc2$lon= germ1$Lon
+tpc2$taxa= "plantgerm"
+tpc2$source= NA
+
+#bind
+tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
 
 

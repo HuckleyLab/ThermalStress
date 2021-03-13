@@ -194,7 +194,8 @@ fig0a= ggplot(tpc.l)+aes(x=temperature, y = performance)+ facet_wrap(~scen)+
   geom_line(aes(color=asym, group=curve2))+
   theme_bw(base_size=14)+theme(legend.position="none")+scale_color_viridis(discrete=TRUE, name="asymmetry")+
   xlim(-2,45)+ylim(-0.01,1)+
-  ylab("relative performance")+xlab("body temperature (°C)")
+  ylab("relative performance")+xlab("body temperature (°C)")+
+  theme(plot.margin = unit(c(1,0.5,0,0.5), "lines"))
 
 #add performance
 fig0a= fig0a +
@@ -241,116 +242,6 @@ tpc.p[,1,2]=solve.asym(asyms)-25
 tpc.p[,2,2]=solve.asym(asyms)
 tpc.p[,3,2]=solve.asym(asyms)+15
 
-#santa fe, nm
-lat= 35.6870
-lon= -105.9378
-year.k=1
-
-#find closest grid cell
-lon.ind= which.min(abs(ncep.lons.neg - lon))
-lat.ind= which.min(abs(ncep.lats - lat))
-
-#extract data
-#daily min max
-ncep.cell= cbind(year, doy, hours, ncep.temp.yrs[year.k,lon.ind,lat.ind,])
-colnames(ncep.cell)[4]="temp"
-ncep.cell= as.data.frame(ncep.cell)
-#make day factor
-ncep.cell$doy= as.factor(ncep.cell$doy)
-
-# #daily min and max
-tmax.k= tapply(ncep.cell$temp, ncep.cell$doy, max)
-tmin.k= tapply(ncep.cell$temp, ncep.cell$doy, min)
-
-hist(tmax.k)
-
-#----
-#calc tsm and pd
-for(k in 1:length(asyms)){
-
-#TSM 
-tsm[k,1]= tpc.p[k,3,1]-max(tmax.k)
-tsm[k,2]= tpc.p[k,3,2]-max(tmax.k)
-
-#perform det
-inds= which(tmax.k > tpc.p[k,2,1])
-
-#pd1= apply(tmax.k[inds], FUN="quad", Topt=tpc.p[k,2,1], CTmax=tpc.p[k,3,1])
-pd[k,1]= sum(1- quad(tmax.k[inds], tpc.p[k,2,1], tpc.p[k,3,1]))/length(tmax.k)
-pd.lin[k,1]= sum(1- lin(tmax.k[inds], tpc.p[k,2,1], tpc.p[k,3,1]))/length(tmax.k)
-pd.gaus[k,1]= sum(1- gaus(tmax.k[inds], tpc.p[k,2,1], tpc.p[k,3,1]))/length(tmax.k)
-
-inds= which(tmax.k > tpc.p[k,2,2])
-pd[k,2]= sum(1- quad(tmax.k[inds], tpc.p[k,2,2], tpc.p[k,3,2]))/length(tmax.k)
-pd.lin[k,2]= sum(1- lin(tmax.k[inds], tpc.p[k,2,2], tpc.p[k,3,2]))/length(tmax.k)
-pd.gaus[k,2]= sum(1- gaus(tmax.k[inds], tpc.p[k,2,2], tpc.p[k,3,2]))/length(tmax.k)
-
-}# loop asymmetry
-
-##normalize pd
-#pd=pd/max(pd)
-
-#est asym of shift in TPC
-ctmin= tpc.p[,1,2]
-topt= tpc.p[,2,2]
-ctmax= tpc.p[,3,2]
-asym.shift= (2*topt-ctmax - ctmin)/(ctmax-ctmin )
-
-#plot
-tpc1= as.data.frame(cbind(tpc.p[,2,1], tsm[,1], 1:length(asyms),asyms ))
-tpc1$tpc= NA
-tpc1$scen="shift in asymmetry (Topt shift)"
-tpc1$var="TSM"
-names(tpc1)[4]="asym"
-
-tpc2= as.data.frame(cbind(tpc.p[,2,2], tsm[,2], 1:length(asyms),asym.shift ))
-tpc2$tpc= NA
-tpc2$scen="shift in TPC (CTmin, Topt, CTmax shift)"
-tpc2$var="TSM"
-names(tpc2)[4]="asym"
-
-tpc3= as.data.frame(cbind(tpc.p[,2,1], pd[,1], 1:length(asyms),asyms ))
-tpc3$tpc= "quadratic"
-tpc3l= as.data.frame(cbind(tpc.p[,2,1], pd.lin[,1], 1:length(asyms),asyms ))
-tpc3l$tpc= "linear"
-tpc3g= as.data.frame(cbind(tpc.p[,2,1], pd.gaus[,1], 1:length(asyms),asyms ))
-tpc3g$tpc= "gaussian"
-tpc3= rbind(tpc3, tpc3l, tpc3g)
-  
-tpc3$scen="shift in asymmetry (Topt shift)"
-tpc3$var="CPD"
-names(tpc3)[4]="asym"
-
-tpc4= as.data.frame(cbind(tpc.p[,2,2], pd[,2], 1:length(asyms),asym.shift ))
-tpc4$tpc= "quadratic"
-tpc4l= as.data.frame(cbind(tpc.p[,2,2], pd.lin[,2], 1:length(asyms),asym.shift ))
-tpc4l$tpc= "linear"
-tpc4g= as.data.frame(cbind(tpc.p[,2,2], pd.gaus[,2], 1:length(asyms),asym.shift ))
-tpc4g$tpc= "gaussian"
-tpc4= rbind(tpc4, tpc4l, tpc4g)
-
-tpc4$scen="shift in TPC (CTmin, Topt, CTmax shift)"
-tpc4$var="CPD"
-names(tpc4)[4]="asym"
-
-#tpc4$scen= factor(tpc4$scen, levels=c("TSM","performance detriment"), ordered=TRUE)
-
-tpc.pl= rbind(tpc1, tpc2, tpc3, tpc4)
-names(tpc.pl)[1:3]=c("Topt","metric","k")
-
-#plot
-fig0b= ggplot(tpc.pl)+aes(x=Topt, y = metric, color=asym, shape=tpc)+geom_point()+
-  facet_grid(var~scen, scales="free_y", switch="y")+
-  theme_bw(base_size=14)+scale_color_viridis(name="asymmetry") + 
-  theme(legend.position="bottom", legend.key.width=unit(2,"cm"))+geom_line()
-
-#----
-combined <- fig0a +fig0b + plot_annotation(tag_levels = 'A') +plot_layout(nrow=2)+plot_layout(heights = c(1.6, 1))
-
-pdf("Fig0.pdf", height = 8, width = 10)
-combined
-dev.off()
-
 #=================
 #EXAMINE TIMESCALE
 library("accelerometry")
@@ -376,42 +267,11 @@ setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/USC
 # 14   ST_TYPE                        X
 # 15   ST_FLAG                        X
 
-clim= read.table("CRNS0101-05-2019-NM_Los_Alamos_13_W.txt", na.strings = "-9999.0")
+#clim= read.table("CRNS0101-05-2019-NM_Los_Alamos_13_W.txt", na.strings = "-9999.0")
 clim= read.table("CRNS0101-05-2019-NM_Las_Cruces_20_N.txt", na.strings = "-9999.0")
 
 clim=clim[,c(4,5,9,13)]
 names(clim)<- c("date","time","Tair","Tsurf")
-
-#------------
-#FUNCTIONS
-#estimate Tcrit
-tcrit= function(m,t){
-  ctmax= 41.92 -1.65*log10(m)
-  z= 2.85-0.45*log10(m)
-  tc= ctmax-z*log10(t)
-  return(tc)
-}
-
-#number heat stress events
-#y= TSM, x=time
-#find high resolution weather data
-#use rolling average to calculate TSM for each time period
-
-#Adapted from: https://github.com/HuckleyLab/BodySizeThermalStress/blob/master/Fig1.R
-
-#Average temperature to different time periods then estimate maximum 
-#n is with of period for rolling average
-temp=clim$Tsurf
-
-rollmax= function(n) {
-  max(movingaves(temp, n), na.rm=TRUE)
-}
-
-ns=1:2016
-#ns= c(1:12,(2:12)*12, seq(13,168,12)*12,168*12)
-hrs=ns
-
-rt= sapply(ns, FUN=rollmax)
 
 #--------------
 #Average data
@@ -446,6 +306,7 @@ clim$wk2.bin[clim$wk.bin %in% 3:4]=2
 clim$wk.bin= paste(clim$month,clim$wk.bin)
 clim$wk2.bin= paste(clim$month,clim$wk2.bin)
 
+#average data
 #hourly, 6 hourly, daily, weekly, monthly, quarterly, annually
 
 temps= clim$Tsurf
@@ -455,10 +316,8 @@ Topt=25
 #hour
 date.hr= paste(clim$date, clim$hour,sep="_")
 clim.hr= tapply(temps, INDEX=date.hr, FUN="mean", na.rm=TRUE)
-clim.hr.max= tapply(temps, INDEX=date.hr, FUN="max", na.rm=TRUE)
 
 clim.6hr= tapply(temps, INDEX=clim$hr.bin, FUN="mean", na.rm=TRUE)
-clim.6hr.max= tapply(temps, INDEX=clim$hr.bin, FUN="max", na.rm=TRUE)
 
 #day  
 clim.day= tapply(temps, INDEX=clim$date, FUN="mean", na.rm=TRUE)
@@ -521,13 +380,13 @@ for(time.k in 1:7){
 
 #flatten array
 tr.mean=as.data.frame(tr[,,1])
-colnames(tr.mean)=c("tsm","cpd.q","cpd.l","cpd.g")
+colnames(tr.mean)=c("tsm","quadratic","linear","gaussian")
 tr.mean$agg= "mean"
 tr.mean$time= c("5min","hr","6hr", "day","week","2week","month") 
 tr.mean$hours= 1:7   #c(0.083, 1, 24, 24*30) 
 
 tr.max=as.data.frame(tr[,,2])
-colnames(tr.max)=c("tsm","cpd.q","cpd.l","cpd.g")
+colnames(tr.max)=c("tsm","quadratic","linear","gaussian")
 tr.max$agg= "max"
 tr.max$time= c("5min","hr","6hr", "day","week","2week","month")
 
@@ -544,16 +403,23 @@ tr.l$met[tr.l$metric=="tsm"]="TSM"
 
 tr.l$time= factor(tr.l$time, levels=c("5min","hr","6hr", "day","week","2week","month"))
 
+#tr.l$metric[tr.l$metric=="tsm"]="NA"
+
 #-------
 #Fig. Plot metrics as a function of exposure time
 
-ggplot(tr.l)+aes(x=time, y=value, color=metric, group=metric)+geom_line()+
+fig0c= ggplot(tr.l)+aes(x=time, y=value, group=metric, shape=metric)+geom_line()+geom_point()+
   facet_grid(met~agg, scales="free_y", switch="y")+ 
-  theme_bw(base_size=14) + theme(axis.text.x = element_text(angle = 45, vjust = 0.95, hjust=1))
+  theme_bw(base_size=14) + theme(axis.text.x = element_text(angle = 45, vjust = 0.95, hjust=1))+
+  theme(legend.position="bottom")+
+  guides(color=guide_legend(title="TPC type"), shape=guide_legend(title="TPC type"))+
+ scale_shape_discrete(breaks = c("gaussian", "linear", "quadratic"), name="TPC type")+
+  theme(legend.margin=margin(t=0, r=0, b=0, l=0, unit="cm"))+
+  theme(plot.margin = unit(c(1,0.5,0,0.5), "lines"))
 #+scale_color_viridis(name="times scale") + 
-  #theme(legend.position="bottom", legend.key.width=unit(2,"cm"))
 
 #================================
+#calculation across curves
 tmax.k=clim.hr
 
 #calc tsm and pd
@@ -565,16 +431,20 @@ for(k in 1:length(asyms)){
   
   #perform det
   inds= which(tmax.k > tpc.p[k,2,1])
-  
-  #pd1= apply(tmax.k[inds], FUN="quad", Topt=tpc.p[k,2,1], CTmax=tpc.p[k,3,1])
-  pd[k,1]= sum(1- quad(tmax.k[inds], tpc.p[k,2,1], tpc.p[k,3,1]))/length(tmax.k)
-  pd.lin[k,1]= sum(1- lin(tmax.k[inds], tpc.p[k,2,1], tpc.p[k,3,1]))/length(tmax.k)
-  pd.gaus[k,1]= sum(1- gaus(tmax.k[inds], tpc.p[k,2,1], tpc.p[k,3,1]))/length(tmax.k)
+  perf= sapply(tmax.k[inds],FUN=quad, Topt=tpc.p[k,2,1], CTmax=tpc.p[k,3,1])
+  pd[k,1]= sum(1- perf)/length(tmax.k)
+  perf= sapply(tmax.k[inds],FUN=lin, Topt=tpc.p[k,2,1], CTmax=tpc.p[k,3,1])
+  pd.lin[k,1]= sum(1- perf)/length(tmax.k)
+  perf= sapply(tmax.k[inds],FUN=gaus, Topt=tpc.p[k,2,1], CTmax=tpc.p[k,3,1])
+  pd.gaus[k,1]= sum(1- perf)/length(tmax.k)
   
   inds= which(tmax.k > tpc.p[k,2,2])
-  pd[k,2]= sum(1- quad(tmax.k[inds], tpc.p[k,2,2], tpc.p[k,3,2]))/length(tmax.k)
-  pd.lin[k,2]= sum(1- lin(tmax.k[inds], tpc.p[k,2,2], tpc.p[k,3,2]))/length(tmax.k)
-  pd.gaus[k,2]= sum(1- gaus(tmax.k[inds], tpc.p[k,2,2], tpc.p[k,3,2]))/length(tmax.k)
+  perf= sapply(tmax.k[inds],FUN=quad, Topt=tpc.p[k,2,2], CTmax=tpc.p[k,3,2])
+  pd[k,2]= sum(1- perf)/length(tmax.k)
+  perf= sapply(tmax.k[inds],FUN=lin, Topt=tpc.p[k,2,2], CTmax=tpc.p[k,3,2])
+  pd.lin[k,2]= sum(1- perf)/length(tmax.k)
+  perf= sapply(tmax.k[inds],FUN=gaus, Topt=tpc.p[k,2,2], CTmax=tpc.p[k,3,2])
+  pd.gaus[k,2]= sum(1- perf)/length(tmax.k)
   
 }# loop asymmetry
 
@@ -633,5 +503,14 @@ names(tpc.pl)[1:3]=c("Topt","metric","k")
 fig0b= ggplot(tpc.pl)+aes(x=Topt, y = metric, color=asym, shape=tpc)+geom_point()+
   facet_grid(var~scen, scales="free_y", switch="y")+
   theme_bw(base_size=14)+scale_color_viridis(name="asymmetry") + 
-  theme(legend.position="bottom", legend.key.width=unit(2,"cm"))+geom_line()
+  theme(legend.position="bottom", legend.key.width=unit(2,"cm"),legend.box = "vertical")+geom_line()+guides(shape=FALSE)+
+  theme(legend.margin=margin(t=0, r=0, b=0, l=0, unit="cm"))+
+  theme(plot.margin = unit(c(1,0.5,0,0.5), "lines"))
+  #+scale_shape_discrete(breaks = c("gaussian", "linear", "quadratic"), name="TPC type")  
 
+#----
+combined <- fig0a +fig0b +fig0c +plot_annotation(tag_levels = 'A') +plot_layout(nrow=3)+plot_layout(heights = c(1.6, 1,1))
+
+pdf("Fig0.pdf", height = 10, width = 8)
+combined
+dev.off()
