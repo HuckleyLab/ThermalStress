@@ -137,12 +137,17 @@ tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 #Add Rezende data 
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Rezende")
 #photosynthesis
-rez.photo= read.csv("RezPhotoFits.csv")
+rez.photo= read.csv("RezPhotoFits_Mar2021.csv")
 #check distance between estimates and measurements
 plot(rez.photo$tmax-rez.photo$maxt.list, rez.photo$tmax)
-abline(v=10)
+abline(v=7)
 plot(-rez.photo$tmin+rez.photo$mint.list, rez.photo$tmin)
 abline(v=10)
+
+#drop 
+#cut tpcs with >x degrees between last temperature and CTmin or CTmax estimate
+rez.photo= rez.photo[-which((rez.photo$tmax-rez.photo$maxt.list)>7), ]
+rez.photo= rez.photo[-which((-rez.photo$tmin+rez.photo$mint.list)>10), ]
 
 rez.photo$genus= NA
 rez.photo$family= NA
@@ -163,8 +168,13 @@ tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 #insect fitness
 
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/DeutschData/")
-ins= read.csv('InsectFit_DeutschRezende.csv')
+ins= read.csv('InsectFit_DeutschRezende_Mar2021.csv')
 ins$family=NA
+
+#split spgen
+sp.mat=matrix(unlist(strsplit(ins$spgen, split=" ")), ncol = 2, byrow = TRUE)
+ins$genus= sp.mat[,1]
+ins$species= sp.mat[,2]
 
 #add data
 tpc2= ins[,c("species","genus","family","Ctmin","CTmax","Topt")] 
@@ -173,7 +183,7 @@ tpc2$habitat="terrestrial"
 tpc2$lat=ins$Lat
 tpc2$lon= ins$Long
 tpc2$taxa= "insects"
-tpc2$source= ins$Source
+tpc2$source= NA #ins$Source ##fix source
 
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
@@ -188,7 +198,7 @@ tpc[which(tpc$taxa=="Australian lizards"),"taxa"]<-"lizards"
 
 #Write out
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
-write.csv(tpc, "tpcs_wSource_2021.csv")
+write.csv(tpc, "tpcs_wSource_Mar2021.csv")
 
 #===============================
 #Datasets not included

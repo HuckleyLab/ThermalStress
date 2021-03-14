@@ -363,13 +363,16 @@ for(spec.k in 1:nrow(tol.h)){
 saveRDS(ts, file = "ts.rds")
 saveRDS(ts.exceed, file = "tsexceed.rds")
 
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
 #ts=readRDS("ts.rds")
 
 #------------
 # #AGGREGATE ACROSS YEARS
 tsm.yrs= apply(ts, MARGIN=c(2,3), FUN=mean, na.rm=T)
 
-colnames(tsm.yrs)=c('TSMhr',"TSMday",'Perf.noAsym','Perf.dTopt','Perf.dSlope','Perf.aveAsym','Perf',"TSMmonth")
+colnames(tsm.yrs)=c('TSMhr',"TSMday",'Perf.noAsym','Perf.dTopt','Perf.dSlope','Perf.aveAsym','Perf',"TSMmonth",
+                    'Perf.noAsym.lin','Perf.dTopt.lin','Perf.dSlope.lin','Perf.aveAsym.lin','Perf.lin',
+                    'Perf.noAsym.gaus','Perf.dTopt.gaus','Perf.dSlope.gaus','Perf.aveAsym.gaus','Perf.gaus')
 
 #----------------------
 #PLOT
@@ -379,57 +382,93 @@ tol2= cbind(tol.h, tsm.yrs)
 tol2=tol2[-which(tol2$taxa=="fish"),] 
 
 #drop unneeded columns
-tol2s= tol2[,c("taxa","asym","TSMhr","Perf.noAsym",'Perf.dTopt','Perf.dSlope',"Perf.aveAsym","Perf","TSMday","TSMmonth")]
+tol2s= tol2[,c("taxa","asym","TSMhr","Perf.noAsym",'Perf.dTopt','Perf.dSlope',"Perf.aveAsym","Perf","TSMday","TSMmonth", 
+               'Perf.noAsym.lin','Perf.dTopt.lin','Perf.dSlope.lin','Perf.aveAsym.lin','Perf.lin',
+               'Perf.noAsym.gaus','Perf.dTopt.gaus','Perf.dSlope.gaus','Perf.aveAsym.gaus','Perf.gaus')]
 #change names
 #names(tol2s)[5:6]=c("without asymetry","fitted asymetry")
 
 #-----
 #compare to TSM
 
-fig4a= ggplot(tol2, aes(x=Perf,y=TSMday, color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
+fig4a= ggplot(tol2, aes(x=Perf.lin,y=TSMday, color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
   theme_bw()+scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom")+
   xlab("CPD (normalized)")+ylab("TSM (°C)")+
   ylim(-10,15)
 
 #-----
-#compare tsms
-#to long format
-tol.l <- melt(tol2s, id=c("taxa","asym","TSMday","Perf"))
+#compare TSM
+tol.tsm= tol2s[,c("taxa","asym","TSMhr","TSMday","TSMmonth")]
+tol.tsm <- melt(tol.tsm, id=c("taxa","asym","TSMday"))
 
-tol.l= subset(tol.l, tol.l$variable %in% c("TSMhr","TSMmonth"))
-
-fig4x= ggplot(tol.l, aes(x=TSMday,y=value, color=variable)) +geom_point()+facet_wrap(~taxa, nrow=1) +
+fig4.tsm= ggplot(tol.tsm, aes(x=TSMday,y=value, color=variable)) +geom_point()+facet_wrap(~taxa, nrow=1) +
   theme_bw()+ theme(legend.position = "bottom")+geom_smooth(method="lm") +geom_abline(col="gray")+
-  xlab("TSM (hourly)")+ylab("TSM (°C)")
+  xlab("TSM (daily)")+ylab("TSM (°C)")
 #+ylim(-10,15)
 
 #-----
 #Compare performance estimates
-#to long format
-tol.l <- melt(tol2s, id=c("taxa","asym","TSMday","Perf"))
 
-#make labels
-tol.l$metric.lab<-NA
-tol.l$metric.lab[tol.l$variable=="Perf.noAsym"]<- "no asymmetry"
-tol.l$metric.lab[tol.l$variable=="Perf.dTopt"]<- "omit slope"
-tol.l$metric.lab[tol.l$variable=="Perf.dSlope"]<- "omit Topt shift"
-tol.l$metric.lab[tol.l$variable=="Perf.aveAsym"]<- "taxa asymmetry"
-#drop symmetric
-tol.l= subset(tol.l, tol.l$metric.lab %in% c("omit Topt shift","omit slope","taxa asymmetry"))
-tol.l$metric.lab= factor(tol.l$metric.lab, levels=c("omit Topt shift","omit slope","taxa asymmetry")) #drop symmetric
+#compare linear, quad, gaus
+tol.p= tol2s[,c("taxa","asym","Perf","Perf.lin","Perf.gaus")]
+tol.pl= melt(tol.p, id=c("taxa","asym","Perf.lin"))
 
-fig4b= ggplot(tol.l, aes(x=(Perf),y=(value), color=metric.lab)) +geom_point()+facet_wrap(~taxa, nrow=1) +
+fig4p1= ggplot(tol.pl, aes(x=(Perf.lin),y=(value), color=variable)) +geom_point()+
+  facet_wrap(~taxa, nrow=1) +
   theme_bw()+ theme(legend.position = "bottom", legend.title = element_blank())+
   ylab("estimated CPD (normalized)")+xlab("observed CPD (normalized)")+
+  scale_color_viridis(discrete=TRUE)+geom_abline(slope=1, intercept=0)
+
+#compare linear, quadratic, guassian
+#to long format
+tol.l <- melt(tol2s, id=c("taxa","asym","TSMhr","TSMday","TSMmonth", "Perf","Perf.lin","Perf.gaus"))
+
+#gather Perf, Perf type, qud / lin/ gaus
+tol.l$perf="perf"
+tol.l$perf[grepl("noAsym", tol.l$variable)]="no asymmetry"
+tol.l$perf[grepl("dTopt", tol.l$variable)]="omit slope"
+tol.l$perf[grepl("dSlope", tol.l$variable)]="omit Topt shift"
+tol.l$perf[grepl("aveAsym", tol.l$variable)]="taxa asymmetry"
+
+#tpc type
+tol.l$tpc="quadratic"
+tol.l$tpc[grepl("lin", tol.l$variable)]="linear"
+tol.l$tpc[grepl("gaus", tol.l$variable)]="gaussian"
+
+#linear
+tol.ls= subset(tol.l, tol.l$tpc=="linear")
+  
+fig4b= ggplot(tol.ls, aes(x=Perf.lin, y=value, color=perf))+geom_point()+facet_wrap(~taxa, nrow=1) +
+  theme_bw()+ theme(legend.position = "bottom", legend.title = element_blank())+
+  ylab("CPD")+xlab("CPD for observed TPC")+
+  scale_color_viridis(discrete=TRUE)+geom_abline(slope=1, intercept=0)
+
+#gaussian
+tol.ls= subset(tol.l, tol.l$tpc=="gaussian")
+
+fig4b.gaus= ggplot(tol.ls, aes(x=Perf.lin, y=value, color=perf))+geom_point()+facet_wrap(~taxa, nrow=1) +
+  theme_bw()+ theme(legend.position = "bottom", legend.title = element_blank())+
+  ylab("CPD")+xlab("CPD for observed TPC")+
+  scale_color_viridis(discrete=TRUE)+geom_abline(slope=1, intercept=0)
+
+#quadratic
+tol.ls= subset(tol.l, tol.l$tpc=="quadratic")
+
+fig4b.quad= ggplot(tol.ls, aes(x=Perf.lin, y=value, color=perf))+geom_point()+facet_wrap(~taxa, nrow=1) +
+  theme_bw()+ theme(legend.position = "bottom", legend.title = element_blank())+
+  ylab("CPD")+xlab("CPD for observed TPC")+
   scale_color_viridis(discrete=TRUE)+geom_abline(slope=1, intercept=0)
 
 #-----
 #Plot
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/figures/")
 pdf("Figs4_TSM.pdf", height = 8, width = 8)
-
 fig4a +fig4b +plot_annotation(tag_levels = 'A') +plot_layout(nrow=2) 
+dev.off()
 
+#Supplementary plot
+pdf("Figs4Sup_TSM.pdf", height = 8, width = 8)
+fig4.tsm + fig4b.gaus + fig4b.quad +plot_annotation(tag_levels = 'A') +plot_layout(nrow=3)
 dev.off()
 
 #-----

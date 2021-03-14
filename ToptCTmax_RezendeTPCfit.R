@@ -183,29 +183,35 @@ write.csv(fits,'RezFitFits_Mar2021.csv')
 
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Rezende")
 #photosynthesis
-rez.photo.fits= read.csv("RezPhotoFits.csv")
+rez.photo.fits= read.csv("RezPhotoFits_Mar2021.csv")
 rez.photo.fits$species= rez.photo[match(rez.photo.fits$curve.id.list, rez.photo$ID),"Species"]
-write.csv(rez.photo.fits,'RezPhotoFits.csv')
+write.csv(rez.photo.fits,'RezPhotoFits_Mar2021.csv')
 
 #insect fitness
-rez.fit.fits= read.csv("RezFitFits.csv")
+rez.fit.fits= read.csv("RezFitFits_Mar2021.csv")
 rez.fit.fits$species= rez.fit[match(rez.fit.fits$curve.id.list, rez.fit$ID),"Species"]
-write.csv(rez.fit.fits,'RezFitFits.csv')
+write.csv(rez.fit.fits,'RezFitFits_Mar2021.csv')
 
 #==========================
 #Combine insect fitness data
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Rezende")
 
-rez= read.csv("RezFitFits.csv")
+rez= read.csv("RezFitFits_Mar2021.csv")
 
 #add reference
 rez.a3= read.csv("RezendeTableA3.csv")
 match1= match(rez$curve.id.list, rez.a3$ID)
 rez$reference= rez.a3$Reference[match1]
 
-#cut tpcs with >17 degrees between last temperature and CTmin or CTmax estimate
+#check distance between estimates and measurements
+plot(rez$tmax-rez$maxt.list, rez$tmax)
+abline(v=7)
+plot(-rez$tmin+rez$mint.list, rez$tmin)
+abline(v=10)
+
+#cut tpcs with >x degrees between last temperature and CTmin or CTmax estimate
 rez= rez[-which((rez$tmax-rez$maxt.list)>7), ]
-rez= rez[-which((-rez$tmin+rez$mint.list)>7), ]
+rez= rez[-which((-rez$tmin+rez$mint.list)>10), ]
 
 #cut outliers
 #rez=rez[-c(18,33),]

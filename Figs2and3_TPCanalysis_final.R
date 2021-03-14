@@ -11,11 +11,12 @@ library(latex2exp)
 library(ggnewscale)
 
 #load data
-#setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
-#tpc=read.csv("tpcs_wSource_2021.csv")
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
+tpc=read.csv("tpcs_wSource_Mar2021.csv")
 
-setwd("./data/")
-tpc=read.csv("tpcs.csv")
+#setwd("./data/")
+#tpc=read.csv("tpcs.csv")
+
 #drop data without all metrics
 tpc= subset(tpc, !is.na(tpc$CTmin) & !is.na(tpc$Topt) & !is.na(tpc$CTmax) )
 #change photosynthesis to plants
