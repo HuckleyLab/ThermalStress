@@ -133,6 +133,45 @@ tpc2= dat[,c("Species","Genus","family","CTmin","CTmax","Topt","habitat","Latitu
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
 
+#----
+#insect fitness
+
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/DeutschData/")
+ins= read.csv('InsectFit_DeutschRezende_Mar2021.csv')
+ins$family=NA
+
+#split spgen
+sp.mat=matrix(unlist(strsplit(ins$spgen, split=" ")), ncol = 2, byrow = TRUE)
+ins$genus= sp.mat[,1]
+ins$species= sp.mat[,2]
+
+#add data
+tpc2= ins[,c("species","genus","family","Ctmin","CTmax","Topt")] 
+
+tpc2$habitat="terrestrial"
+tpc2$lat=ins$Lat
+tpc2$lon= ins$Long
+tpc2$taxa= "insects"
+tpc2$source= ins$Source
+
+#bind
+tpc= rbind(tpc, setNames(tpc2, names(tpc)))
+
+#--------
+#drop sea urchin data
+tpc= subset(tpc, tpc$taxa!="Sea urchins" & tpc$taxa!="Isopod" & tpc$taxa!="Bonefish")
+
+#combine fish and lizards
+tpc[which(tpc$taxa %in% c("Charr","Trout","Salmon","Bonefish")),"taxa"]<-"fish"
+tpc[which(tpc$taxa=="Australian lizards"),"taxa"]<-"lizards"
+
+#Write out
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
+write.csv(tpc, "tpcs_wSource_Mar2021.csv")
+
+#===============================
+#Datasets not included
+
 #------------------
 #Add Rezende data 
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/Rezende")
@@ -163,45 +202,7 @@ tpc2$source= "Rezende and Bozinovic 2019"
 
 #bind
 tpc= rbind(tpc, setNames(tpc2, names(tpc)))
-
-#----
-#insect fitness
-
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/DeutschData/")
-ins= read.csv('InsectFit_DeutschRezende_Mar2021.csv')
-ins$family=NA
-
-#split spgen
-sp.mat=matrix(unlist(strsplit(ins$spgen, split=" ")), ncol = 2, byrow = TRUE)
-ins$genus= sp.mat[,1]
-ins$species= sp.mat[,2]
-
-#add data
-tpc2= ins[,c("species","genus","family","Ctmin","CTmax","Topt")] 
-
-tpc2$habitat="terrestrial"
-tpc2$lat=ins$Lat
-tpc2$lon= ins$Long
-tpc2$taxa= "insects"
-tpc2$source= NA #ins$Source ##fix source
-
-#bind
-tpc= rbind(tpc, setNames(tpc2, names(tpc)))
-
-#--------
-#drop sea urchin data
-tpc= subset(tpc, tpc$taxa!="Sea urchins" & tpc$taxa!="Isopod" & tpc$taxa!="Bonefish")
-
-#combine fish and lizards
-tpc[which(tpc$taxa %in% c("Charr","Trout","Salmon","Bonefish")),"taxa"]<-"fish"
-tpc[which(tpc$taxa=="Australian lizards"),"taxa"]<-"lizards"
-
-#Write out
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
-write.csv(tpc, "tpcs_wSource_Mar2021.csv")
-
-#===============================
-#Datasets not included
+#---------------
 
 #DROSOPHILA: https://royalsocietypublishing.org/doi/full/10.1098/rstb.2018.0548
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")

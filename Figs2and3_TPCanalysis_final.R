@@ -19,10 +19,17 @@ tpc=read.csv("tpcs_wSource_Mar2021.csv")
 
 #drop data without all metrics
 tpc= subset(tpc, !is.na(tpc$CTmin) & !is.na(tpc$Topt) & !is.na(tpc$CTmax) )
-#change photosynthesis to plants
-tpc$taxa[tpc$taxa=="photosynthesis"]="plants"
 
-taxas= c("plants","plantgerm","ants", "lizards", "fish","insects", "plankton")
+#change names
+#change photosynthesis to plants
+#tpc$taxa[tpc$taxa=="photosynthesis"]="plants"
+tpc$taxa[tpc$taxa=="ants"]="ant performance"
+tpc$taxa[tpc$taxa=="lizards"]="lizard performance"
+tpc$taxa[tpc$taxa=="fish"]="fish growth"
+tpc$taxa[tpc$taxa=="insects"]="insect fitness"
+tpc$taxa[tpc$taxa=="plankton"]="plankton fitness"
+
+taxas= c("ant performance", "lizard performance", "fish growth","insect fitness", "plankton fitness")
 
 #setwd for figures
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/figures/")
@@ -98,8 +105,8 @@ tpc.l<- tpc.pred %>%
 tpc.l$temperature= as.numeric(as.character(tpc.l$temperature))
 
 #make taxa ordered factor
-tpc$taxa= factor(tpc$taxa, levels=c("plants","plantgerm","ants", "lizards", "fish","insects", "plankton"), ordered=TRUE)
-tpc.l$taxa= factor(tpc.l$taxa, levels=c("plants","plantgerm","ants", "lizards", "fish","insects", "plankton"), ordered=TRUE)
+tpc$taxa= factor(tpc$taxa, levels=c("ant performance", "lizard performance", "fish growth","insect fitness", "plankton fitness"), ordered=TRUE)
+tpc.l$taxa= factor(tpc.l$taxa, levels=c("ant performance", "lizard performance", "fish growth","insect fitness", "plankton fitness"), ordered=TRUE)
 
 #plot
 fig1a= ggplot(tpc.l)+aes(x=temperature, y = performance, color=asym, group=X)+facet_grid(taxa~.)+geom_line()+
@@ -373,14 +380,19 @@ names(tpc.a2)[1:2]=c("Topt","pc.asym")
 tpc.a= rbind(tpc.a1, tpc.a2)
 tpc.a$lab2="PC1:blue, PC2:yellow"
 
-fig3a= ggplot(tpc.a) + aes(x=Topt, y = pc.asym, color=pc)+geom_point(size=2, alpha=0.7)+ylab("asymmetry")+
-  xlab("Topt (°C)")+facet_grid(taxa~lab2)+
-  theme_bw()+theme(legend.position="bottom")+ylim(-1,1) + scale_color_viridis(discrete=TRUE)+guides(color=FALSE)
+#order taxa
+tpc.a$taxa= factor(tpc.a$taxa, levels=c("ant performance", "lizard performance", "fish growth","insect fitness", "plankton fitness"), ordered=TRUE)
 
+#make pca labels
 pc.var$pc=""
 pc.var$label=paste(" PC1=",round(pc.var$pc1.var,2),"\n PC2=",round(pc.var$pc2.var,2), sep=" ") #"\n PC3=",round(pc.var$pc3.var,2),
-fig3a= fig3a +geom_text(data= pc.var, mapping=aes(x=10, y=0.6,label=label))
+pc.var$taxa= factor(pc.var$taxa, levels=c("ant performance", "lizard performance", "fish growth","insect fitness", "plankton fitness"), ordered=TRUE)
 
+fig3a= ggplot(tpc.a) + aes(x=Topt, y = pc.asym, color=pc)+geom_point(size=2, alpha=0.7)+ylab("asymmetry")+
+  xlab("Topt (°C)")+facet_grid(taxa~lab2)+
+  geom_text(data= pc.var, mapping=aes(x=10, y=0.6,label=label))+
+  theme_bw()+theme(legend.position="bottom")+ylim(-1,1) + scale_color_viridis(discrete=TRUE)+guides(color=FALSE)
+ 
 #pc plots
 #pc1 plots
 out=t(apply(tpc.pca[,c("pc1.Topt","pc1.CTmin","pc1.CTmax")], MARGIN=1, FUN=tpc.mat))
@@ -432,10 +444,10 @@ dev.off()
 
 #------
 #plot write out loadings
-pc.out=rbind(pc.load[,,1],pc.load[,,2],pc.load[,,3],pc.load[,,4],pc.load[,,5],pc.load[,,6],pc.load[,,7])
+pc.out=rbind(pc.load[,,1],pc.load[,,2],pc.load[,,3],pc.load[,,4],pc.load[,,5])
 pc.out=as.data.frame(round(pc.out,2))
 colnames(pc.out)=c("PC1","PC2","PC3")
-pc.out$var=rep(c("Topt","CTmax","range"),7)
+pc.out$var=rep(c("Topt","CTmax","range"),5)
 pc.out$var= ordered(pc.out$var, levels=c("Topt","CTmax","range") )
 pc.out$taxa=rep(taxas, each=3)
 
@@ -446,6 +458,8 @@ pc.plot <- melt(pc.out, id=c("var","taxa"))
 
 #remove PCA3
 pc.plot= pc.plot[pc.plot$variable %in% c("PC1","PC2"),]
+#order taxa
+pc.plot$taxa= factor(pc.plot$taxa, levels=c("ant performance", "lizard performance", "fish growth","insect fitness", "plankton fitness"), ordered=TRUE)
 
 #plot
 pdf(paste("LoadingsPCAs_",pc.lab[pc.vars],".pdf",sep=""), height = 8, width = 6)
@@ -454,7 +468,6 @@ ggplot(pc.plot)+aes(x=var, y = value)+facet_grid(taxa~variable)+geom_col()+
 dev.off()
 
 #}#end PC vars loop
-
 
 #================
 #variances
@@ -489,5 +502,10 @@ MeanMatrixStatistics(cov.matrix)
 #selection gradient CTmax
 #selection on tpc, 
 #plankton function valued, curves vs parameters selection, selection on curves not parameters, e.g., Ann Rev Gomulkiwitz, Kingsolver
+
+
+
+
+
 
 
