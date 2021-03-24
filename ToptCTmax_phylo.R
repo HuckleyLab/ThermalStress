@@ -52,16 +52,74 @@ ant.match=ant[match(ant.prune$tip.label, ant$genus),]
 #use genus name for species for code simplicity
 ant.match$species= ant.match$genus
 
+----
+#insects
+
+#match to tips
+ins= tpc[tpc$taxa=="insects",]
+ins$genspec= paste(ins$genus, ins$species, sep=" ")
+
+#https://phylot.biobyte.de/
+#approaches:
+#https://taylorreiter.github.io/2017-07-28-Taxonomy-from-Species-Name-in-R/
+
+library(taxize)
+library(rotl)
+library(ape)
+
+ins_class <- classification(unique(ins$genspec), db = "ncbi")
+ins_tree <- class2tree(ins_class, check = TRUE)
+plot(ins_tree)
+ins_phy= ins_tree$phylo
+
+# specs <- tnrs_match_names(ins$genspec)
+# specs <- specs[!is.na(specs$ott_id),]
+# specs <- specs[-which(specs$ott_id==3360350),]
+# specs <- specs[-which(specs$ott_id==3359321),]
+# 
+# tree <- tol_induced_subtree(ott_ids = specs$ott_id)
+# plot(tree)
+
+#---
+#match
+match1= match(ins$genspec, ins_phy$tip.label)
+
+ins.prune<-drop.tip(ins_phy,ins_phy$tip.label[-na.omit(match1)])
+ins.match=ins[match(ins.prune$tip.label, ins$genspec),]
+
 #----
 #phytoplankton
 #https://www.ibi.vu.nl/programs/phylopars/
+
+#match to tips
+plank= tpc[tpc$taxa=="plankton",]
+plank$genspec= paste(plank$genus, plank$species, sep=" ")
+
+plank_class <- classification(unique(plank$genspec), db = "ncbi")
+plank_tree <- class2tree(plank_class, check = TRUE)
+plot(plank_tree)
+plank_phy= plank_tree$phylo
+
+#---
+#match
+match1= match(plank$genspec, plank_phy$tip.label)
+
+plank.prune<-drop.tip(plank_phy,plank_phy$tip.label[-na.omit(match1)])
+plank.match=plank[match(plank.prune$tip.label, plank$genspec),]
+
+#----
+#fish
+
+#match to tips
+fish= tpc[tpc$taxa=="fish",]
+fish$genspec= paste(fish$genus, fish$species, sep=" ")
+#only three species
 
 #----------------
 #phyr
 #https://besjournals.onlinelibrary.wiley.com/doi/10.1111/2041-210X.13471
 #https://daijiang.github.io/phyr/articles/phyr_example_empirical.html
 #Zheng, L., A. R. Ives, T. Garland, B. R. Larget, Y. Yu, and K. F. Cao. 2009. New multivariate tests for phylogenetic signal and trait correlations applied to ecophysiological phenotypes of nine Manglietia species. Functional Ecology 23:1059–1069.
-
 
 library(phyr)
 library(ape)
@@ -72,16 +130,54 @@ tmat= liz.match
 
 #lizards
 topt.asym=cor_phylo(variates = ~ Topt + asym, species = ~ species, phy = phy,
-  data = tmat, boot = 200)
+  data = tmat, boot = 100)
 topt.ctmin=cor_phylo(variates = ~ Topt + CTmin, species = ~ species, phy = phy,
-                        data = tmat, boot = 200)
+                        data = tmat, boot = 100)
 topt.ctmax=cor_phylo(variates = ~ Topt + CTmax, species = ~ species, phy = phy,
-                        data = tmat, boot = 200)
+                        data = tmat, boot = 100)
 topt.tol=cor_phylo(variates = ~ Topt + CTmax.Topt.breadth, species = ~ species, phy = phy,
-                        data = tmat, boot = 200)
-
-
-
-
+                        data = tmat, boot = 100)
 
 #B matrix
+topt.asym$B
+
+#--------
+library(phylolm)
+#phyloglm
+
+phy= plank.prune
+tmat= plank.match
+rownames(tmat)= tmat$genspec
+
+fit = phyloglm(asym~Topt,phy=phy,data=tmat,boot=50)
+summary(fit)
+coef(fit)
+vcov(fit)
+
+set.seed(123456)
+tre = phy
+x = rTrait(n=1,phy=phy)
+X = cbind(rep(1,50),x)
+y = rbinTrait(n=1,phy=tre, beta=c(-1,0.5), alpha=1 ,X=X)
+dat = data.frame(trait01 = y, predictor = x)
+fit = phyloglm(trait01~predictor,phy=tre,data=dat,boot=100)
+
+#====================
+fm1 <- cpglm.lambda(newTopt ~ Lat - 1, liz.match, phy.prune, 1) #sets lambda to 1
+fm2 <- pglm( newTopt ~ Lat, liz.match, vcv.phylo(phy.prune) )
+fm.estlambda<- cpglm.estlambda(newTopt ~ Lat, liz.match, phy.prune) #PGLM for estimation of lambda
+fm3 <-  cpglm.spatial( newTopt ~ Lat, liz.match, phy.prune, liz.match$Lat, liz.match$Long, 1, 0) #function( formula, data, phylo, lat, lon, lambda, phi) 
+#Fit phi and lambda
+fit.temp <- optimise.cpglm(newTopt ~  -1, liz.match, phy.prune, liz.match$Lat, liz.match$Long) #estimate phy/lambda
+fitphi.temp <- optimisephi.cpglm( newTopt ~  -1, liz.match, phy.prune, liz.match$Lat, liz.match$Long) #set lambda to zero to estimate phi singly
+#may need to manually step through to get to work
+#APPROACH 2: uses brutual
+Vliz <- vcv.phylo(phy.prune)
+#Dliz <- dist.mat( tb$Lat, tb$Lon, tb.back$Genus_sp)
+Dliz <- spDists(as.matrix(liz.match[,c(13,11)]), longlat = TRUE);
+rownames(Dliz)<-liz.match$Species
+fm <- pglmSpatial( newTopt ~ 1, liz.match, Vliz, Dliz)
+fm <- pglm( newTopt ~ 1, liz.match, Vliz)
+fm1 <- pglmEstLambda( newTopt ~ Lat, liz.match, Vliz)
+fm2 <- pglmSpatialFit( newTopt ~ Lat, liz.match, Vliz, Dliz)
+
