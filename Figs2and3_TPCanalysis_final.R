@@ -242,10 +242,35 @@ slope.mod= signif(slope.mod, 2)
 rownames(slope.mod)= coefs$taxa
 
 #write out
-write.csv(slope.mod, "Fig1stats.csv", row.names = TRUE)
+write.csv(slope.mod, "Fig1stats_out.csv", row.names = TRUE)
+
+#------------------
+#Thermodynamic stats
+tpc$thermo.topt= thermo.temp(tpc$Topt)
+
+mod.therm <- dlply(tpc, "taxa", function(df) lm(asym.thermo ~ thermo.topt, data = df))
+
+coefs= ldply(mod.therm, coef)
+ses= ldply(mod.therm, function(mod) sqrt(diag(vcov(mod))) )
+ts= ldply(mod.therm, function(mod) coef(mod) / sqrt(diag(vcov(mod))) )
+ps= ldply(mod.therm, function(mod) 2 * pt(abs(coef(mod) / sqrt(diag(vcov(mod)))), df = df.residual(mod), lower.tail = FALSE)  )
+
+#combine slope data
+therm.asymm.mod= cbind(coefs$thermo.topt, ses$thermo.topt, ts$thermo.topt, ps$thermo.topt)
+
+colnames(therm.asymm.mod)= c("slope","se","t value","p")
+#round
+slope.mod= signif(therm.asymm.mod, 2)
+
+#add taxa
+rownames(slope.mod)= coefs$taxa
+
+#write out
+write.csv(slope.mod, "Fig2_thermstats_out.csv", row.names = TRUE)
+
 
 #==============================================
-#Null analysis of asymmetry relationship based on TPC constraints
+#PCA analysis
 
 ps= matrix(NA, nrow=nrow(tpc), ncol=11)
 pc.var= as.data.frame(matrix(NA, nrow=length(taxas), ncol=4))

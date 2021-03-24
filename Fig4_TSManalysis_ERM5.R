@@ -138,6 +138,15 @@ tol.h$asym= (2*tol.h$Topt-tol.h$CTmax - tol.h$CTmin)/(tol.h$CTmax-tol.h$CTmin )
 
 plot(tol.h$lon, tol.h$lat)
 
+#change names
+tol.h$taxa[tol.h$taxa=="ants"]="ant performance"
+tol.h$taxa[tol.h$taxa=="lizards"]="lizard performance"
+tol.h$taxa[tol.h$taxa=="fish"]="fish growth"
+tol.h$taxa[tol.h$taxa=="insects"]="insect fitness"
+tol.h$taxa[tol.h$taxa=="plankton"]="plankton fitness"
+
+taxas= c("ant performance", "lizard performance", "fish growth","insect fitness", "plankton fitness")
+
 #===================================================
 #Estimate thermal stress with increasing information
 
@@ -379,7 +388,7 @@ colnames(tsm.yrs)=c('TSMhr',"TSMday",'Perf.noAsym','Perf.dTopt','Perf.dSlope','P
 #comparison plots
 tol2= cbind(tol.h, tsm.yrs)
 #drop fish
-tol2=tol2[-which(tol2$taxa=="fish"),] 
+tol2=tol2[-which(tol2$taxa=="fish growth"),] 
 
 #drop unneeded columns
 tol2s= tol2[,c("taxa","asym","TSMhr","Perf.noAsym",'Perf.dTopt','Perf.dSlope',"Perf.aveAsym","Perf","TSMday","TSMmonth", 
@@ -393,7 +402,7 @@ tol2s= tol2[,c("taxa","asym","TSMhr","Perf.noAsym",'Perf.dTopt','Perf.dSlope',"P
 
 fig4a= ggplot(tol2, aes(x=Perf.lin,y=TSMday, color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
   theme_bw()+scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom")+
-  xlab("CPD (normalized)")+ylab("TSM (°C)")+
+  xlab("CPD (proportion)")+ylab("TSM (°C)")+
   ylim(-10,15)
 
 #-----
@@ -416,7 +425,7 @@ tol.pl= melt(tol.p, id=c("taxa","asym","Perf.lin"))
 fig4p1= ggplot(tol.pl, aes(x=(Perf.lin),y=(value), color=variable)) +geom_point()+
   facet_wrap(~taxa, nrow=1) +
   theme_bw()+ theme(legend.position = "bottom", legend.title = element_blank())+
-  ylab("estimated CPD (normalized)")+xlab("observed CPD (normalized)")+
+  ylab("CPD for observed TPC")+xlab("CPD for observed TPC")+
   scale_color_viridis(discrete=TRUE)+geom_abline(slope=1, intercept=0)
 
 #compare linear, quadratic, guassian
@@ -440,7 +449,7 @@ tol.ls= subset(tol.l, tol.l$tpc=="linear")
   
 fig4b= ggplot(tol.ls, aes(x=Perf.lin, y=value, color=perf))+geom_point()+facet_wrap(~taxa, nrow=1) +
   theme_bw()+ theme(legend.position = "bottom", legend.title = element_blank())+
-  ylab("CPD")+xlab("CPD for observed TPC")+
+  ylab("CPD for altered TPC (proportion)")+xlab("CPD for observed TPC (proportion)")+
   scale_color_viridis(discrete=TRUE)+geom_abline(slope=1, intercept=0)
 
 #gaussian

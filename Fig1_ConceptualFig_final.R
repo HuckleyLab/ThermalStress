@@ -268,10 +268,18 @@ setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/USC
 # 15   ST_FLAG                        X
 
 #clim= read.table("CRNS0101-05-2019-NM_Los_Alamos_13_W.txt", na.strings = "-9999.0")
-clim= read.table("CRNS0101-05-2019-NM_Las_Cruces_20_N.txt", na.strings = "-9999.0")
+#clim= read.table("CRNS0101-05-2019-NM_Las_Cruces_20_N.txt", na.strings = "-9999.0")
+#clim=clim[,c(4,5,9,13)]
+#names(clim)<- c("date","time","Tair","Tsurf")
 
-clim=clim[,c(4,5,9,13)]
-names(clim)<- c("date","time","Tair","Tsurf")
+#ERA5 for Santa Fe
+#find closest grid cell
+lon.ind= which.min(abs(lons.z1 - (-105.94)))
+lat.ind= which.min(abs(lats.z1 - 35.69))
+
+tmax.k= skt.z1[lat.ind,lon.ind,]
+tmax.k.yrs= as.vector(tmax.k[1,])-273.15
+
 
 #--------------
 #Average data
@@ -334,6 +342,13 @@ clim.2week.max= tapply(temps, INDEX=clim$wk2.bin, FUN="max", na.rm=TRUE)
 #month
 clim.month= tapply(temps, INDEX=clim$month, FUN="mean", na.rm=TRUE)
 clim.month.max= tapply(temps, INDEX=clim$month, FUN="max", na.rm=TRUE)
+
+#annual mean
+clim.annmean= mean(temps, na.rm=TRUE)
+
+#monthly mean of daily max
+month=as.numeric(substring(rownames(clim.day.max),5,6))
+clim.momeandaymax= tapply(clim.day.max, INDEX=month, FUN="mean", na.rm=TRUE)
 
 #make data array
 tr= array(data=NA, dim= c(7,4,2) ) #dims are time, metric, mean and max
