@@ -62,6 +62,7 @@ era.dates= as.POSIXct(times*3600,origin='1900-01-01 00:00')
 year= as.numeric(format(era.dates, "%Y"))
 doy= as.numeric(format(era.dates, "%j"))
 hours= as.numeric(format(era.dates, "%H"))
+day= as.numeric(format(era.dates, "%d"))
 months= month(era.dates)
 #need to add a few hours?
 
@@ -126,7 +127,7 @@ count=function(x) length(na.omit(x))
 
 #Topt data
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
-tol.h=read.csv("tpcs.csv")
+tol.h=read.csv("tpcs_wSource_Mar2021.csv")  #  #("tpcs.csv")
 
 #species with lat lon
 tol.h= subset(tol.h, !is.na(tol.h$lat) & !is.na(tol.h$lon) )
@@ -137,6 +138,8 @@ tol.h= subset(tol.h, !is.na(tol.h$CTmin) & !is.na(tol.h$Topt) & !is.na(tol.h$CTm
 tol.h$asym= (2*tol.h$Topt-tol.h$CTmax - tol.h$CTmin)/(tol.h$CTmax-tol.h$CTmin )
 
 plot(tol.h$lon, tol.h$lat)
+
+tol.h$taxa= as.character(tol.h$taxa)
 
 #change names
 tol.h$taxa[tol.h$taxa=="ants"]="ant performance"
@@ -369,11 +372,11 @@ for(spec.k in 1:nrow(tol.h)){
 
 #save output
 # Save an object to a file
-saveRDS(ts, file = "ts.rds")
-saveRDS(ts.exceed, file = "tsexceed.rds")
+#saveRDS(ts, file = "ts.rds")
+#saveRDS(ts.exceed, file = "tsexceed.rds")
 
 setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/CTlimits/")
-#ts=readRDS("ts.rds")
+ts=readRDS("ts.rds")
 
 #------------
 # #AGGREGATE ACROSS YEARS
@@ -509,7 +512,7 @@ anova(mod1)
 #----
 #LATITUDINAL PLOT
 #latitudinal figure for plankton
-tol.p= tol2[which(tol2$taxa %in% c("plankton")), c(1:12,15:21) ] #"insects","lizards",
+tol.p= tol2[which(tol2$taxa %in% c("plankton fitness")), c(1:13,15:21) ] #"insects","lizards",
 
 #to long format
 tol.pl<- tol.p %>%

@@ -70,6 +70,7 @@ gaus=function(x, Topt, CTmax, a=1) {
 #load data
 setwd("./data/")
 tpc=read.csv("tpcs.csv")
+
 #drop data without all metrics
 tpc= subset(tpc, !is.na(tpc$CTmin) & !is.na(tpc$Topt) & !is.na(tpc$CTmax) )
 #change photosynthesis to plants
@@ -280,134 +281,80 @@ lat.ind= which.min(abs(lats.z1 - 35.69))
 tmax.k= skt.z1[lat.ind,lon.ind,]
 tmax.k.yrs= as.vector(tmax.k[1,])-273.15
 
-
-#--------------
-#Average data
-clim$year= as.numeric(substr(clim$date, 1,4))
-clim$month= as.numeric(substr(clim$date, 5,6))
-clim$day= as.numeric(substr(clim$date, 7,8))
-clim$hour= floor(clim$time/100)
-
-hm= function(x){
-  x= x/100
-  hr= floor(x)
-  return(hr+ (x-hr)*100/60)
-}
-
-clim$hm= sapply(clim$time, FUN="hm")
+#link time
+#bind times
+tmat= as.data.frame(cbind(year,months, doy,day,hours,tmax.k.yrs))
+#drop 2014 data
+tmat= subset(tmat, tmat$year>2014)
 
 #hourly bin
-clim$hr.bin[clim$hour %in% 0:5]=1
-clim$hr.bin[clim$hour %in% 6:11]=2
-clim$hr.bin[clim$hour %in% 12:17]=3
-clim$hr.bin[clim$hour %in% 18:23]=4
-clim$hr.bin= paste(clim$day,clim$hr.bin)
+tmat$hr.bin[tmat$hours %in% 0:5]=1
+tmat$hr.bin[tmat$hours %in% 6:11]=2
+tmat$hr.bin[tmat$hours %in% 12:17]=3
+tmat$hr.bin[tmat$hours %in% 18:23]=4
+tmat$hr.bin= as.numeric(tmat$hr.bin)
 
 #weekly and 2 week
-clim$wk.bin[clim$day %in% 1:7]=1
-clim$wk.bin[clim$day %in% 8:14]=2
-clim$wk.bin[clim$day %in% 15:21]=3
-clim$wk.bin[clim$day %in% 21:31]=4
-clim$wk2.bin=1
-clim$wk2.bin[clim$wk.bin %in% 3:4]=2
+tmat$wk.bin[tmat$day %in% 1:7]=1
+tmat$wk.bin[tmat$day %in% 8:14]=2
+tmat$wk.bin[tmat$day %in% 15:21]=3
+tmat$wk.bin[tmat$day %in% 21:31]=4
+tmat$wk2.bin=1
+tmat$wk2.bin[tmat$wk.bin %in% 3:4]=2
 
-clim$wk.bin= paste(clim$month,clim$wk.bin)
-clim$wk2.bin= paste(clim$month,clim$wk2.bin)
-
-#average data
 #hourly, 6 hourly, daily, weekly, monthly, quarterly, annually
+clim.hr <- tmax.k.yrs
+clim.6hr <- tmat %>% group_by(year,doy,hr.bin) %>% summarise(tmean=mean(tmax.k.yrs))
+clim.day <- tmat %>% group_by(year,doy) %>% summarise(tmean=mean(tmax.k.yrs))
+clim.week <- tmat %>% group_by(year,months, wk.bin) %>% summarise(tmean=mean(tmax.k.yrs))
+clim.month <- tmat %>% group_by(year,months) %>% summarise(tmean=mean(tmax.k.yrs))
+clim.ann <- tmat %>% group_by(year) %>% summarise(tmean=mean(tmax.k.yrs))
+#monthly data, monthly mean of daily max
+tmat1 <- tmat %>% group_by(year,doy,months) %>% summarise(tmean=max(tmax.k.yrs)) #daily max
+clim.momdm <- tmat1 %>% group_by(year,months)  %>% summarise(tmean=mean(tmean))
 
-temps= clim$Tsurf
+#--------------
+
 CTmax=40
 Topt=25
 
-#hour
-date.hr= paste(clim$date, clim$hour,sep="_")
-clim.hr= tapply(temps, INDEX=date.hr, FUN="mean", na.rm=TRUE)
-
-clim.6hr= tapply(temps, INDEX=clim$hr.bin, FUN="mean", na.rm=TRUE)
-
-#day  
-clim.day= tapply(temps, INDEX=clim$date, FUN="mean", na.rm=TRUE)
-clim.day.max= tapply(temps, INDEX=clim$date, FUN="max", na.rm=TRUE)
-
-#weekly
-clim.week= tapply(temps, INDEX=clim$wk.bin, FUN="mean", na.rm=TRUE)
-clim.week.max= tapply(temps, INDEX=clim$wk.bin, FUN="max", na.rm=TRUE)
-
-#14 day
-clim.2week= tapply(temps, INDEX=clim$wk2.bin, FUN="mean", na.rm=TRUE)
-clim.2week.max= tapply(temps, INDEX=clim$wk2.bin, FUN="max", na.rm=TRUE)
-
-#month
-clim.month= tapply(temps, INDEX=clim$month, FUN="mean", na.rm=TRUE)
-clim.month.max= tapply(temps, INDEX=clim$month, FUN="max", na.rm=TRUE)
-
-#annual mean
-clim.annmean= mean(temps, na.rm=TRUE)
-
-#monthly mean of daily max
-month=as.numeric(substring(rownames(clim.day.max),5,6))
-clim.momeandaymax= tapply(clim.day.max, INDEX=month, FUN="mean", na.rm=TRUE)
-
 #make data array
-tr= array(data=NA, dim= c(7,4,2) ) #dims are time, metric, mean and max
+tr= array(data=NA, dim= c(7,4,1) ) #dims are time, metric, mean and max
 
 #estimate metrics
-for(agg.k in 1:2){
-
 for(time.k in 1:7){
   
-  if(agg.k==1){ #mean
-    if(time.k==1)temps= clim$Tsurf
-    if(time.k==2)temps= clim.hr
-    if(time.k==3)temps= clim.6hr
-    if(time.k==4)temps= clim.day
-    if(time.k==5)temps= clim.week
-    if(time.k==6)temps= clim.2week
-    if(time.k==7)temps= clim.month
-  }
-  
-  if(agg.k==2){ #max
-    if(time.k==1)temps= clim$Tsurf
-    if(time.k==2)temps= clim.hr.max
-    if(time.k==3)temps= clim.6hr.max
-    if(time.k==4)temps= clim.day.max
-    if(time.k==5)temps= clim.week.max
-    if(time.k==6)temps= clim.2week.max
-    if(time.k==7)temps= clim.month.max
-  }
+    if(time.k==1)temps= clim.hr
+    if(time.k==2)temps= clim.6hr$tmean
+    if(time.k==3)temps= clim.day$tmean
+    if(time.k==4)temps= clim.week$tmean
+    if(time.k==5)temps= clim.month$tmean
+    if(time.k==6)temps= clim.ann$tmean
+    if(time.k==7)temps= clim.momdm$tmean
 
   #TSM
-   tr[time.k, 1, agg.k]= CTmax - max(temps, na.rm=TRUE)
+   tr[time.k, 1, 1]= CTmax - max(temps, na.rm=TRUE)
    #CPDs
    inds= which(temps > Topt)
    
+   if(time.k<7){
    pd1= apply(as.data.frame(temps[inds]), FUN="quad", MARGIN=1, Topt=Topt, CTmax=CTmax)
-   tr[time.k, 2, agg.k]= sum(1- pd1)/length(temps)
+   tr[time.k, 2, 1]= sum(1- pd1)/length(temps)
    pd1= apply(as.data.frame(temps[inds]), FUN="lin", MARGIN=1, Topt=Topt, CTmax=CTmax)
-   tr[time.k, 3, agg.k]= sum(1- pd1)/length(temps)
+   tr[time.k, 3, 1]= sum(1- pd1)/length(temps)
    pd1= apply(as.data.frame(temps[inds]), FUN="gaus", MARGIN=1, Topt=Topt, CTmax=CTmax)
-   tr[time.k, 4, agg.k]= sum(1- pd1)/length(temps)
+   tr[time.k, 4, 1]= sum(1- pd1)/length(temps)
+   }
    
   } #end loop time
-} #end loop agg
+
 
 #flatten array
-tr.mean=as.data.frame(tr[,,1])
-colnames(tr.mean)=c("tsm","quadratic","linear","gaussian")
-tr.mean$agg= "mean"
-tr.mean$time= c("5min","hr","6hr", "day","week","2week","month") 
-tr.mean$hours= 1:7   #c(0.083, 1, 24, 24*30) 
-
-tr.max=as.data.frame(tr[,,2])
-colnames(tr.max)=c("tsm","quadratic","linear","gaussian")
-tr.max$agg= "max"
-tr.max$time= c("5min","hr","6hr", "day","week","2week","month")
-
-tr.max$hours= 1:7   #c(0.083, 1, 24, 24*30) 
-
-tr.l= rbind(tr.mean,tr.max)
+tr.l=as.data.frame(tr[,,1])
+colnames(tr.l)=c("tsm","quadratic","linear","gaussian")
+tr.l$agg= "mean"
+tr.l$time= c("hr","6hr", "day","week","month","annual","Td,max") 
+tr.l$hours= 1:7   #c(0.083, 1, 24, 24*30) 
 
 #to long format
 tr.l<- tr.l %>%
@@ -416,15 +363,16 @@ tr.l<- tr.l %>%
 tr.l$met="CPD"
 tr.l$met[tr.l$metric=="tsm"]="TSM"
 
-tr.l$time= factor(tr.l$time, levels=c("5min","hr","6hr", "day","week","2week","month"))
+tr.l$time= factor(tr.l$time, levels=c("hr","6hr", "day","week","month","annual","Td,max"))
 
 #tr.l$metric[tr.l$metric=="tsm"]="NA"
 
 #-------
 #Fig. Plot metrics as a function of exposure time
 
-fig0c= ggplot(tr.l)+aes(x=time, y=value, group=metric, shape=metric)+geom_line()+geom_point()+
-  facet_grid(met~agg, scales="free_y", switch="y")+ 
+fig0c= ggplot(tr.l)+aes(x=time, y=value, shape=metric)+geom_line(aes(group=metric))+geom_point()+
+  facet_grid(met~., scales="free_y", switch="y")+ 
+  xlab("temporal aggregation of temperature data")+
   theme_bw(base_size=14) + theme(axis.text.x = element_text(angle = 45, vjust = 0.95, hjust=1))+
   theme(legend.position="bottom")+
   guides(color=guide_legend(title="TPC type"), shape=guide_legend(title="TPC type"))+
@@ -441,8 +389,8 @@ tmax.k=clim.hr
 for(k in 1:length(asyms)){
   
   #TSM 
-  tsm[k,1]= tpc.p[k,3,1]-max(clim.day)
-  tsm[k,2]= tpc.p[k,3,2]-max(clim.day)
+  tsm[k,1]= tpc.p[k,3,1]-max(clim.day$tmean)
+  tsm[k,2]= tpc.p[k,3,2]-max(clim.day$tmean)
   
   #perform det
   inds= which(tmax.k > tpc.p[k,2,1])
@@ -526,6 +474,7 @@ fig0b= ggplot(tpc.pl)+aes(x=Topt, y = metric, color=asym, shape=tpc)+geom_point(
 #----
 combined <- fig0a +fig0b +fig0c +plot_annotation(tag_levels = 'A') +plot_layout(nrow=3)+plot_layout(heights = c(1.6, 1,1))
 
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/figures/")
 pdf("Fig0.pdf", height = 10, width = 8)
 combined
 dev.off()
