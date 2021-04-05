@@ -408,6 +408,16 @@ fig4a= ggplot(tol2, aes(x=Perf.lin,y=TSMday, color=asym)) +geom_point()+facet_wr
   xlab("CPD (proportion)")+ylab("TSM (°C)")+
   ylim(-10,15)
 
+fig4a.gaus= ggplot(tol2, aes(x=Perf.gaus,y=TSMday, color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
+  theme_bw()+scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom")+
+  xlab("CPD (proportion)")+ylab("TSM (°C)")+
+  ylim(-10,15)
+
+fig4a.quad= ggplot(tol2, aes(x=Perf,y=TSMday, color=asym)) +geom_point()+facet_wrap(~taxa, nrow=1) +
+  theme_bw()+scale_color_viridis(name="asymmetry")+ theme(legend.position = "bottom")+
+  xlab("CPD (proportion)")+ylab("TSM (°C)")+
+  ylim(-10,15)
+
 #-----
 #compare TSM
 tol.tsm= tol2s[,c("taxa","asym","TSMhr","TSMday","TSMmonth")]
@@ -441,6 +451,8 @@ tol.l$perf[grepl("noAsym", tol.l$variable)]="no asymmetry"
 tol.l$perf[grepl("dTopt", tol.l$variable)]="omit slope"
 tol.l$perf[grepl("dSlope", tol.l$variable)]="omit Topt shift"
 tol.l$perf[grepl("aveAsym", tol.l$variable)]="taxa asymmetry"
+#drop no asymmetry
+tol.l= tol.l[-which(tol.l$perf=="no asymmetry"),]
 
 #tpc type
 tol.l$tpc="quadratic"
@@ -478,7 +490,12 @@ pdf("Figs4_TSM.pdf", height = 8, width = 8)
 fig4a +fig4b +plot_annotation(tag_levels = 'A') +plot_layout(nrow=2) 
 dev.off()
 
-#Supplementary plot
+#Supplementary plots
+#compare to TSM
+pdf("Figs4_TSM_spp.pdf", height = 8, width = 8)
+fig4a.gaus +fig4a.quad +plot_annotation(tag_levels = 'A') +plot_layout(nrow=2) 
+dev.off()
+
 pdf("Figs4Sup_TSM.pdf", height = 8, width = 8)
 fig4.tsm + fig4b.gaus + fig4b.quad +plot_annotation(tag_levels = 'A') +plot_layout(nrow=3)
 dev.off()
@@ -512,19 +529,18 @@ anova(mod1)
 #----
 #LATITUDINAL PLOT
 #latitudinal figure for plankton
-tol.p= tol2[which(tol2$taxa %in% c("plankton fitness")), c(1:13,15:21) ] #"insects","lizards",
+tol.p= tol2[which(tol2$taxa %in% c("plankton fitness")), c(1:13,17,24:28) ] #"insects","lizards",
 
 #to long format
 tol.pl<- tol.p %>%
-  gather("metric", "value", c("Perf","Perf.noAsym","Perf.aveAsym","Perf.dTopt","Perf.dSlope") ) #"days_p50"
+  gather("metric", "value", c("Perf.lin","Perf.noAsym.lin","Perf.aveAsym.lin","Perf.dTopt.lin","Perf.dSlope.lin") ) #"days_p50"
 
 #make labels
 tol.pl$metric.lab<-NA
-tol.pl$metric.lab[tol.pl$metric=="days_p50"]<- "proportion days with 50% performance loss"
 tol.pl$metric.lab[tol.pl$metric=="TSMday"]<- "annual minimum of daily TSM"
-tol.pl$metric.lab[tol.pl$metric=="Perf"]<- "observed" #"log annual performance detriment"
-tol.pl$metric.lab[tol.pl$metric=="Perf.noAsym"]<- "without asymetry"
-tol.pl$metric.lab[tol.pl$metric=="Perf.aveAsym"]<- "average asymetry"
+tol.pl$metric.lab[tol.pl$metric=="Perf.lin"]<- "observed" #"log annual performance detriment"
+tol.pl$metric.lab[tol.pl$metric=="Perf.noAsym.lin"]<- "without asymetry"
+tol.pl$metric.lab[tol.pl$metric=="Perf.aveAsym.lin"]<- "average asymetry"
 tol.pl$metric.lab= factor(tol.pl$metric.lab, levels=c("annual minimum of daily TSM","observed","without asymetry","average asymetry"))
 
 #TSM plot
@@ -536,7 +552,7 @@ fig5a= ggplot(tol.p, aes(x=abs(lat),y=TSMday, color=asym) ) +
   ylim(-10,15) +geom_vline(xintercept=23.55)+geom_vline(xintercept=66.6)
 
 #Perf plot
-tol.p2= tol.pl[which(tol.pl$metric %in% c("Perf","Perf.noAsym")),]
+tol.p2= tol.pl[which(tol.pl$metric %in% c("Perf.lin","Perf.noAsym.lin")),]
 
 fig5b= ggplot(tol.p2, aes(x=abs(lat),y=value, color=metric.lab) ) +
   geom_point()+geom_smooth(method='loess',se=TRUE) +

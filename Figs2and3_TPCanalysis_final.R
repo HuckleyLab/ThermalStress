@@ -192,9 +192,11 @@ tpc$asym.thermo<- (2*thermo.temp(tpc$Topt)-thermo.temp(tpc$CTmax) - thermo.temp(
 tpc$CTmax.Topt.breadth.thermo= thermo.temp(tpc$CTmax) - thermo.temp(tpc$Topt)
 
 #assymetry vs Topt
-fig2at= ggplot(tpc) + aes(x=thermo.temp(Topt), y = asym.thermo, group=taxa)+geom_point()+ylab("asymmetry")+facet_grid(taxa~1)+
+fig2at= ggplot(tpc) + aes(x=thermo.temp(Topt), y = asym.thermo, group=taxa)+geom_point()+
+  ylab("asymmetry")+facet_grid(taxa~.)+
   ylim(-0.5,0.75)+
-  theme_bw()+theme(legend.position="bottom")+geom_smooth(method="lm", color="black")+xlab("thermodynamic Topt (°C)")
+  theme_bw()+theme(legend.position="bottom")+geom_smooth(method="lm", color="black")+
+  xlab("thermodynamic Topt (°C)")
 
 pdf("FigSX_ThermoAssym.pdf", height = 10, width = 4)
 fig2at
