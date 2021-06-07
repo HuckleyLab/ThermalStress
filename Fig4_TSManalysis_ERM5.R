@@ -21,7 +21,7 @@ library(dplyr)
 convert.lon= function(r0) ifelse(r0 > 180, -360 + r0, r0)
 
 #----------------------
-#LOAD ERM5
+#LOAD ERM5, check whether surface
 library(raster)
 library(ncdf4)
 
