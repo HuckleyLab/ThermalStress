@@ -553,8 +553,6 @@ for(k in 1:1000){
 }# loop asymmetry
 
 #actual values
-tsm= -2.7, 0.027
-
 #summarize variance
 #paper uses linear
 sd1= c(sd(tsm[,1]), sd(pd.lin[,1]) )
