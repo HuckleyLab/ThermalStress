@@ -259,7 +259,7 @@ library("accelerometry")
 #ftp://ftp.ncdc.noaa.gov/pub/data/uscrn/products/subhourly01/2019/
 #data from 2013-2019 available, use 2019
 
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/USCRN/")
+#setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/USCRN/")
 
 # 4    LST_DATE                       YYYYMMDD
 # 5    LST_TIME                       HHmm
@@ -492,12 +492,14 @@ dev.off()
 #ftp://ftp.ncdc.noaa.gov/pub/data/uscrn/products/subhourly01/2019/
 #data from 2013-2019 available, use 2019
 
-setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/USCRN/")
+#setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/USCRN/")
 
-clim= read.table("CRNS0101-05-2019-NM_Los_Alamos_13_W.txt", na.strings = "-9999.0")
+#clim= read.table("CRNS0101-05-2019-NM_Los_Alamos_13_W.txt", na.strings = "-9999.0")
 #clim= read.table("CRNS0101-05-2019-NM_Las_Cruces_20_N.txt", na.strings = "-9999.0")
-clim=clim[,c(4,5,9,13)]
-names(clim)<- c("date","time","Tair","Tsurf")
+#clim=clim[,c(4,5,9,13)]
+#names(clim)<- c("date","time","Tair","Tsurf")
+
+#USE ERA5
 
 #make tpc parameters
 rnorm2 <- function(n,mean,sd) { mean+sd*scale(rnorm(n)) }
@@ -517,7 +519,7 @@ tpc.p[,3,2]= as.vector(rnorm2(1000,40,4.5))
 
 #--------------------
 #calculation across curves
-tmax.k=na.omit(clim$Tsurf)
+tmax.k=na.omit(tmat$tmax.k.yrs)
 
 #data structures
 #make vectors to store data
