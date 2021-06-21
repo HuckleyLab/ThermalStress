@@ -65,7 +65,7 @@ gaus=function(x, Topt, CTmax, a=1) {
 } 
   
 ####
-#Need to run Fig4_TSManalysis_final.R first to load envi data
+#Need to run Fig4_TSManalysis_ERM5.R first to load envi data
 
 #load data
 setwd("./data/")
@@ -478,3 +478,101 @@ setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/figures/
 pdf("Fig0.pdf", height = 10, width = 8)
 combined
 dev.off()
+
+#=====================
+#analyze metrics
+
+#vary CTmax by error
+# estimate TSM
+# estimate CPD
+# calcuate SE across estimates
+
+#load climate data
+#Los Alamos surface temp, 5 minute interval
+#ftp://ftp.ncdc.noaa.gov/pub/data/uscrn/products/subhourly01/2019/
+#data from 2013-2019 available, use 2019
+
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/USCRN/")
+
+clim= read.table("CRNS0101-05-2019-NM_Los_Alamos_13_W.txt", na.strings = "-9999.0")
+#clim= read.table("CRNS0101-05-2019-NM_Las_Cruces_20_N.txt", na.strings = "-9999.0")
+clim=clim[,c(4,5,9,13)]
+names(clim)<- c("date","time","Tair","Tsurf")
+
+#make tpc parameters
+rnorm2 <- function(n,mean,sd) { mean+sd*scale(rnorm(n)) }
+#se ~1C, sample size ~20, se= sd/sqrt(n)
+#sd=1*sqrt(20)~4.5
+
+tpc.p=array(NA, dim=c(1000,3,4.5))
+#vary CTmax
+tpc.p[,1,1]=0
+tpc.p[,2,1]=25
+tpc.p[,3,1]= as.vector(rnorm2(1000,40,4.5))
+
+#vary Topt and CTmax
+tpc.p[,1,2]=0
+tpc.p[,2,2]=as.vector(rnorm2(1000,25,4.5))
+tpc.p[,3,2]= as.vector(rnorm2(1000,40,4.5))
+
+#--------------------
+#calculation across curves
+tmax.k=na.omit(clim$Tsurf)
+
+#data structures
+#make vectors to store data
+tsm=matrix(NA, nrow=1000, ncol=2 )
+pd=matrix(NA, nrow=1000, ncol=2 )
+pd.lin=matrix(NA, nrow=1000, ncol=2 )
+pd.gaus=matrix(NA, nrow=1000, ncol=2 )
+
+#calc tsm and pd
+for(k in 1:1000){
+  
+  #TSM 
+  tsm[k,1]= tpc.p[k,3,1]-max(tmax.k)
+  tsm[k,2]= tpc.p[k,3,2]-max(tmax.k)
+  
+  #perform det
+  inds= which(tmax.k > tpc.p[k,2,1])
+  perf= sapply(tmax.k[inds],FUN=quad, Topt=tpc.p[k,2,1], CTmax=tpc.p[k,3,1])
+  pd[k,1]= sum(1- perf)/length(tmax.k)
+  perf= sapply(tmax.k[inds],FUN=lin, Topt=tpc.p[k,2,1], CTmax=tpc.p[k,3,1])
+  pd.lin[k,1]= sum(1- perf)/length(tmax.k)
+  perf= sapply(tmax.k[inds],FUN=gaus, Topt=tpc.p[k,2,1], CTmax=tpc.p[k,3,1])
+  pd.gaus[k,1]= sum(1- perf)/length(tmax.k)
+  
+  inds= which(tmax.k > tpc.p[k,2,2])
+  perf= sapply(tmax.k[inds],FUN=quad, Topt=tpc.p[k,2,2], CTmax=tpc.p[k,3,2])
+  pd[k,2]= sum(1- perf)/length(tmax.k)
+  perf= sapply(tmax.k[inds],FUN=lin, Topt=tpc.p[k,2,2], CTmax=tpc.p[k,3,2])
+  pd.lin[k,2]= sum(1- perf)/length(tmax.k)
+  perf= sapply(tmax.k[inds],FUN=gaus, Topt=tpc.p[k,2,2], CTmax=tpc.p[k,3,2])
+  pd.gaus[k,2]= sum(1- perf)/length(tmax.k)
+  
+}# loop asymmetry
+
+#actual values
+#summarize variance
+#paper uses linear
+sd1= c(sd(tsm[,1]), sd(pd.lin[,1]) )
+m1= c(mean(tsm[,1]), mean(pd.lin[,1]) )
+sd1/m1
+sd1/c(-2.7, 0.027)
+
+sd2= c(sd(tsm[,2]), sd(pd.lin[,2]) )
+m2= c(mean(tsm[,2]), mean(pd.lin[,2]) )
+sd2/m2
+sd2/c(-2.7, 0.027)
+
+#compare uncertainty Topt, CTmax
+#fish aerobic metabolic scope: https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/1365-2435.12618 (Payne et al. 2015)
+#CTmax: https://cdnsciencepub.com/doi/pdf/10.1139/cjz-2012-0300 (Chen et al.)
+#CTmax varied with incubation temp and whether by time or to common body mass
+#use 90 days posthatch at standard temperature
+
+setwd("/Volumes/GoogleDrive/Shared Drives/TrEnCh/Projects/ThermalStress/data/FishCTvar/")
+fits= read.csv("ToptTcritUncertainty.csv")
+cts= read.csv("SockeyeCTs.csv")
+
+
