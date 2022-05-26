@@ -304,14 +304,14 @@ tmat$wk2.bin[tmat$wk.bin %in% 3:4]=2
 
 #hourly, 6 hourly, daily, weekly, monthly, quarterly, annually
 clim.hr <- tmax.k.yrs
-clim.6hr <- tmat %>% group_by(year,doy,hr.bin) %>% summarise(tmean=mean(tmax.k.yrs))
-clim.day <- tmat %>% group_by(year,doy) %>% summarise(tmean=mean(tmax.k.yrs))
-clim.week <- tmat %>% group_by(year,months, wk.bin) %>% summarise(tmean=mean(tmax.k.yrs))
-clim.month <- tmat %>% group_by(year,months) %>% summarise(tmean=mean(tmax.k.yrs))
-clim.ann <- tmat %>% group_by(year) %>% summarise(tmean=mean(tmax.k.yrs))
+clim.6hr <- tmat %>% dplyr::group_by(year,doy,hr.bin) %>% dplyr::summarise(tmean=mean(tmax.k.yrs))
+clim.day <- tmat %>% dplyr::group_by(year,doy) %>% dplyr::summarise(tmean=mean(tmax.k.yrs))
+clim.week <- tmat %>% dplyr::group_by(year,months, wk.bin) %>% dplyr::summarise(tmean=mean(tmax.k.yrs))
+clim.month <- tmat %>% dplyr::group_by(year,months) %>% dplyr::summarise(tmean=mean(tmax.k.yrs))
+clim.ann <- tmat %>% dplyr::group_by(year) %>% dplyr::summarise(tmean=mean(tmax.k.yrs))
 #monthly data, monthly mean of daily max
-tmat1 <- tmat %>% group_by(year,doy,months) %>% summarise(tmean=max(tmax.k.yrs)) #daily max
-clim.momdm <- tmat1 %>% group_by(year,months)  %>% summarise(tmean=mean(tmean))
+tmat1 <- tmat %>% dplyr::group_by(year,doy,months) %>% dplyr::summarise(tmean=max(tmax.k.yrs)) #daily max
+clim.momdm <- tmat1 %>% dplyr::group_by(year,months)  %>% dplyr::summarise(tmean=mean(tmean))
 
 #--------------
 
